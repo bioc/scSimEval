@@ -660,14 +660,17 @@ evaluate_simulation_accuracy <- function(
 #' Compute Category III Clustering Concordance across Both Modalities
 #' @keywords internal
 #' @noRd
-.evaluate_multiomics_clustering <- function(ref_multi, sim_multi, ct_m1, ct_m2, bt_m1, bt_m2,
+.evaluate_multiomics_clustering <- function(ref_multi, sim_multi,
+                                            ct_m1_ref, ct_m2_ref,
+                                            ct_m1_sim, ct_m2_sim,
+                                            bt_m1_sim, bt_m2_sim,
                                             m1_name, m2_name, threads, verbose) {
   if (verbose) message(sprintf("=== [Step 3] Evaluating Clustering Preservation (%s & %s) ===", m1_name, m2_name))
-  run_one <- function(sim_o, ref_o, ct, bt, tag) {
+  run_one <- function(sim_o, ref_o, ct_s, ct_r, bt_s, tag) {
     tryCatch(
       evaluate_clustering_metrics(
-        data = sim_o, cell_types = ct, ref_data = ref_o,
-        ref_cell_types = ct, batch_info = bt, threads = threads
+        data = sim_o, cell_types = ct_s, ref_data = ref_o,
+        ref_cell_types = ct_r, batch_info = bt_s, threads = threads
       ),
       error = function(e) {
         if (verbose) message(sprintf("Clustering evaluation note (%s): %s", tag, conditionMessage(e)))
@@ -675,8 +678,8 @@ evaluate_simulation_accuracy <- function(
       }
     )
   }
-  clu_m1 <- run_one(sim_multi[[1L]], ref_multi[[1L]], ct_m1, bt_m1, "M1")
-  clu_m2 <- run_one(sim_multi[[2L]], ref_multi[[2L]], ct_m2, bt_m2, "M2")
+  clu_m1 <- run_one(sim_multi[[1L]], ref_multi[[1L]], ct_m1_sim, ct_m1_ref, bt_m1_sim, "M1")
+  clu_m2 <- run_one(sim_multi[[2L]], ref_multi[[2L]], ct_m2_sim, ct_m2_ref, bt_m2_sim, "M2")
   fields <- c("silhouette_sim", "cdi", "neighborhood_purity", "ari", "nmi")
   rows <- c(
     .append_rows_from_fields(clu_m1, fields, "Cellular Manifold & Clustering Concordance", "clustering", m1_name),
@@ -719,20 +722,20 @@ evaluate_simulation_accuracy <- function(
 #' Compute Category V Differential Signal Fidelity across RNA and ATAC Modalities
 #' @keywords internal
 #' @noRd
-.evaluate_multiomics_signal <- function(ref_multi, sim_multi, ct_m1, ct_m2, bt_m1, bt_m2,
+.evaluate_multiomics_signal <- function(ref_multi, sim_multi,
+                                        ct_m1_ref, ct_m2_ref, bt_m1_ref, bt_m2_ref,
+                                        ct_m1_sim, ct_m2_sim, bt_m1_sim, bt_m2_sim,
                                         m1_name, m2_name, threads, verbose) {
   signal_res <- list()
   rows <- list()
 
-  if (!is.null(ct_m1) && !is.null(bt_m1)) {
+  if (!is.null(ct_m1_ref) && !is.null(bt_m1_ref) && !is.null(ct_m1_sim) && !is.null(bt_m1_sim)) {
     if (verbose) message(sprintf("=== [Step 5] Evaluating %s Biological Signal Fidelity ===", m1_name))
-    sim_ct_m1 <- if (length(ct_m1) == ncol(sim_multi[[1L]])) ct_m1 else rep(ct_m1, length.out = ncol(sim_multi[[1L]]))
-    sim_bt_m1 <- if (length(bt_m1) == ncol(sim_multi[[1L]])) bt_m1 else rep(bt_m1, length.out = ncol(sim_multi[[1L]]))
     deg_eval <- tryCatch(
       evaluate_deg_fidelity(
         ref_data = ref_multi[[1L]], sim_data = sim_multi[[1L]],
-        ref_celltypes = ct_m1, sim_celltypes = sim_ct_m1,
-        batch_ref = bt_m1, batch_sim = sim_bt_m1, threads = threads
+        ref_celltypes = ct_m1_ref, sim_celltypes = ct_m1_sim,
+        batch_ref = bt_m1_ref, batch_sim = bt_m1_sim, threads = threads
       ),
       error = function(e) {
         if (verbose) message("scRNA-seq pseudobulk DE evaluation note: ", conditionMessage(e))
@@ -746,21 +749,19 @@ evaluate_simulation_accuracy <- function(
         "scRNA_differential_expression", m1_name
       ))
     }
-  } else if (!is.null(ct_m1) && verbose) {
+  } else if (!is.null(ct_m1_ref) && verbose) {
     message(sprintf("Batch annotations not provided: skipping Category V pseudobulk analysis for %s.", m1_name))
   }
 
   is_atac_m2 <- .is_atac_modality(ref_multi[[2L]], m2_name)
   if (is_atac_m2) {
-    if (!is.null(ct_m2) && !is.null(bt_m2)) {
+    if (!is.null(ct_m2_ref) && !is.null(bt_m2_ref) && !is.null(ct_m2_sim) && !is.null(bt_m2_sim)) {
       if (verbose) message(sprintf("=== [Step 5] Evaluating %s Biological Signal Fidelity ===", m2_name))
-      sim_ct_m2 <- if (length(ct_m2) == ncol(sim_multi[[2L]])) ct_m2 else rep(ct_m2, length.out = ncol(sim_multi[[2L]]))
-      sim_bt_m2 <- if (length(bt_m2) == ncol(sim_multi[[2L]])) bt_m2 else rep(bt_m2, length.out = ncol(sim_multi[[2L]]))
       da_eval <- tryCatch(
         evaluate_atac_da_fidelity(
           ref_data = ref_multi[[2L]], sim_data = sim_multi[[2L]],
-          ref_celltypes = ct_m2, sim_celltypes = sim_ct_m2,
-          batch_ref = bt_m2, batch_sim = sim_bt_m2, threads = threads
+          ref_celltypes = ct_m2_ref, sim_celltypes = ct_m2_sim,
+          batch_ref = bt_m2_ref, batch_sim = bt_m2_sim, threads = threads
         ),
         error = function(e) {
           if (verbose) message("scATAC-seq DA evaluation note in multiomics: ", conditionMessage(e))
@@ -1016,14 +1017,32 @@ evaluate_multiomics_accuracy <- function(
   m2_eval <- u2$ev
   master_rows <- list(u1$tbl, u2$tbl)
 
-  ct_m1 <- .extract_modality_label(cell_types, ncol(ref_list[[1L]]), m1_name, 1L)
-  ct_m2 <- .extract_modality_label(cell_types, ncol(ref_list[[2L]]), m2_name, 2L)
-  bt_m1 <- .extract_modality_label(batch_info, ncol(ref_list[[1L]]), m1_name, 1L)
-  bt_m2 <- .extract_modality_label(batch_info, ncol(ref_list[[2L]]), m2_name, 2L)
+  ct_m1_ref <- .extract_modality_label(val_ref$cell_types, ncol(ref_list[[1L]]), m1_name, 1L)
+  ct_m2_ref <- .extract_modality_label(val_ref$cell_types, ncol(ref_list[[2L]]), m2_name, 2L)
+  bt_m1_ref <- .extract_modality_label(val_ref$batch_info, ncol(ref_list[[1L]]), m1_name, 1L)
+  bt_m2_ref <- .extract_modality_label(val_ref$batch_info, ncol(ref_list[[2L]]), m2_name, 2L)
 
-  clu_out <- .evaluate_multiomics_clustering(ref_list, sim_list, ct_m1, ct_m2, bt_m1, bt_m2, m1_name, m2_name, threads, verbose)
-  bat_out <- .evaluate_multiomics_batch(sim_list, ct_m1, ct_m2, bt_m1, bt_m2, m1_name, m2_name, threads, verbose)
-  sig_out <- .evaluate_multiomics_signal(ref_list, sim_list, ct_m1, ct_m2, bt_m1, bt_m2, m1_name, m2_name, threads, verbose)
+  ct_m1_sim <- .extract_modality_label(val_sim$cell_types, ncol(sim_list[[1L]]), m1_name, 1L) %||%
+    (if (!is.null(ct_m1_ref) && length(ct_m1_ref) == ncol(sim_list[[1L]])) ct_m1_ref else NULL)
+  ct_m2_sim <- .extract_modality_label(val_sim$cell_types, ncol(sim_list[[2L]]), m2_name, 2L) %||%
+    (if (!is.null(ct_m2_ref) && length(ct_m2_ref) == ncol(sim_list[[2L]])) ct_m2_ref else NULL)
+  bt_m1_sim <- .extract_modality_label(val_sim$batch_info, ncol(sim_list[[1L]]), m1_name, 1L) %||%
+    (if (!is.null(bt_m1_ref) && length(bt_m1_ref) == ncol(sim_list[[1L]])) bt_m1_ref else NULL)
+  bt_m2_sim <- .extract_modality_label(val_sim$batch_info, ncol(sim_list[[2L]]), m2_name, 2L) %||%
+    (if (!is.null(bt_m2_ref) && length(bt_m2_ref) == ncol(sim_list[[2L]])) bt_m2_ref else NULL)
+
+  clu_out <- .evaluate_multiomics_clustering(
+    ref_list, sim_list,
+    ct_m1_ref, ct_m2_ref, ct_m1_sim, ct_m2_sim,
+    bt_m1_sim, bt_m2_sim, m1_name, m2_name, threads, verbose
+  )
+  bat_out <- .evaluate_multiomics_batch(sim_list, ct_m1_sim, ct_m2_sim, bt_m1_sim, bt_m2_sim, m1_name, m2_name, threads, verbose)
+  sig_out <- .evaluate_multiomics_signal(
+    ref_list, sim_list,
+    ct_m1_ref, ct_m2_ref, bt_m1_ref, bt_m2_ref,
+    ct_m1_sim, ct_m2_sim, bt_m1_sim, bt_m2_sim,
+    m1_name, m2_name, threads, verbose
+  )
   master_rows <- c(master_rows, clu_out$rows, bat_out$rows, sig_out$rows)
 
   if (!is.null(bat_out$batch_res[[m1_name]])) m1_eval$batch_effects <- bat_out$batch_res[[m1_name]]
@@ -1039,13 +1058,13 @@ evaluate_multiomics_accuracy <- function(
   traj_eval <- NULL
   if (!is.na(rna_idx)) {
     rna_nm <- if (rna_idx == 1L) m1_name else m2_name
-    rna_ct <- if (rna_idx == 1L) ct_m1 else ct_m2
+    rna_ct_ref <- if (rna_idx == 1L) ct_m1_ref else ct_m2_ref
+    rna_ct_sim <- if (rna_idx == 1L) ct_m1_sim else ct_m2_sim
     if (verbose) message(sprintf("=== [Step 6] Evaluating Trajectory & Lineage Topology Inferred from %s ===", rna_nm))
-    sim_ct_traj <- if (!is.null(rna_ct)) rep(rna_ct, length.out = ncol(sim_list[[rna_idx]])) else NULL
     traj_eval <- tryCatch(
       evaluate_trajectory_metrics(
         ref_data = ref_list[[rna_idx]], sim_data = sim_list[[rna_idx]],
-        cell_types_ref = rna_ct, cell_types_sim = sim_ct_traj,
+        cell_types_ref = rna_ct_ref, cell_types_sim = rna_ct_sim,
         num_trees = trajectory_num_trees, threads = threads, verbose = FALSE
       ),
       error = function(e) NULL
@@ -1058,8 +1077,8 @@ evaluate_multiomics_accuracy <- function(
   int_eval <- tryCatch(
     evaluate_multiomics_integration(
       ref_multi = ref_multi, sim_multi = sim_multi,
-      cell_types = if (!is.null(ct_m1) && !is.null(ct_m2)) list(ct_m1, ct_m2) else ct_m1,
-      batch_info = if (!is.null(bt_m1) && !is.null(bt_m2)) list(bt_m1, bt_m2) else bt_m1,
+      cell_types = if (!is.null(ct_m1_sim) && !is.null(ct_m2_sim)) list(ct_m1_sim, ct_m2_sim) else ct_m1_sim,
+      batch_info = if (!is.null(bt_m1_sim) && !is.null(bt_m2_sim)) list(bt_m1_sim, bt_m2_sim) else bt_m1_sim,
       n_pcs = 15L, threads = threads, verbose = verbose
     ),
     error = function(e) {

@@ -276,10 +276,15 @@ calc_graph_connectivity <- function(embed, cell_type, k = 15) {
   k_clust <- if (!is.null(n_clusters)) as.integer(n_clusters) else as.integer(n_types)
   n_uniq <- nrow(unique(embed))
   if (is.na(n_uniq) || n_uniq < 2L) return(NULL)
-  k_clust <- max(2L, min(k_clust, n_uniq - 1L))
+  k_clust <- max(2L, min(k_clust, n_uniq))
   km <- tryCatch(
-    stats::kmeans(embed, centers = k_clust, nstart = 10L, iter.max = 100L, algorithm = "MacQueen"),
-    error = function(e) NULL
+    stats::kmeans(embed, centers = k_clust, nstart = 25L, iter.max = 100L),
+    error = function(e) {
+      tryCatch(
+        stats::kmeans(embed, centers = k_clust, nstart = 15L, iter.max = 100L, algorithm = "MacQueen"),
+        error = function(e2) NULL
+      )
+    }
   )
   if (is.null(km)) return(NULL)
   km$cluster
@@ -490,18 +495,20 @@ evaluate_multiomics_integration <- function(
   bt_vec <- NULL
   p1_cached <- NULL
   p2_cached <- NULL
-  
+  is_paired_layout <- FALSE
+  n1 <- if (is.list(sim_multi) && length(sim_multi) >= 2L) ncol(sim_multi[[1L]]) else NA_integer_
+  n2 <- if (is.list(sim_multi) && length(sim_multi) >= 2L) ncol(sim_multi[[2L]]) else NA_integer_
+
   if (is.null(joint_embed)) {
     if (is.matrix(sim_multi) || (is.data.frame(sim_multi) && !is.list(sim_multi))) {
       joint_embed <- as.matrix(sim_multi)
-    } else if (is.list(sim_multi) && length(sim_multi) >= 2) {
-      m1 <- sim_multi[[1]]
-      m2 <- sim_multi[[2]]
-      n1 <- ncol(m1)
-      n2 <- ncol(m2)
-      
+    } else if (is.list(sim_multi) && length(sim_multi) >= 2L) {
+      m1 <- sim_multi[[1L]]
+      m2 <- sim_multi[[2L]]
+
       # Paired multiomics (equal cell counts)
       if (n1 == n2) {
+        is_paired_layout <- TRUE
         p1 <- .fast_mod_pca(m1, n_pcs = n_pcs)
         p2 <- .fast_mod_pca(m2, n_pcs = n_pcs)
         p1_cached <- p1
@@ -511,28 +518,6 @@ evaluate_multiomics_integration <- function(
         s1[is.na(s1)] <- 0
         s2[is.na(s2)] <- 0
         joint_embed <- cbind(s1, s2)
-        
-        # Resolve cell types
-        if (!is.null(cell_types)) {
-          if (length(cell_types) == n1) {
-            ct_vec <- as.character(cell_types)
-          } else if (is.data.frame(cell_types) && nrow(cell_types) == n1) {
-            ct_vec <- as.character(cell_types[[1]])
-          } else if (is.list(cell_types) && length(cell_types[[1]]) == n1) {
-            ct_vec <- as.character(cell_types[[1]])
-          }
-        }
-        
-        # Resolve batches
-        if (!is.null(batch_info)) {
-          if (length(batch_info) == n1) {
-            bt_vec <- as.character(batch_info)
-          } else if (is.data.frame(batch_info) && nrow(batch_info) == n1) {
-            bt_vec <- as.character(batch_info[[1]])
-          } else if (is.list(batch_info) && length(batch_info[[1]]) == n1) {
-            bt_vec <- as.character(batch_info[[1]])
-          }
-        }
       } else {
         # Unpaired multiomics: modalities stacked
         p1 <- .fast_mod_pca(m1, n_pcs = n_pcs)
@@ -544,79 +529,143 @@ evaluate_multiomics_integration <- function(
                              scale(p2[, seq_len(min_p), drop = FALSE]))
         joint_embed[is.na(joint_embed)] <- 0
         bt_vec <- c(rep("Modality_1", n1), rep("Modality_2", n2))
-        
-        if (!is.null(cell_types)) {
-          if (length(cell_types) == (n1 + n2)) {
-            ct_vec <- as.character(cell_types)
-          } else if (is.list(cell_types) && length(cell_types) >= 2) {
-            ct_vec <- c(as.character(cell_types[[1]]), as.character(cell_types[[2]]))
-          } else if (length(cell_types) == n1) {
-            ct_vec <- c(as.character(cell_types), rep("Unannotated", n2))
-          }
-        }
       }
-    } else if (is.list(sim_multi) && length(sim_multi) == 1) {
-      joint_embed <- .fast_mod_pca(sim_multi[[1]], n_pcs = n_pcs)
+    } else if (is.list(sim_multi) && length(sim_multi) == 1L) {
+      joint_embed <- .fast_mod_pca(sim_multi[[1L]], n_pcs = n_pcs)
     }
+  } else if (!is.na(n1) && !is.na(n2) && n1 == n2 && nrow(joint_embed) == n1) {
+    is_paired_layout <- TRUE
   }
-  
-  if (is.null(joint_embed) || nrow(joint_embed) < 3) {
+
+  if (is.null(joint_embed) || nrow(joint_embed) < 3L) {
     warning("Unable to construct valid joint embedding for multiomics integration evaluation.")
     return(NULL)
   }
-  
+
   n_cells <- nrow(joint_embed)
-  
-  # Fallbacks for cell types and batches if missing
-  if (is.null(ct_vec)) {
-    if (!is.null(cell_types) && length(cell_types) == n_cells) {
-      ct_vec <- as.character(cell_types)
-    } else {
-      # Unsupervised clustering fallback
-      k_fallback <- min(3, max(2, n_cells - 1))
-      ct_vec <- paste0("Cluster_", stats::kmeans(joint_embed, centers = k_fallback, nstart = 5)$cluster)
+
+  # 2. Always resolve cell_types and batch_info cleanly (including list(ct_m1, ct_m2)),
+  #    whether joint_embed was precomputed or freshly constructed!
+  .resolve_multi_meta <- function(meta_obj, n_target, paired_flag, n1_v, n2_v) {
+    if (is.null(meta_obj)) return(NULL)
+    if (is.data.frame(meta_obj)) {
+      if (nrow(meta_obj) == n_target) return(as.character(meta_obj[[1L]]))
+      return(NULL)
     }
-  } else {
-    ct_vec <- as.character(ct_vec)
-    if (length(ct_vec) != n_cells) {
-      ct_vec <- if (length(ct_vec) > n_cells) ct_vec[seq_len(n_cells)] else c(ct_vec, rep("Unannotated", n_cells - length(ct_vec)))
+    if (is.list(meta_obj)) {
+      if (paired_flag && length(meta_obj) >= 1L && !is.null(meta_obj[[1L]]) && length(meta_obj[[1L]]) == n_target) {
+        return(as.character(meta_obj[[1L]]))
+      }
+      if (paired_flag && length(meta_obj) >= 2L && !is.null(meta_obj[[2L]]) && length(meta_obj[[2L]]) == n_target) {
+        return(as.character(meta_obj[[2L]]))
+      }
+      if (!paired_flag && length(meta_obj) >= 2L && !is.null(meta_obj[[1L]]) && !is.null(meta_obj[[2L]])) {
+        comb_v <- c(as.character(meta_obj[[1L]]), as.character(meta_obj[[2L]]))
+        if (length(comb_v) == n_target) return(comb_v)
+      }
+      # Fallback: first element matching target length
+      for (el in meta_obj) {
+        if (!is.null(el) && length(el) == n_target) return(as.character(el))
+      }
+      return(NULL)
     }
+    if (length(meta_obj) == n_target) return(as.character(meta_obj))
+    if (!paired_flag && !is.na(n1_v) && !is.na(n2_v) && length(meta_obj) == n1_v && n_target == (n1_v + n2_v)) {
+      return(c(as.character(meta_obj), rep("Unannotated", n2_v)))
+    }
+    NULL
   }
-  
+
+  ct_vec <- .resolve_multi_meta(cell_types, n_cells, is_paired_layout, n1, n2)
+  if (is.null(bt_vec)) {
+    bt_vec <- .resolve_multi_meta(batch_info, n_cells, is_paired_layout, n1, n2)
+  }
+
+  has_ground_truth_ct <- !is.null(ct_vec) && length(unique(stats::na.omit(ct_vec))) >= 2L
+
   if (!is.null(bt_vec)) {
     bt_vec <- as.character(bt_vec)
     if (length(bt_vec) != n_cells) {
       bt_vec <- if (length(bt_vec) > n_cells) bt_vec[seq_len(n_cells)] else c(bt_vec, rep("Modality_2", n_cells - length(bt_vec)))
     }
   }
-  
+
   # If batch is NULL or unimodal, evaluate cross-modal alignment by projecting modalities
-  eval_modality_mixing <- is.null(bt_vec) || length(unique(bt_vec)) < 2
-  
-  if (eval_modality_mixing && is.list(sim_multi) && length(sim_multi) >= 2) {
-    m1 <- sim_multi[[1]]
-    m2 <- sim_multi[[2]]
-    n1 <- ncol(m1)
-    n2 <- ncol(m2)
+  eval_modality_mixing <- is.null(bt_vec) || length(unique(bt_vec)) < 2L
+
+  # For batch_asw / cell_type_asw / graph_connectivity when ct_vec is truly absent,
+  # derive modality-1 clusters (not joint_embed clusters) to avoid circularity.
+  ct_for_structure <- ct_vec
+  if (is.null(ct_for_structure)) {
+    k_fallback <- min(5L, max(2L, as.integer(floor(sqrt(n_cells / 5)))))
+    if (!is.null(p1_cached) && nrow(p1_cached) == n_cells) {
+      cl_fb <- .safe_kmeans_labels(p1_cached, k_fallback, k_fallback)
+      ct_for_structure <- if (!is.null(cl_fb)) paste0("Cluster_", cl_fb) else rep("Cluster_1", n_cells)
+    } else {
+      cl_fb <- .safe_kmeans_labels(joint_embed, k_fallback, k_fallback)
+      ct_for_structure <- if (!is.null(cl_fb)) paste0("Cluster_", cl_fb) else rep("Cluster_1", n_cells)
+    }
+  }
+
+  if (eval_modality_mixing && is.list(sim_multi) && length(sim_multi) >= 2L) {
+    m1 <- sim_multi[[1L]]
+    m2 <- sim_multi[[2L]]
     p1 <- if (!is.null(p1_cached)) p1_cached else .fast_mod_pca(m1, n_pcs = n_pcs)
     p2 <- if (!is.null(p2_cached)) p2_cached else .fast_mod_pca(m2, n_pcs = n_pcs)
+    p1_cached <- p1
+    p2_cached <- p2
     min_p <- min(ncol(p1), ncol(p2))
     cross_embed <- rbind(scale(p1[, seq_len(min_p), drop = FALSE]),
                          scale(p2[, seq_len(min_p), drop = FALSE]))
     cross_embed[is.na(cross_embed)] <- 0
     cross_batch <- c(rep("Modality_1", n1), rep("Modality_2", n2))
-    cross_ct <- if (length(ct_vec) == (n1 + n2)) ct_vec else c(ct_vec[seq_len(min(length(ct_vec), n1))], rep("Modality_2", n2))
-    
+    cross_ct <- if (length(ct_for_structure) == (n1 + n2)) {
+      ct_for_structure
+    } else if (length(ct_for_structure) == n1 && n1 == n2) {
+      c(ct_for_structure, ct_for_structure)
+    } else {
+      c(ct_for_structure[seq_len(min(length(ct_for_structure), n1))], rep("Modality_2", n2))
+    }
     b_asw <- calc_batch_asw(cross_embed, cross_batch, cross_ct, threads = threads)
   } else {
     bt_target <- if (!is.null(bt_vec)) bt_vec else rep("Batch_1", n_cells)
-    b_asw <- calc_batch_asw(joint_embed, bt_target, ct_vec, threads = threads)
+    b_asw <- calc_batch_asw(joint_embed, bt_target, ct_for_structure, threads = threads)
   }
-  
-  ct_asw <- calc_cell_type_asw(joint_embed, ct_vec, threads = threads)
-  g_conn <- calc_graph_connectivity(joint_embed, ct_vec, k = min(15, n_cells - 1))
-  ari_val <- calc_integration_ari(joint_embed, ct_vec)
-  nmi_val <- calc_integration_nmi(joint_embed, ct_vec)
+
+  ct_asw <- calc_cell_type_asw(joint_embed, ct_for_structure, threads = threads)
+  g_conn <- calc_graph_connectivity(joint_embed, ct_for_structure, k = min(15L, n_cells - 1L))
+
+  # Compute ARI and NMI cleanly without circular self-clustering:
+  # - When ground-truth cell types exist, cluster joint_embed once and evaluate both ARI and NMI.
+  # - When cell types are absent in paired multiomics, measure cross-modal cluster concordance
+  #   between modality-1 PCA clusters and modality-2 PCA clusters (never joint vs joint!).
+  if (has_ground_truth_ct) {
+    n_types <- length(unique(ct_vec))
+    pred_cl <- .safe_kmeans_labels(joint_embed, NULL, n_types)
+    if (!is.null(pred_cl)) {
+      ari_val <- max(0, min(1, calc_ari(pred_cl, ct_vec)))
+      nmi_val <- max(0, min(1, calc_nmi(pred_cl, ct_vec)))
+    } else {
+      ari_val <- NA_real_
+      nmi_val <- NA_real_
+    }
+  } else if (is_paired_layout && is.list(sim_multi) && length(sim_multi) >= 2L) {
+    p1 <- if (!is.null(p1_cached)) p1_cached else .fast_mod_pca(sim_multi[[1L]], n_pcs = n_pcs)
+    p2 <- if (!is.null(p2_cached)) p2_cached else .fast_mod_pca(sim_multi[[2L]], n_pcs = n_pcs)
+    k_xm <- min(5L, max(2L, as.integer(floor(sqrt(n_cells / 5)))))
+    cl1 <- .safe_kmeans_labels(p1, k_xm, k_xm)
+    cl2 <- .safe_kmeans_labels(p2, k_xm, k_xm)
+    if (!is.null(cl1) && !is.null(cl2)) {
+      ari_val <- max(0, min(1, calc_ari(cl1, cl2)))
+      nmi_val <- max(0, min(1, calc_nmi(cl1, cl2)))
+    } else {
+      ari_val <- NA_real_
+      nmi_val <- NA_real_
+    }
+  } else {
+    ari_val <- NA_real_
+    nmi_val <- NA_real_
+  }
   
   metrics_list <- list(
     batch_asw = as.numeric(b_asw),

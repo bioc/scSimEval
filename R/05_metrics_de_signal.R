@@ -665,7 +665,7 @@ evaluate_predictive_de_model <- function(
   
   n_pos <- sum(labels == 1)
   n_neg <- sum(labels == 0)
-  if (n_pos == 0 || n_neg == 0) return(1.0)
+  if (n_pos == 0 || n_neg == 0) return(NA_real_)
   
   r <- rank(scores, ties.method = "average")
   u <- sum(r[labels == 1]) - (n_pos * (n_pos + 1)) / 2
@@ -757,9 +757,18 @@ evaluate_predictive_de_model <- function(
     tn <- sum(!y_true & !y_pred, na.rm = TRUE)
 
     acc_val <- (tp + tn) / max(1, n_total)
-    prec_val <- if ((tp + fp) > 0) tp / (tp + fp) else (if (n_r == 0) 1.0 else 0.0)
-    rec_val <- if ((tp + fn) > 0) tp / (tp + fn) else (if (n_s == 0) 1.0 else 0.0)
-    f1_val <- if ((prec_val + rec_val) > 0) (2 * prec_val * rec_val) / (prec_val + rec_val) else 0.0
+    # Avoid inflating null contrasts (n_r == 0 & n_s == 0) to 1.0:
+    # recall is undefined when the reference has zero true DEGs/DARs;
+    # precision is 0 when false positives are called on a null contrast and NA when 0/0.
+    prec_val <- if ((tp + fp) > 0) tp / (tp + fp) else (if (n_r == 0) NA_real_ else 0.0)
+    rec_val <- if ((tp + fn) > 0) tp / (tp + fn) else NA_real_
+    f1_val <- if (!is.na(prec_val) && !is.na(rec_val)) {
+      if ((prec_val + rec_val) > 0) (2 * prec_val * rec_val) / (prec_val + rec_val) else 0.0
+    } else if (n_r == 0 && (tp + fp) > 0) {
+      0.0
+    } else {
+      NA_real_
+    }
 
     sim_scores <- -log10(pmax(sub_s$PValue, 1e-300))
     auc_val <- .calc_roc_auc(sim_scores, y_true)
@@ -1026,6 +1035,17 @@ evaluate_deg_fidelity <- function(
     method = classifier
   )
   
+  tot_tp <- sum(pair_df$TP, na.rm = TRUE)
+  tot_fp <- sum(pair_df$FP, na.rm = TRUE)
+  tot_fn <- sum(pair_df$FN, na.rm = TRUE)
+  tot_tn <- sum(pair_df$TN, na.rm = TRUE)
+  sum_acc <- (tot_tp + tot_tn) / max(1, tot_tp + tot_fp + tot_fn + tot_tn)
+  sum_prec <- if ((tot_tp + tot_fp) > 0) tot_tp / (tot_tp + tot_fp) else 0.0
+  sum_rec <- if ((tot_tp + tot_fn) > 0) tot_tp / (tot_tp + tot_fn) else 0.0
+  sum_f1 <- if ((sum_prec + sum_rec) > 0) (2 * sum_prec * sum_rec) / (sum_prec + sum_rec) else 0.0
+  sum_auc <- if (any(is.finite(pair_df$auc))) mean(pair_df$auc, na.rm = TRUE) else 0.5
+  sum_pdist <- if (any(is.finite(pair_df$pval_dist_score))) mean(pair_df$pval_dist_score, na.rm = TRUE) else 0.5
+
   summary_df <- data.frame(
     SubCategory = rep("scRNA-seq Differential Expression", 6),
     Metric = c(
@@ -1037,12 +1057,12 @@ evaluate_deg_fidelity <- function(
       "auc"
     ),
     Value = c(
-      mean(pair_df$pval_dist_score, na.rm = TRUE),
-      mean(pair_df$accuracy, na.rm = TRUE),
-      mean(pair_df$precision, na.rm = TRUE),
-      mean(pair_df$recall, na.rm = TRUE),
-      mean(pair_df$f1_score, na.rm = TRUE),
-      mean(pair_df$auc, na.rm = TRUE)
+      sum_pdist,
+      sum_acc,
+      sum_prec,
+      sum_rec,
+      sum_f1,
+      sum_auc
     ),
     Direction = c(
       "Higher is better (1.0 = uniform null p-values, no inflation)",
@@ -1524,6 +1544,17 @@ evaluate_atac_da_fidelity <- function(
   
   pair_df <- do.call(rbind, pair_rows)
   
+  tot_tp <- sum(pair_df$TP, na.rm = TRUE)
+  tot_fp <- sum(pair_df$FP, na.rm = TRUE)
+  tot_fn <- sum(pair_df$FN, na.rm = TRUE)
+  tot_tn <- sum(pair_df$TN, na.rm = TRUE)
+  sum_acc <- (tot_tp + tot_tn) / max(1, tot_tp + tot_fp + tot_fn + tot_tn)
+  sum_prec <- if ((tot_tp + tot_fp) > 0) tot_tp / (tot_tp + tot_fp) else 0.0
+  sum_rec <- if ((tot_tp + tot_fn) > 0) tot_tp / (tot_tp + tot_fn) else 0.0
+  sum_f1 <- if ((sum_prec + sum_rec) > 0) (2 * sum_prec * sum_rec) / (sum_prec + sum_rec) else 0.0
+  sum_auc <- if (any(is.finite(pair_df$auc))) mean(pair_df$auc, na.rm = TRUE) else 0.5
+  sum_pdist <- if (any(is.finite(pair_df$pval_dist_score))) mean(pair_df$pval_dist_score, na.rm = TRUE) else 0.5
+
   summary_df <- data.frame(
     SubCategory = rep("scATAC-seq Differential Accessibility", 6),
     Metric = c(
@@ -1535,12 +1566,12 @@ evaluate_atac_da_fidelity <- function(
       "auc"
     ),
     Value = c(
-      mean(pair_df$pval_dist_score, na.rm = TRUE),
-      mean(pair_df$accuracy, na.rm = TRUE),
-      mean(pair_df$precision, na.rm = TRUE),
-      mean(pair_df$recall, na.rm = TRUE),
-      mean(pair_df$f1_score, na.rm = TRUE),
-      mean(pair_df$auc, na.rm = TRUE)
+      sum_pdist,
+      sum_acc,
+      sum_prec,
+      sum_rec,
+      sum_f1,
+      sum_auc
     ),
     Direction = c(
       "Higher is better (1.0 = uniform null p-values, no inflation)",

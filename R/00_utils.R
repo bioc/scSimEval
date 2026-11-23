@@ -764,7 +764,22 @@ validate_multiomics_input <- function(obj,
         NULL
       }
 
-      emb <- if (!is.null(v1$embedding)) v1$embedding else v2$embedding
+      # Only reuse a precomputed embedding when explicitly requested via reduction_name
+      # or when a genuinely joint/integrated multiomics reduction is present; never
+      # treat a unimodal PCA/UMAP from modality 1 alone as a joint multiomics embedding.
+      .extract_joint_rd <- function(sce_o, rd_req) {
+        if (!inherits(sce_o, "SingleCellExperiment")) return(NULL)
+        rd_nms <- SingleCellExperiment::reducedDimNames(sce_o)
+        if (is.null(rd_nms) || length(rd_nms) == 0L) return(NULL)
+        if (!is.null(rd_req) && rd_req %in% rd_nms) {
+          return(as.matrix(SingleCellExperiment::reducedDim(sce_o, rd_req)))
+        }
+        joint_pref <- c("integrated", "joint", "wnn", "wnn.umap", "harmony_joint", "multivi", "mofa", "cca")
+        hit <- rd_nms[tolower(rd_nms) %in% joint_pref]
+        if (length(hit) > 0L) as.matrix(SingleCellExperiment::reducedDim(sce_o, hit[1L])) else NULL
+      }
+      emb <- .extract_joint_rd(v1$object, reduction_name)
+      if (is.null(emb)) emb <- .extract_joint_rd(v2$object, reduction_name)
 
       return(list(
         m1 = v1$counts,
@@ -821,7 +836,7 @@ validate_multiomics_input <- function(obj,
             m2_name = alt_names[1L],
             cell_types = stats::setNames(list(v1$cell_types, v2$cell_types), c(m1_nm, alt_names[1L])),
             batch_info = stats::setNames(list(v1$batch_info, v2$batch_info), c(m1_nm, alt_names[1L])),
-            embedding = v1$embedding
+            embedding = NULL
           ))
         }
       }
@@ -830,6 +845,14 @@ validate_multiomics_input <- function(obj,
       m2 <- SummarizedExperiment::assay(a2, "counts")
       v <- validate_sc_object(obj, arg_name, reduction_name = reduction_name,
                               cell_type_col = cell_type_col, batch_col = batch_col)
+      rd_nms_obj <- SingleCellExperiment::reducedDimNames(obj)
+      joint_pref <- c("integrated", "joint", "wnn", "wnn.umap", "harmony_joint", "multivi", "mofa", "cca")
+      emb_obj <- if (!is.null(reduction_name) && reduction_name %in% rd_nms_obj) {
+        as.matrix(SingleCellExperiment::reducedDim(obj, reduction_name))
+      } else {
+        hit_j <- rd_nms_obj[tolower(rd_nms_obj) %in% joint_pref]
+        if (length(hit_j) > 0L) as.matrix(SingleCellExperiment::reducedDim(obj, hit_j[1L])) else NULL
+      }
       return(list(
         m1 = m1,
         m2 = m2,
@@ -839,7 +862,7 @@ validate_multiomics_input <- function(obj,
         m2_name = alt_names[1L],
         cell_types = v$cell_types,
         batch_info = v$batch_info,
-        embedding = v$embedding
+        embedding = emb_obj
       ))
     } else {
       stop(sprintf("Multiomics SingleCellExperiment object '%s' must contain at least one altExp for the secondary modality (e.g. ATAC).", arg_name), call. = FALSE)

@@ -385,33 +385,31 @@ calc_cdi <- function(
     }
   }
 
-  # Validate multi-batch cell counts; fall back to single-batch CDI if batch splits are too small
-  if (!is.null(batch_label)) {
-    bt_chr <- as.character(batch_label)
-    if (length(unique(bt_chr)) < 2L) {
-      batch_label <- NULL
-    } else {
-      comb_tab <- table(paste0(cl_chr, "||", bt_chr))
-      valid_comb <- comb_tab >= 3L
-      surviving_cl <- unique(sub("\\|\\|.*$", "", names(comb_tab)[valid_comb]))
-      if (length(surviving_cl) < 2L) {
-        batch_label <- NULL
-      } else {
-        batch_label <- bt_chr
-      }
-    }
+  # Helper to validate multi-batch cell counts (requires >= 2 batches and >= 3 cells per surviving cluster x batch)
+  .validate_cdi_batch <- function(cl_v, bt_v) {
+    if (is.null(bt_v) || length(bt_v) != length(cl_v)) return(NULL)
+    bt_c <- as.character(bt_v)
+    if (any(is.na(bt_c)) || length(unique(bt_c)) < 2L) return(NULL)
+    comb_tab <- table(paste0(cl_v, "||", bt_c))
+    valid_comb <- comb_tab >= 3L
+    surviving_cl <- unique(sub("\\|\\|.*$", "", names(comb_tab)[valid_comb]))
+    surviving_bt <- unique(sub("^.*\\|\\|", "", names(comb_tab)[valid_comb]))
+    if (length(surviving_cl) < 2L || length(surviving_bt) < 2L) return(NULL)
+    bt_c
   }
+  batch_label <- .validate_cdi_batch(cl_chr, batch_label)
 
   # 2. Proportional stratified cell subsampling in sparse space: O(N)
   N_cur <- ncol(counts)
   if (!is.null(max_cells) && is.finite(max_cells) && N_cur > max_cells && max_cells >= 6L) {
-    idx_by_cl <- split(seq_len(N_cur), cl_chr)
-    sub_idx <- unlist(lapply(idx_by_cl, function(ix) {
+    strat_key <- if (!is.null(batch_label)) paste0(cl_chr, "||", batch_label) else cl_chr
+    idx_by_strat <- split(seq_len(N_cur), strat_key)
+    sub_idx <- unlist(lapply(idx_by_strat, function(ix) {
       n_take <- max(3L, as.integer(round(length(ix) * (max_cells / N_cur))))
       n_take <- min(length(ix), n_take)
       if (n_take == length(ix)) ix else ix[unique(round(seq(1, length(ix), length.out = n_take)))]
     }), use.names = FALSE)
-    sub_idx <- sort(sub_idx)
+    sub_idx <- sort(unique(sub_idx))
 
     counts <- counts[, sub_idx, drop = FALSE]
     cl_chr <- cl_chr[sub_idx]
@@ -466,6 +464,8 @@ calc_cdi <- function(
       }
     }
   }
+  # Re-validate batch splits AFTER subsampling and empty-cell filtering
+  batch_label <- .validate_cdi_batch(cl_chr, batch_label)
 
   # 4. Materialize compact active matrix & ensure non-negative integer counts for NB PMF
   counts_mat <- as.matrix(counts)
@@ -473,6 +473,13 @@ calc_cdi <- function(
   if (anyNA(counts_mat)) counts_mat[is.na(counts_mat)] <- 0
   if (any(counts_mat < 0)) counts_mat[counts_mat < 0] <- 0
   if (is.double(counts_mat) && any(counts_mat != floor(counts_mat))) {
+    pos_vals <- counts_mat[counts_mat > 0]
+    if (length(pos_vals) > 0L) {
+      med_pos <- stats::median(pos_vals)
+      if (is.finite(med_pos) && med_pos > 0 && med_pos < 1) {
+        counts_mat <- counts_mat * (2.0 / med_pos)
+      }
+    }
     counts_mat <- round(counts_mat)
   }
   storage.mode(counts_mat) <- "integer"
@@ -538,6 +545,11 @@ calc_cdi <- function(
   N_eval <- ncol(sub_mat)
   threads <- max(1L, as.integer(threads))
 
+  aic_raw <- NA_real_
+  bic_raw <- NA_real_
+  neg_llk <- NA_real_
+  n_clust_out <- K_eval
+
   if (has_cdi_pkg) {
     # 7. Adaptive BiocParallel backend (avoids socket startup latency on small tasks)
     n_cdi_workers <- min(threads, max(1L, G_eval))
@@ -551,23 +563,42 @@ calc_cdi <- function(
       BiocParallel::SerialParam()
     }
 
-    # 8. Official CDI::calculate_CDI()
+    # 8. Official CDI::calculate_CDI() (Fang et al., Genome Biology 2022) with safe retries
     cand_df <- data.frame(cand = cl_chr, stringsAsFactors = FALSE)
-    cdi_df <- CDI::calculate_CDI(
-      X = sub_mat,
-      feature_gene_index = NULL,
-      cand_lab_df = cand_df,
-      cell_size_factor = size_factors,
-      batch_label = batch_label,
-      lrt_pval_threshold = lrt_pval_threshold,
-      BPPARAM = bpparam
-    )
+    run_cdi_official <- function(bt_arg, bp_arg) {
+      tryCatch(
+        CDI::calculate_CDI(
+          X = sub_mat,
+          feature_gene_index = NULL,
+          cand_lab_df = cand_df,
+          cell_size_factor = size_factors,
+          batch_label = bt_arg,
+          lrt_pval_threshold = lrt_pval_threshold,
+          BPPARAM = bp_arg
+        ),
+        error = function(e) NULL
+      )
+    }
 
-    aic_raw <- as.numeric(cdi_df$CDI_AIC[1])
-    bic_raw <- as.numeric(cdi_df$CDI_BIC[1])
-    neg_llk <- if ("neg_llk_val" %in% colnames(cdi_df)) as.numeric(cdi_df$neg_llk_val[1]) else NA_real_
-    n_clust_out <- if ("N_cluster" %in% colnames(cdi_df)) as.integer(cdi_df$N_cluster[1]) else K_eval
-  } else {
+    cdi_df <- run_cdi_official(batch_label, bpparam)
+    if ((is.null(cdi_df) || !is.finite(as.numeric(cdi_df$CDI_AIC[1]))) &&
+        !inherits(bpparam, "SerialParam")) {
+      cdi_df <- run_cdi_official(batch_label, BiocParallel::SerialParam())
+    }
+    if ((is.null(cdi_df) || !is.finite(as.numeric(cdi_df$CDI_AIC[1]))) &&
+        !is.null(batch_label)) {
+      cdi_df <- run_cdi_official(NULL, BiocParallel::SerialParam())
+    }
+
+    if (!is.null(cdi_df) && is.finite(as.numeric(cdi_df$CDI_AIC[1]))) {
+      aic_raw <- as.numeric(cdi_df$CDI_AIC[1])
+      bic_raw <- as.numeric(cdi_df$CDI_BIC[1])
+      neg_llk <- if ("neg_llk_val" %in% colnames(cdi_df)) as.numeric(cdi_df$neg_llk_val[1]) else NA_real_
+      n_clust_out <- if ("N_cluster" %in% colnames(cdi_df)) as.integer(cdi_df$N_cluster[1]) else K_eval
+    }
+  }
+
+  if (!is.finite(aic_raw)) {
     # Robust native pure-R Negative Binomial log-likelihood & AIC calculation (Fang et al., 2022)
     tot_llk <- 0.0
     u_clusters <- unique(cl_chr)
@@ -835,9 +866,9 @@ evaluate_clustering_metrics <- function(
   if (is.null(pred_clusters) && n_cl_lvls >= 2L) {
     km_input <- if (!is.null(pca_coords)) pca_coords else t(as.matrix(d_use))
     n_uniq_km <- nrow(unique(km_input))
-    k_centers <- min(n_cl_lvls, max(1L, n_uniq_km - 1L))
+    k_centers <- min(n_cl_lvls, max(1L, n_uniq_km))
     if (k_centers >= 2L) {
-      km_fit <- tryCatch(stats::kmeans(km_input, centers = k_centers, iter.max = 100, nstart = 5), error = function(e) NULL)
+      km_fit <- tryCatch(stats::kmeans(km_input, centers = k_centers, iter.max = 100, nstart = 20), error = function(e) NULL)
       if (!is.null(km_fit)) {
         pred_clusters <- factor(km_fit$cluster)
       }
@@ -921,10 +952,32 @@ calc_generative_precision_recall <- function(
     sim_mat <- sim_mat[seq_len(n_common), , drop = FALSE]
   }
   
-  # Standard protocol: library-size normalize & log-transform counts
-  ref_norm <- normalize_counts(ref_mat)
-  sim_norm <- normalize_counts(sim_mat)
-  
+  # Consistent library-size log1p(CP10k) normalization applied identically to both
+  # reference and simulated matrices (avoids scale mismatch when simulators emit
+  # continuous non-integer values that bypass normalize_counts' integer heuristic).
+  # Only skipped if negative entries exist (pre-centered/z-scored/embedding input).
+  manifold_lognorm <- function(mat, target_sum = 1e4) {
+    vals <- if (inherits(mat, "Matrix")) mat@x else as.numeric(mat)
+    if (length(vals) > 0L && any(vals < 0, na.rm = TRUE)) {
+      return(as.matrix(mat))
+    }
+    libs <- as.numeric(Matrix::colSums(mat))
+    libs[!is.finite(libs) | libs <= 0] <- 1
+    if (inherits(mat, "Matrix")) {
+      trip <- Matrix::summary(mat)
+      if (nrow(trip) == 0L) return(as.matrix(mat))
+      scaled_x <- trip$x * (target_sum / libs[trip$j])
+      return(Matrix::sparseMatrix(
+        i = trip$i, j = trip$j, x = log1p(scaled_x),
+        dims = dim(mat), dimnames = dimnames(mat)
+      ))
+    }
+    log1p(sweep(as.matrix(mat), 2L, target_sum / libs, `*`))
+  }
+
+  ref_norm <- manifold_lognorm(ref_mat)
+  sim_norm <- manifold_lognorm(sim_mat)
+
   # Subsample features to top HVGs if large
   if (nrow(ref_norm) > max_features) {
     rv <- fast_row_vars(ref_norm)
@@ -932,56 +985,70 @@ calc_generative_precision_recall <- function(
     ref_norm <- ref_norm[top_f, , drop = FALSE]
     sim_norm <- sim_norm[top_f, , drop = FALSE]
   }
-  
+
   x_raw <- t(as.matrix(ref_norm))
   y_raw <- t(as.matrix(sim_norm))
-  
-  if (nrow(x_raw) > max_cells) x_raw <- x_raw[sample(nrow(x_raw), max_cells), , drop = FALSE]
-  if (nrow(y_raw) > max_cells) y_raw <- y_raw[sample(nrow(y_raw), max_cells), , drop = FALSE]
-  
-  # Joint PCA projection (30 PCs) for density sphere calculation
+
+  # Deterministic subsampling when cell count exceeds max_cells
+  if (nrow(x_raw) > max_cells) {
+    x_raw <- x_raw[unique(round(seq(1, nrow(x_raw), length.out = max_cells))), , drop = FALSE]
+  }
+  if (nrow(y_raw) > max_cells) {
+    y_raw <- y_raw[unique(round(seq(1, nrow(y_raw), length.out = max_cells))), , drop = FALSE]
+  }
+
+  # Joint PCA projection (15 PCs) to mitigate high-dimensional sphere degeneracy
   combined <- rbind(x_raw, y_raw)
-  n_pcs_use <- min(30, ncol(combined) - 1, nrow(combined) - 1)
-  if (n_pcs_use >= 2 && ncol(combined) > n_pcs_use) {
+  n_pcs_use <- min(15L, ncol(combined) - 1L, nrow(x_raw) - 1L, nrow(y_raw) - 1L)
+  if (n_pcs_use >= 2L && ncol(combined) > n_pcs_use) {
     pca_comb <- fast_pca(combined, n_pcs = n_pcs_use, scale = FALSE)
     x <- pca_comb[seq_len(nrow(x_raw)), , drop = FALSE]
-    y <- pca_comb[(nrow(x_raw) + 1):nrow(combined), , drop = FALSE]
+    y <- pca_comb[(nrow(x_raw) + 1L):nrow(combined), , drop = FALSE]
   } else {
     x <- x_raw
     y <- y_raw
   }
-  
+
   m <- nrow(x)
   n <- nrow(y)
-  
-  k_x <- min(k, m - 1)
-  k_y <- min(k, n - 1)
-  
-  if (k_x < 1 || k_y < 1) {
+
+  k_x <- min(k, m - 1L)
+  k_y <- min(k, n - 1L)
+
+  if (k_x < 1L || k_y < 1L) {
     return(list(generative_precision = NA_real_, generative_recall = NA_real_, generative_f1 = NA_real_))
   }
-  
+
   # Pairwise distance within reference: dist_xx
   dist_xx <- as.matrix(stats::dist(x))
   diag(dist_xx) <- Inf
-  radius_x <- apply(dist_xx, 1, function(row) sort(row)[k_x])
-  
+  radius_x <- apply(dist_xx, 1L, function(row) sort(row, partial = k_x)[k_x])
+
   # Pairwise distance within simulation: dist_yy
   dist_yy <- as.matrix(stats::dist(y))
   diag(dist_yy) <- Inf
-  radius_y <- apply(dist_yy, 1, function(row) sort(row)[k_y])
-  
+  radius_y <- apply(dist_yy, 1L, function(row) sort(row, partial = k_y)[k_y])
+
+  # Cap extreme outlier k-NN hypersphere radii at the 95th percentile so a single
+  # isolated outlier cell cannot swallow the entire opposing distribution
+  if (length(radius_x) >= 10L) {
+    radius_x <- pmin(radius_x, stats::quantile(radius_x, 0.95, names = FALSE))
+  }
+  if (length(radius_y) >= 10L) {
+    radius_y <- pmin(radius_y, stats::quantile(radius_y, 0.95, names = FALSE))
+  }
+
   # Fast BLAS cross distance between reference and simulation: dist_xy (m x n)
   dist_xy <- sqrt(fast_cross_distance_sq(x, y))
-  
+
   # Precision: For each simulated cell y_j, is it within at least one reference sphere?
-  precision_hits <- apply(dist_xy, 2, function(col_dists) {
+  precision_hits <- apply(dist_xy, 2L, function(col_dists) {
     any(col_dists <= radius_x)
   })
   precision_val <- mean(precision_hits)
-  
+
   # Recall: For each reference cell x_i, is it within at least one simulated sphere?
-  recall_hits <- apply(dist_xy, 1, function(row_dists) {
+  recall_hits <- apply(dist_xy, 1L, function(row_dists) {
     any(row_dists <= radius_y)
   })
   recall_val <- mean(recall_hits)

@@ -118,12 +118,14 @@
 #' Library-Size Log-Normalization for Trajectory Analysis
 #' @keywords internal
 #' @noRd
-.traj_lognorm <- function(counts) {
+.traj_lognorm <- function(counts, target_lib = NULL) {
   lib <- as.numeric(Matrix::colSums(counts))
-  pos_lib <- lib[lib > 0]
-  med_lib <- if (length(pos_lib) > 0) stats::median(pos_lib) else 1
-  if (!is.finite(med_lib) || med_lib <= 0) med_lib <- 1
-  sf <- ifelse(lib > 0, lib / med_lib, 1)
+  if (is.null(target_lib) || !is.finite(target_lib) || target_lib <= 0) {
+    pos_lib <- lib[lib > 0]
+    target_lib <- if (length(pos_lib) > 0) stats::median(pos_lib) else 1
+    if (!is.finite(target_lib) || target_lib <= 0) target_lib <- 1
+  }
+  sf <- ifelse(lib > 0, lib / target_lib, 1)
   scaled <- Matrix::t(Matrix::t(counts) / sf)
   log1p(scaled)
 }
@@ -335,8 +337,12 @@ preprocess_trajectory_hvgs <- function(
   }
 
   hvgs_final <- rownames(ref_sub)
-  ref_expr <- .traj_lognorm(ref_sub)
-  sim_expr <- if (!is.null(sim_sub)) .traj_lognorm(sim_sub) else NULL
+  ref_libs <- as.numeric(Matrix::colSums(ref_sub))
+  ref_pos_libs <- ref_libs[ref_libs > 0]
+  target_lib_ref <- if (length(ref_pos_libs) > 0) stats::median(ref_pos_libs) else 1
+  if (!is.finite(target_lib_ref) || target_lib_ref <= 0) target_lib_ref <- 1
+  ref_expr <- .traj_lognorm(ref_sub, target_lib = target_lib_ref)
+  sim_expr <- if (!is.null(sim_sub)) .traj_lognorm(sim_sub, target_lib = target_lib_ref) else NULL
 
   list(
     ref_expr = ref_expr,
@@ -600,7 +606,7 @@ infer_dynverse_trajectory <- function(
   n_r <- nrow(ref_c)
   n_s <- nrow(sim_c)
 
-  mapping <- stats::setNames(rownames(sim_c), rownames(sim_c))
+  mapping <- stats::setNames(paste0("SimOnly_", seq_len(n_s)), rownames(sim_c))
   if (requireNamespace("clue", quietly = TRUE) && n_r >= 2L && n_s >= 2L) {
     if (n_s <= n_r) {
       perm <- as.integer(clue::solve_LSAP(t(d_mat), maximum = FALSE))
@@ -612,11 +618,16 @@ infer_dynverse_trajectory <- function(
     }
   } else {
     used_ref <- character(0)
+    extra_idx <- 0L
     for (s_idx in seq_len(n_s)) {
       ord <- order(d_mat[, s_idx])
       pick <- rownames(ref_c)[ord[!(rownames(ref_c)[ord] %in% used_ref)][1]]
-      if (is.na(pick)) pick <- rownames(ref_c)[ord[1]]
-      used_ref <- c(used_ref, pick)
+      if (is.na(pick)) {
+        extra_idx <- extra_idx + 1L
+        pick <- paste0("SimOnly_", extra_idx)
+      } else {
+        used_ref <- c(used_ref, pick)
+      }
       mapping[rownames(sim_c)[s_idx]] <- pick
     }
   }
@@ -744,11 +755,18 @@ calc_dynverse_edge_flip <- function(ref_traj, sim_traj) {
   net2 <- sim_traj$milestone_network
   if (nrow(net1) == 0L || nrow(net2) == 0L) return(0)
 
-  e1 <- unique(paste(pmin(net1$from, net1$to), pmax(net1$from, net1$to), sep = "||"))
-  e2 <- unique(paste(pmin(net2$from, net2$to), pmax(net2$from, net2$to), sep = "||"))
-  u_len <- length(union(e1, e2))
-  if (u_len == 0L) return(1)
-  length(intersect(e1, e2)) / u_len
+  net1 <- net1[as.character(net1$from) != as.character(net1$to), , drop = FALSE]
+  net2 <- net2[as.character(net2$from) != as.character(net2$to), , drop = FALSE]
+  if (nrow(net1) == 0L || nrow(net2) == 0L) return(0)
+
+  e1 <- unique(paste(pmin(as.character(net1$from), as.character(net1$to)),
+                     pmax(as.character(net1$from), as.character(net1$to)), sep = "||"))
+  e2 <- unique(paste(pmin(as.character(net2$from), as.character(net2$to)),
+                     pmax(as.character(net2$from), as.character(net2$to)), sep = "||"))
+  max_flips <- length(e1) + length(e2)
+  if (max_flips == 0L) return(1)
+  n_flips <- length(setdiff(e1, e2)) + length(setdiff(e2, e1))
+  max(0, min(1, 1 - (n_flips / max_flips)))
 }
 
 #' Nearest-Neighbor Cell Matching in Shared PCA Space
@@ -785,6 +803,8 @@ calc_dynverse_edge_flip <- function(ref_traj, sim_traj) {
 calc_dynverse_geodesic_correlation <- function(ref_traj, sim_traj, nn_map = NULL) {
   D_ref <- ref_traj$cell_milestone_geodesic
   D_sim <- sim_traj$cell_milestone_geodesic
+  if (anyDuplicated(colnames(D_ref))) D_ref <- D_ref[, !duplicated(colnames(D_ref)), drop = FALSE]
+  if (anyDuplicated(colnames(D_sim))) D_sim <- D_sim[, !duplicated(colnames(D_sim)), drop = FALSE]
   common_m <- intersect(colnames(D_ref), colnames(D_sim))
   if (length(common_m) < 2L) return(0)
 
@@ -800,11 +820,15 @@ calc_dynverse_geodesic_correlation <- function(ref_traj, sim_traj, nn_map = NULL
   v_ref2 <- as.numeric(D_ref[nn_map$s_to_r, , drop = FALSE])
   v_sim2 <- as.numeric(D_sim)
 
-  cor1 <- if (stats::sd(v_ref1) > 0 && stats::sd(v_sim1) > 0) {
-    max(0, stats::cor(v_ref1, v_sim1, method = "spearman"))
+  ok1 <- is.finite(v_ref1) & is.finite(v_sim1)
+  ok2 <- is.finite(v_ref2) & is.finite(v_sim2)
+  cor1 <- if (sum(ok1) >= 3L && stats::sd(v_ref1[ok1]) > 0 && stats::sd(v_sim1[ok1]) > 0) {
+    val1 <- stats::cor(v_ref1[ok1], v_sim1[ok1], method = "spearman")
+    if (is.finite(val1)) max(0, val1) else 0
   } else 0
-  cor2 <- if (stats::sd(v_ref2) > 0 && stats::sd(v_sim2) > 0) {
-    max(0, stats::cor(v_ref2, v_sim2, method = "spearman"))
+  cor2 <- if (sum(ok2) >= 3L && stats::sd(v_ref2[ok2]) > 0 && stats::sd(v_sim2[ok2]) > 0) {
+    val2 <- stats::cor(v_ref2[ok2], v_sim2[ok2], method = "spearman")
+    if (is.finite(val2)) max(0, val2) else 0
   } else 0
 
   max(0, min(1, 0.5 * (cor1 + cor2)))
@@ -892,19 +916,30 @@ calc_wcor_features <- function(
   X_sim <- as.matrix(Matrix::t(sim_expr[genes, colnames(sim_expr), drop = FALSE]))
   D_ref <- ref_traj$cell_milestone_geodesic[rownames(X_ref), , drop = FALSE]
   D_sim <- sim_traj$cell_milestone_geodesic[rownames(X_sim), , drop = FALSE]
+  if (anyDuplicated(colnames(D_ref))) D_ref <- D_ref[, !duplicated(colnames(D_ref)), drop = FALSE]
+  if (anyDuplicated(colnames(D_sim))) D_sim <- D_sim[, !duplicated(colnames(D_sim)), drop = FALSE]
+  common_m <- intersect(colnames(D_ref), colnames(D_sim))
+  if (length(common_m) >= 2L) {
+    D_ref <- D_ref[, common_m, drop = FALSE]
+    D_sim <- D_sim[, common_m, drop = FALSE]
+  }
 
   P <- length(genes)
-  mtry_val <- max(1L, as.integer(floor(mtry_prop * P)))
+  mtry_val <- if (P < 200L) {
+    max(1L, min(P, as.integer(floor(sqrt(P)))))
+  } else {
+    max(1L, min(P, as.integer(floor(mtry_prop * P))))
+  }
   use_ranger <- requireNamespace("ranger", quietly = TRUE)
 
   compute_imp <- function(X, D, seed_offset = 0L) {
     n_milestones <- ncol(D)
     imp_mat <- matrix(0, nrow = P, ncol = n_milestones, dimnames = list(genes, colnames(D)))
-    valid_m <- 0L
+    valid_cols <- integer(0)
     for (m in seq_len(n_milestones)) {
       y <- as.numeric(D[, m])
       if (length(y) < 5L || !is.finite(stats::sd(y)) || stats::sd(y) <= 1e-8) next
-      valid_m <- valid_m + 1L
+      valid_cols <- c(valid_cols, m)
       if (use_ranger) {
         fit <- ranger::ranger(
           x = X,
@@ -929,8 +964,8 @@ calc_wcor_features <- function(
         imp_mat[, m] <- cs
       }
     }
-    if (valid_m == 0L) return(stats::setNames(rep(0, P), genes))
-    rowMeans(imp_mat[, seq_len(n_milestones), drop = FALSE], na.rm = TRUE)
+    if (length(valid_cols) == 0L) return(stats::setNames(rep(0, P), genes))
+    rowMeans(imp_mat[, valid_cols, drop = FALSE], na.rm = TRUE)
   }
 
   imp_ref <- compute_imp(X_ref, D_ref, seed_offset = 0L)

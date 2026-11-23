@@ -63,7 +63,7 @@ utils::globalVariables(c(
   "Generative_Precision"             = "Generative Precision",
   "Generative_Recall"                = "Generative Recall",
   "silhouette_sim"                   = "Silhouette ASW",
-  "cdi"                              = "Clustering Deviation Index",
+  "cdi"                              = "CDI",
   "ari"                              = "ARI",
   "nmi"                              = "NMI",
   # Auxiliary & legacy Category III aliases:
