@@ -62,7 +62,7 @@ evaluate_rna_de_fidelity(
 }
 \value{
 A list containing:
-  \item{deg_summary_table}{Tidy summary data.frame with 6 scRNA-seq DE metrics: \code{de_score}, \code{pval_dist_score}, \code{true_proportion}, \code{accuracy}, \code{precision}, \code{recall}, \code{f1_score}, and \code{auc}}
+  \item{deg_summary_table}{Tidy summary data.frame with 6 scRNA-seq DE metrics: \code{pval_dist_score}, \code{accuracy}, \code{precision}, \code{recall}, \code{f1_score}, and \code{auc}}
   \item{pairwise_results}{Detailed contrast-level data.frame with per-contrast metrics and confusion matrix counts}
   \item{pseudobulks_ref}{List of reference pseudobulk matrices per cell type}
   \item{pseudobulks_sim}{List of simulated pseudobulk matrices per cell type}
@@ -79,12 +79,12 @@ and simulated scRNA-seq datasets using biological replicate pseudobulks and edge
 \details{
 Category V is divided into two distinct sub-categories:
 \itemize{
-  \item \strong{Sub-category V-A (scRNA-seq Differential Expression)}: Computes 8 metrics:
-    \code{de_score}, \code{pval_dist_score}, \code{true_proportion}, \code{accuracy},
-    \code{precision}, \code{recall}, \code{f1_score}, and \code{auc}.
-  \item \strong{Sub-category V-B (scATAC-seq Differential Accessibility)}: Computes 8 metrics:
-    \code{da_score}, \code{pval_dist_score}, \code{true_proportion}, \code{accuracy},
-    \code{precision}, \code{recall}, \code{f1_score}, and \code{auc}.
+  \item \strong{Sub-category V-A (scRNA-seq Differential Expression)}: Computes 6 metrics:
+    \code{pval_dist_score}, \code{accuracy}, \code{precision}, \code{recall},
+    \code{f1_score}, and \code{auc}.
+  \item \strong{Sub-category V-B (scATAC-seq Differential Accessibility)}: Computes 6 metrics:
+    \code{pval_dist_score}, \code{accuracy}, \code{precision}, \code{recall},
+    \code{f1_score}, and \code{auc}.
 }
 
 If \code{batch_ref} or \code{batch_sim} is NULL, the analysis is gracefully skipped,

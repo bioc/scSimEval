@@ -608,6 +608,15 @@ evaluate_predictive_de_model <- function(
     test_x <- train_x
     test_y <- train_y
   }
+
+  # Filter zero-variance columns in training set to avoid SVM scaling warnings
+  col_sds <- vapply(train_x, stats::sd, numeric(1), na.rm = TRUE)
+  keep_cols <- which(is.finite(col_sds) & col_sds > 0)
+  if (length(keep_cols) < 1L) {
+    return(list(accuracy = NA_real_, F1 = NA_real_, precision = NA_real_, recall = NA_real_))
+  }
+  train_x <- train_x[, keep_cols, drop = FALSE]
+  test_x <- test_x[, keep_cols, drop = FALSE]
   
   pred_y <- NULL
   if (method == "svm" && requireNamespace("e1071", quietly = TRUE)) {
@@ -847,12 +856,12 @@ evaluate_predictive_de_model <- function(
 #'
 #' Category V is divided into two distinct sub-categories:
 #' \itemize{
-#'   \item \strong{Sub-category V-A (scRNA-seq Differential Expression)}: Computes 8 metrics:
-#'     \code{de_score}, \code{pval_dist_score}, \code{true_proportion}, \code{accuracy},
-#'     \code{precision}, \code{recall}, \code{f1_score}, and \code{auc}.
-#'   \item \strong{Sub-category V-B (scATAC-seq Differential Accessibility)}: Computes 8 metrics:
-#'     \code{da_score}, \code{pval_dist_score}, \code{true_proportion}, \code{accuracy},
-#'     \code{precision}, \code{recall}, \code{f1_score}, and \code{auc}.
+#'   \item \strong{Sub-category V-A (scRNA-seq Differential Expression)}: Computes 6 metrics:
+#'     \code{pval_dist_score}, \code{accuracy}, \code{precision}, \code{recall},
+#'     \code{f1_score}, and \code{auc}.
+#'   \item \strong{Sub-category V-B (scATAC-seq Differential Accessibility)}: Computes 6 metrics:
+#'     \code{pval_dist_score}, \code{accuracy}, \code{precision}, \code{recall},
+#'     \code{f1_score}, and \code{auc}.
 #' }
 #'
 #' If \code{batch_ref} or \code{batch_sim} is NULL, the analysis is gracefully skipped,
@@ -873,7 +882,7 @@ evaluate_predictive_de_model <- function(
 #' @param threads Number of CPU threads for parallel pairwise contrast evaluation (default 1).
 #'
 #' @return A list containing:
-#'   \item{deg_summary_table}{Tidy summary data.frame with 6 scRNA-seq DE metrics: \code{de_score}, \code{pval_dist_score}, \code{true_proportion}, \code{accuracy}, \code{precision}, \code{recall}, \code{f1_score}, and \code{auc}}
+#'   \item{deg_summary_table}{Tidy summary data.frame with 6 scRNA-seq DE metrics: \code{pval_dist_score}, \code{accuracy}, \code{precision}, \code{recall}, \code{f1_score}, and \code{auc}}
 #'   \item{pairwise_results}{Detailed contrast-level data.frame with per-contrast metrics and confusion matrix counts}
 #'   \item{pseudobulks_ref}{List of reference pseudobulk matrices per cell type}
 #'   \item{pseudobulks_sim}{List of simulated pseudobulk matrices per cell type}
@@ -1392,12 +1401,12 @@ run_edger_qlf_da <- function(
 #'
 #' Category V is divided into two distinct sub-categories:
 #' \itemize{
-#'   \item \strong{Sub-category V-A (scRNA-seq Differential Expression)}: Computes 8 metrics:
-#'     \code{de_score}, \code{pval_dist_score}, \code{true_proportion}, \code{accuracy},
-#'     \code{precision}, \code{recall}, \code{f1_score}, and \code{auc}.
-#'   \item \strong{Sub-category V-B (scATAC-seq Differential Accessibility)}: Computes 8 metrics:
-#'     \code{da_score}, \code{pval_dist_score}, \code{true_proportion}, \code{accuracy},
-#'     \code{precision}, \code{recall}, \code{f1_score}, and \code{auc}.
+#'   \item \strong{Sub-category V-A (scRNA-seq Differential Expression)}: Computes 6 metrics:
+#'     \code{pval_dist_score}, \code{accuracy}, \code{precision}, \code{recall},
+#'     \code{f1_score}, and \code{auc}.
+#'   \item \strong{Sub-category V-B (scATAC-seq Differential Accessibility)}: Computes 6 metrics:
+#'     \code{pval_dist_score}, \code{accuracy}, \code{precision}, \code{recall},
+#'     \code{f1_score}, and \code{auc}.
 #' }
 #'
 #' If \code{batch_ref} or \code{batch_sim} is NULL, the analysis is gracefully skipped,
@@ -1418,7 +1427,7 @@ run_edger_qlf_da <- function(
 #' @param threads Number of CPU threads for parallel pairwise contrast evaluation (default 1).
 #'
 #' @return A list containing:
-#'   \item{da_summary_table}{Tidy summary data.frame with 6 scATAC-seq DA metrics: \code{da_score}, \code{pval_dist_score}, \code{true_proportion}, \code{accuracy}, \code{precision}, \code{recall}, \code{f1_score}, and \code{auc}}
+#'   \item{da_summary_table}{Tidy summary data.frame with 6 scATAC-seq DA metrics: \code{pval_dist_score}, \code{accuracy}, \code{precision}, \code{recall}, \code{f1_score}, and \code{auc}}
 #'   \item{pairwise_results}{Detailed contrast-level data.frame with per-contrast metrics and confusion matrix counts}
 #'   \item{pseudobulks_ref}{List of reference pseudobulk matrices per cell type}
 #'   \item{pseudobulks_sim}{List of simulated pseudobulk matrices per cell type}

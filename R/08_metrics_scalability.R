@@ -216,8 +216,9 @@ benchmark_resource_usage <- function(expr, sim_cores = NULL) {
   elapsed_time <- (proc.time() - start_time)[["elapsed"]]
   mem_info <- gc()
   
-  # Approximate MiB used in Vcells + Ncells (1024^2 bytes)
-  mem_mib <- sum(mem_info[, 2]) * (8 / (1024^2))
+  # Peak resident MiB across Ncells + Vcells (gc() columns 2 and 6 are already in MiB)
+  mem_col <- if (ncol(mem_info) >= 6L) 6L else 2L
+  mem_mib <- as.numeric(sum(mem_info[, mem_col], na.rm = TRUE))
   mem_mb_si <- .convert_memory_from_mib(mem_mib, "MB")
 
   core_sec <- as.numeric(elapsed_time * cores_active)

@@ -427,12 +427,10 @@ normalize_counts <- function(mat, scale_factor = 1e6, log_base = 2, pseudo_count
 
   if (inherits(mat, "Matrix")) {
     trip <- Matrix::summary(mat)
-    sample_vals <- head(trip$x, 100L)
-    sample_vals <- sample_vals[!is.na(sample_vals)]
-    if (length(sample_vals) > 0L && max(sample_vals) < 35 && any(sample_vals %% 1 != 0)) {
+    if (nrow(trip) == 0L) return(mat)
+    if (any(trip$x < 0, na.rm = TRUE)) {
       return(mat)
     }
-    if (nrow(trip) == 0L) return(mat)
     libs <- as.numeric(Matrix::colSums(mat))
     libs[libs == 0] <- 1
     cell_factors <- scale_factor / libs
@@ -444,9 +442,7 @@ normalize_counts <- function(mat, scale_factor = 1e6, log_base = 2, pseudo_count
     ))
   }
 
-  sample_vals <- as.numeric(mat[seq_len(min(10L, nrow(mat))), seq_len(min(10L, ncol(mat)))])
-  sample_vals <- sample_vals[!is.na(sample_vals)]
-  if (length(sample_vals) > 0L && max(sample_vals) < 35 && any(sample_vals %% 1 != 0)) {
+  if (any(mat < 0, na.rm = TRUE)) {
     return(mat)
   }
 

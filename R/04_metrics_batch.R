@@ -155,7 +155,7 @@
 #' @examples
 #' coords <- matrix(stats::rnorm(100), 50, 2)
 #' batch <- factor(rep(c("B1", "B2"), length.out = 50))
-#' calc_cms(coords, batch)
+#' calc_cms(coords = coords, batch_info = batch)
 #' @keywords internal
 #' @export
 calc_cms <- function(
@@ -169,7 +169,8 @@ calc_cms <- function(
   threads = 1,
   knn_res = NULL
 ) {
-  batch_info <- as.factor(batch_info)
+  batch_info <- droplevels(as.factor(batch_info))
+  n_batches <- nlevels(batch_info)
   
   if (is.null(coords)) {
     d_use <- normalize_counts(data)
@@ -178,10 +179,19 @@ calc_cms <- function(
   }
   
   n_cells <- nrow(coords)
-  if (is.null(k)) {
-    k <- max(10, round(min(table(batch_info)) / 2))
+  if (n_batches < 2L || n_cells < 3L) {
+    return(list(
+      cms_scores = rep(NA_real_, n_cells),
+      mean_cms = NA_real_,
+      median_cms = NA_real_
+    ))
   }
-  k <- min(k, n_cells - 1)
+  if (is.null(k)) {
+    k_cap <- max(10L, as.integer(floor(0.4 * n_cells)))
+    k <- min(k_cap, max(10L, as.integer(round(min(table(batch_info)) / 2)), 4L * n_batches))
+  }
+  k <- max(2L, min(as.integer(k), n_cells - 1L))
+  cell_min_eff <- max(2L, min(as.integer(cell_min), as.integer(floor(k / max(2L, n_batches)))))
   threads <- if (is.null(threads) || length(threads) == 0L || is.na(threads[1L])) 1L else max(1L, as.integer(threads[1L]))
 
   # Delegate to CellMixS::cms only for single-threaded uncached calls;
@@ -212,7 +222,7 @@ calc_cms <- function(
       SingleCellExperiment::reducedDim(sce, "PCA") <- coords
       eval_res <- CellMixS::cms(
         sce, k = k, group = "batch", dim_red = "PCA",
-        n_dim = ncol(coords), BPPARAM = bpparam
+        n_dim = ncol(coords), cell_min = cell_min_eff, BPPARAM = bpparam
       )
       p_vals <- eval_res$cms
       return(list(
@@ -239,7 +249,7 @@ calc_cms <- function(
       nn_batches <- batch_info[nn_idx]
 
       dist_by_b <- split(nn_dists, nn_batches)
-      dist_by_b <- dist_by_b[vapply(dist_by_b, length, integer(1)) >= cell_min]
+      dist_by_b <- dist_by_b[vapply(dist_by_b, length, integer(1)) >= cell_min_eff]
 
       if (length(dist_by_b) <= 1) {
         return(if (unbalanced) NA_real_ else 0)
@@ -393,16 +403,27 @@ evaluate_batch_metrics <- function(
   verbose = FALSE
 ) {
   threads <- .set_parallel_threads(threads)
-  batch_info <- as.factor(batch_info)
+  batch_info <- droplevels(as.factor(batch_info))
+  n_batches <- nlevels(batch_info)
   if (inherits(data, "SingleCellExperiment")) {
     data <- SummarizedExperiment::assay(data, "counts")
   } else if (inherits(data, "Seurat")) {
     stop("Seurat objects are not directly supported; convert via Seurat::as.SingleCellExperiment().", call. = FALSE)
   }
   n_cells <- ncol(data)
+  if (n_batches < 2L || n_cells < 3L) {
+    return(list(
+      batch_silhouette = NA_real_,
+      pcr_r2 = NA_real_,
+      cms = NA_real_,
+      isi = NA_real_,
+      cross_batch_F1 = NA_real_
+    ))
+  }
   
   if (is.null(k)) {
-    k <- max(5, round(min(table(batch_info)) / 2))
+    k_cap <- max(10L, as.integer(floor(0.4 * n_cells)))
+    k <- min(k_cap, max(10L, as.integer(round(min(table(batch_info)) / 2)), 4L * n_batches))
   }
   k <- max(1L, min(as.integer(k), n_cells - 1L))
   

@@ -187,7 +187,9 @@ calc_accessibility_sparsity_curve <- function(data, poly_degree = 2) {
   means <- means[valid]
   nzp <- nzp[valid]
   
-  if (length(means) < poly_degree + 2) {
+  n_uniq <- length(unique(means))
+  eff_deg <- min(as.integer(poly_degree), n_uniq - 1L)
+  if (length(means) < eff_deg + 2L || eff_deg < 1L) {
     return(list(
       c0 = NA_real_, c1 = NA_real_, c2 = NA_real_,
       r_squared = NA_real_,
@@ -197,7 +199,7 @@ calc_accessibility_sparsity_curve <- function(data, poly_degree = 2) {
   }
   
   df <- data.frame(y = nzp, x = means)
-  fit <- stats::lm(y ~ stats::poly(x, degree = poly_degree, raw = TRUE), data = df)
+  fit <- stats::lm(y ~ stats::poly(x, degree = eff_deg, raw = TRUE), data = df)
   s_fit <- summary(fit)
   
   coefs <- stats::coef(fit)
@@ -205,7 +207,7 @@ calc_accessibility_sparsity_curve <- function(data, poly_degree = 2) {
   c1 <- ifelse(length(coefs) >= 2, unname(coefs[2]), 0)
   c2 <- ifelse(length(coefs) >= 3, unname(coefs[3]), 0)
   
-  r2 <- s_fit$r.squared
+  r2 <- if (!is.null(s_fit$r.squared) && is.finite(s_fit$r.squared)) s_fit$r.squared else NA_real_
   spearman_cor <- if (stats::sd(means, na.rm = TRUE) > 0 && stats::sd(nzp, na.rm = TRUE) > 0) {
     stats::cor(means, nzp, method = "spearman")
   } else {
@@ -275,8 +277,8 @@ evaluate_accessibility_sparsity_curve <- function(ref_data, sim_data, poly_degre
     r_c2 <- if (is.na(ref_res$c2)) 0 else ref_res$c2
     s_c1 <- if (is.na(sim_res$c1)) 0 else sim_res$c1
     s_c2 <- if (is.na(sim_res$c2)) 0 else sim_res$c2
-    ref_pred <- ref_res$c0 + r_c1 * grid_x + r_c2 * (grid_x^2)
-    sim_pred <- sim_res$c0 + s_c1 * grid_x + s_c2 * (grid_x^2)
+    ref_pred <- pmin(1, pmax(0, ref_res$c0 + r_c1 * grid_x + r_c2 * (grid_x^2)))
+    sim_pred <- pmin(1, pmax(0, sim_res$c0 + s_c1 * grid_x + s_c2 * (grid_x^2)))
     curve_rmse <- sqrt(mean((ref_pred - sim_pred)^2, na.rm = TRUE))
   } else {
     curve_rmse <- NA_real_

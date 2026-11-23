@@ -691,21 +691,21 @@ filter_gold_standard_metrics <- function(df) {
   "accuracy"                       = "DE/DA Accuracy",
   "precision"                      = "DE/DA Precision",
   "recall"                         = "DE/DA Recall",
-  "f1_score"                       = "DE/DA F1",
-  "auc"                            = "DE/DA AUC",
-  "pval_dist_score"                = "DE/DA p-val",
+  "f1_score"                       = "DE/DA F1-Score",
+  "auc"                            = "DE/DA ROC-AUC",
+  "pval_dist_score"                = "DE/DA Null P-Value Uniformity",
   "rna_de_accuracy"                = "DE Accuracy",
   "rna_de_precision"               = "DE Precision",
   "rna_de_recall"                  = "DE Recall",
-  "rna_de_f1"                      = "DE F1",
-  "rna_de_auc"                     = "DE AUC",
-  "rna_de_pval_dist_score"         = "DE p-val",
+  "rna_de_f1"                      = "DE F1-Score",
+  "rna_de_auc"                     = "DE ROC-AUC",
+  "rna_de_pval_dist_score"         = "DE Null P-Value Uniformity",
   "atac_da_accuracy"               = "DA Accuracy",
   "atac_da_precision"              = "DA Precision",
   "atac_da_recall"                 = "DA Recall",
-  "atac_da_f1"                     = "DA F1",
-  "atac_da_auc"                    = "DA AUC",
-  "atac_da_pval_dist_score"        = "DA p-val",
+  "atac_da_f1"                     = "DA F1-Score",
+  "atac_da_auc"                    = "DA ROC-AUC",
+  "atac_da_pval_dist_score"        = "DA Null P-Value Uniformity",
   "Log2FC_Pearson_Corr"            = "log2FC Cor",
   "Top_DEG_Jaccard_Overlap"        = "DEG Jaccard",
   "Distribution_Score"             = "Dist. Score",
@@ -889,6 +889,24 @@ filter_gold_standard_metrics <- function(df) {
     disp_m[hit] <- paste0(cat5_prefix, c5_map[metrics[hit]])
   }
   disp_m
+}
+
+#' Disambiguate Category VI Multiomics Integration ARI/NMI From Category III Clustering ARI/NMI
+#' @keywords internal
+#' @noRd
+.disambiguate_cat6_metrics <- function(df) {
+  if (!is.data.frame(df) || nrow(df) == 0L ||
+      !all(c("Category", "Metric") %in% colnames(df))) {
+    return(df)
+  }
+  is_c6 <- grepl("^\\(VI\\)|Multiomics Integration|Cross-Modal", as.character(df$Category), ignore.case = TRUE)
+  if (any(is_c6)) {
+    m_chr <- as.character(df$Metric)
+    m_chr[is_c6 & m_chr == "ari"] <- "integration_ari"
+    m_chr[is_c6 & m_chr == "nmi"] <- "integration_nmi"
+    df$Metric <- m_chr
+  }
+  df
 }
 
 
@@ -1801,6 +1819,7 @@ plot_metric_boxplots <- function(
   facet_by   <- match.arg(facet_by)
   df <- .ingest_bubble_data(benchmark_data)
   df <- standardize_benchmark_categories(df)
+  df <- .disambiguate_cat6_metrics(df)
   cat5_prefix <- .resolve_cat5_prefix(df)
 
   if (!is.null(categories)) {
@@ -1948,6 +1967,7 @@ plot_individual_metric_bar <- function(
     df$Category <- ifelse(cat_chr %in% names(.LEGACY_CATEGORY_MAP),
                           .LEGACY_CATEGORY_MAP[cat_chr], cat_chr)
   }
+  df <- .disambiguate_cat6_metrics(df)
 
   avail_m <- unique(df$Metric)
   if (!metric %in% avail_m) {
@@ -2151,6 +2171,7 @@ plot_category_metric_bars <- function(
     df$Category <- ifelse(cat_chr %in% names(.LEGACY_CATEGORY_MAP),
                           .LEGACY_CATEGORY_MAP[cat_chr], cat_chr)
   }
+  df <- .disambiguate_cat6_metrics(df)
 
   if (!missing(category) && !is.null(category) && !identical(category, "all")) {
     if (category %in% names(.LEGACY_CATEGORY_MAP)) {
@@ -2793,6 +2814,7 @@ plot_metric_heatmap <- function(
   scale_fill <- match.arg(scale_fill)
   df <- .ingest_bubble_data(benchmark_data)
   df <- standardize_benchmark_categories(df)
+  df <- .disambiguate_cat6_metrics(df)
   cat5_prefix <- .resolve_cat5_prefix(df)
 
   if (anyDuplicated(df[, c("Method", "Metric")])) {
@@ -3170,6 +3192,8 @@ plot_metric_mds <- function(
   }
   group_by <- if (is.null(group_by) || length(group_by) == 0) "category" else match.arg(group_by, c("category", "summary_type"))
   df <- .ingest_bubble_data(benchmark_data)
+  df <- standardize_benchmark_categories(df)
+  df <- .disambiguate_cat6_metrics(df)
   feature_label <- .resolve_modality_summary_type(df, assay_modality)
 
   if (anyDuplicated(df[, c("Method", "Metric")])) {
@@ -3444,6 +3468,8 @@ plot_metric_pca <- function(
   }
   group_by <- if (is.null(group_by) || length(group_by) == 0) "category" else match.arg(group_by, c("category", "summary_type"))
   df <- .ingest_bubble_data(benchmark_data)
+  df <- standardize_benchmark_categories(df)
+  df <- .disambiguate_cat6_metrics(df)
   feature_label <- .resolve_modality_summary_type(df, assay_modality)
   val_c <- if ("Score_Norm" %in% colnames(df)) "Score_Norm" else if ("Score" %in% colnames(df)) "Score" else if ("Score_Raw" %in% colnames(df)) "Score_Raw" else "Value"
   if (anyDuplicated(df[, c("Method", "Metric")])) {

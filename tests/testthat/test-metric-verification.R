@@ -246,3 +246,49 @@ test_that("All 4 analysis modes return exact canonical metric counts (44/38/56/5
   )
   expect_equal(count_canonical(r_unp$benchmark_summary_table), 56L)
 })
+
+test_that("Regression tests: normalize_counts, benchmark_resource_usage, multi-batch CMS, clamped ATAC curve, Cat VI disambiguation", {
+  # 1. normalize_counts normalizes continuous non-integer non-negative counts
+  set.seed(11)
+  cont_mat <- Matrix::Matrix(matrix(rgamma(500, shape = 0.5, scale = 0.4), nrow = 25, ncol = 20), sparse = TRUE)
+  expect_lt(max(cont_mat), 35)
+  norm_cont <- normalize_counts(cont_mat)
+  expect_gt(mean(as.numeric(norm_cont)), mean(as.numeric(cont_mat)))
+
+  # 2. benchmark_resource_usage reports realistic peak MiB (not divided by 131072)
+  res_mem <- benchmark_resource_usage({ x <- numeric(2e5); sum(x) }, sim_cores = 2L)
+  expect_true(is.finite(res_mem$memory_mb) && res_mem$memory_mb > 1)
+  expect_equal(res_mem$memory_per_core_mib, res_mem$memory_mb / 2, tolerance = 1e-6)
+
+  # 3. Multi-batch CMS (5 well-mixed batches, 100 cells) yields reasonable mixing > 0.2
+  set.seed(42)
+  coords_5b <- matrix(rnorm(100 * 5), nrow = 100, ncol = 5)
+  batch_5b  <- factor(rep(paste0("rep", 1:5), each = 20))
+  cms_5b <- calc_cms(coords = coords_5b, batch_info = batch_5b, threads = 1L)
+  expect_true(is.finite(cms_5b$mean_cms) && cms_5b$mean_cms > 0.2)
+
+  # Single-batch evaluate_batch_metrics returns NA gracefully instead of crashing
+  data(example_scrna, package = "scSimEval")
+  b1 <- evaluate_batch_metrics(example_scrna$ref, factor(rep("OnlyBatch", ncol(example_scrna$ref))), verbose = FALSE)
+  expect_true(is.na(b1$pcr_r2))
+  expect_true(is.na(b1$cms))
+
+  # 4. Accessibility sparsity curve RMSE stays bounded in [0, 1]
+  data(example_rice_bud, package = "scSimEval")
+  ac_res <- evaluate_accessibility_sparsity_curve(
+    example_rice_bud$reference$atac,
+    example_rice_bud$simulated$scMoMtF$atac
+  )
+  expect_true(is.finite(ac_res$curve_rmse) && ac_res$curve_rmse >= 0 && ac_res$curve_rmse <= 1)
+
+  # 5. Category III vs Category VI ari/nmi disambiguation in heatmap/MDS/PCA (zero reshapeWide warnings)
+  rds_path <- system.file("extdata", "scSimEval_benchmark_results.rds", package = "scSimEval")
+  if (nzchar(rds_path) && file.exists(rds_path)) {
+    rds_df <- readRDS(rds_path)
+    p_hm <- plot_metric_heatmap(rds_df)
+    expect_equal(length(unique(p_hm$data$Display_Metric)), length(unique(paste(p_hm$data$Category, p_hm$data$Metric))))
+    expect_no_warning(plot_metric_mds(rds_df, ordination_by = "summaries"))
+    p_pca <- plot_metric_pca(rds_df, panel = "both")
+    expect_true(inherits(p_pca, "gg") || inherits(p_pca, "patchwork"))
+  }
+})
