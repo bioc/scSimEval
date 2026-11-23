@@ -442,6 +442,7 @@ calc_integration_nmi <- function(embed, cell_type, n_clusters = NULL) {
 #' @param n_pcs Number of principal components per modality to retain for joint embedding (default 15).
 #' @param k Number of nearest neighbors for graph-based metrics (default 30).
 #' @param threads Number of CPU threads for parallel processing (default 1).
+#' @param pairing Optional pairing mode (\code{"paired"} or \code{"unpaired"}); auto-detected from cell barcodes if \code{NULL}.
 #' @param verbose Logical; whether to print progress messages (default TRUE).
 #'
 #' @return A list of class \code{scSimEval_integration} containing:
@@ -467,6 +468,7 @@ evaluate_multiomics_integration <- function(
   n_pcs = 15,
   k = 30,
   threads = 1,
+  pairing = NULL,
   verbose = TRUE
 ) {
   threads <- .set_parallel_threads(threads)
@@ -498,6 +500,17 @@ evaluate_multiomics_integration <- function(
   is_paired_layout <- FALSE
   n1 <- if (is.list(sim_multi) && length(sim_multi) >= 2L) ncol(sim_multi[[1L]]) else NA_integer_
   n2 <- if (is.list(sim_multi) && length(sim_multi) >= 2L) ncol(sim_multi[[2L]]) else NA_integer_
+  c1 <- if (is.list(sim_multi) && length(sim_multi) >= 2L) colnames(sim_multi[[1L]]) else NULL
+  c2 <- if (is.list(sim_multi) && length(sim_multi) >= 2L) colnames(sim_multi[[2L]]) else NULL
+  detect_paired <- if (!is.null(pairing) && tolower(as.character(pairing)[1L]) == "unpaired") {
+    FALSE
+  } else if (!is.null(pairing) && tolower(as.character(pairing)[1L]) == "paired") {
+    !is.na(n1) && !is.na(n2) && n1 == n2
+  } else if (!is.na(n1) && !is.na(n2) && n1 == n2) {
+    if (!is.null(c1) && !is.null(c2)) identical(c1, c2) else TRUE
+  } else {
+    FALSE
+  }
 
   if (is.null(joint_embed)) {
     if (is.matrix(sim_multi) || (is.data.frame(sim_multi) && !is.list(sim_multi))) {
@@ -506,8 +519,8 @@ evaluate_multiomics_integration <- function(
       m1 <- sim_multi[[1L]]
       m2 <- sim_multi[[2L]]
 
-      # Paired multiomics (equal cell counts)
-      if (n1 == n2) {
+      # Paired multiomics (matched barcodes/cells)
+      if (detect_paired) {
         is_paired_layout <- TRUE
         p1 <- .fast_mod_pca(m1, n_pcs = n_pcs)
         p2 <- .fast_mod_pca(m2, n_pcs = n_pcs)
@@ -519,7 +532,7 @@ evaluate_multiomics_integration <- function(
         s2[is.na(s2)] <- 0
         joint_embed <- cbind(s1, s2)
       } else {
-        # Unpaired multiomics: modalities stacked
+        # Unpaired multiomics: modalities stacked (distinct cell populations)
         p1 <- .fast_mod_pca(m1, n_pcs = n_pcs)
         p2 <- .fast_mod_pca(m2, n_pcs = n_pcs)
         p1_cached <- p1
@@ -533,8 +546,11 @@ evaluate_multiomics_integration <- function(
     } else if (is.list(sim_multi) && length(sim_multi) == 1L) {
       joint_embed <- .fast_mod_pca(sim_multi[[1L]], n_pcs = n_pcs)
     }
-  } else if (!is.na(n1) && !is.na(n2) && n1 == n2 && nrow(joint_embed) == n1) {
+  } else if (detect_paired && !is.na(n1) && nrow(joint_embed) == n1) {
     is_paired_layout <- TRUE
+  } else if (!detect_paired && !is.na(n1) && !is.na(n2) && nrow(joint_embed) == (n1 + n2)) {
+    is_paired_layout <- FALSE
+    bt_vec <- c(rep("Modality_1", n1), rep("Modality_2", n2))
   }
 
   if (is.null(joint_embed) || nrow(joint_embed) < 3L) {

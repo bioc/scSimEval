@@ -28,9 +28,14 @@ calc_zero_probability_curve <- function(counts) {
   gene_means <- as.numeric(Matrix::rowMeans(counts))
   p0 <- fast_sparse_zero_fraction_feature(counts)
   
-  # Filter genes with non-trivial means and dropouts strictly between 0 and 1
+  # Filter genes with non-trivial means and dropouts strictly between 0 and 1;
+  # if fewer than 10 interior genes exist (e.g. dense neural/VAE simulators with
+  # near-zero dropouts), include all expressed genes via clamped logit stability.
   valid <- gene_means > 0 & p0 > 0 & p0 < 1
-  if (sum(valid) < 10) {
+  if (sum(valid) < 10L) {
+    valid <- gene_means > 0
+  }
+  if (sum(valid) < 2L) {
     return(list(intercept = NA_real_, slope = NA_real_, midpoint = NA_real_, r_squared = NA_real_))
   }
   
@@ -49,8 +54,15 @@ calc_zero_probability_curve <- function(counts) {
   coefs <- stats::coef(fit)
   b0 <- coefs[1]
   b1 <- coefs[2]
-  midpoint <- if (!is.na(b1) && abs(b1) > 1e-6) -b0 / b1 else NA_real_
+  if (is.na(b1)) b1 <- 0
+  midpoint <- if (abs(b1) > 1e-6) {
+    -b0 / b1
+  } else {
+    # Flat dropout curve (zero slope): clamp midpoint outside observed log-mean range
+    if (!is.na(b0) && b0 < 0) min(log_mu) - 5 else max(log_mu) + 5
+  }
   r2 <- summary(fit)$r.squared
+  if (is.na(r2) || !is.finite(r2)) r2 <- 0
   
   list(
     intercept = as.numeric(b0),
@@ -257,10 +269,14 @@ evaluate_accessibility_sparsity_curve <- function(ref_data, sim_data, poly_degre
   }
   
   max_m <- max(ref_means, na.rm = TRUE)
-  if (is.finite(max_m) && max_m > 0) {
+  if (is.finite(max_m) && max_m > 0 && !is.na(ref_res$c0) && !is.na(sim_res$c0)) {
     grid_x <- seq(0, max_m, length.out = 100)
-    ref_pred <- ref_res$c0 + ref_res$c1 * grid_x + ref_res$c2 * (grid_x^2)
-    sim_pred <- sim_res$c0 + sim_res$c1 * grid_x + sim_res$c2 * (grid_x^2)
+    r_c1 <- if (is.na(ref_res$c1)) 0 else ref_res$c1
+    r_c2 <- if (is.na(ref_res$c2)) 0 else ref_res$c2
+    s_c1 <- if (is.na(sim_res$c1)) 0 else sim_res$c1
+    s_c2 <- if (is.na(sim_res$c2)) 0 else sim_res$c2
+    ref_pred <- ref_res$c0 + r_c1 * grid_x + r_c2 * (grid_x^2)
+    sim_pred <- sim_res$c0 + s_c1 * grid_x + s_c2 * (grid_x^2)
     curve_rmse <- sqrt(mean((ref_pred - sim_pred)^2, na.rm = TRUE))
   } else {
     curve_rmse <- NA_real_

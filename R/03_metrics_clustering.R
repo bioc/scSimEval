@@ -115,6 +115,7 @@ calc_ari <- function(pred, truth) {
     d <- choose(sum(tab), 2)
     expected <- (b * c) / d
     max_idx <- (b + c) / 2
+    if (max_idx == expected) return(1.0)
     (a - expected) / (max_idx - expected)
   }
 }
@@ -132,13 +133,14 @@ calc_ari <- function(pred, truth) {
 calc_nmi <- function(pred, truth) {
   tab <- table(pred, truth)
   n <- sum(tab)
+  if (n <= 0) return(NA_real_)
   p_ij <- tab / n
   p_i <- rowSums(tab) / n
   p_j <- colSums(tab) / n
   
-  # Entropies
-  h_i <- -sum(p_i * log2(p_i + 1e-12))
-  h_j <- -sum(p_j * log2(p_j + 1e-12))
+  # Entropies over strictly positive marginal probabilities
+  h_i <- -sum(p_i[p_i > 0] * log2(p_i[p_i > 0]))
+  h_j <- -sum(p_j[p_j > 0] * log2(p_j[p_j > 0]))
   
   # Mutual info
   mi <- 0
@@ -149,8 +151,8 @@ calc_nmi <- function(pred, truth) {
       }
     }
   }
-  if (h_i + h_j == 0) return(1)
-  2 * mi / (h_i + h_j)
+  if (h_i + h_j <= 0) return(1.0)
+  max(0.0, min(1.0, as.numeric(2 * mi / (h_i + h_j))))
 }
 
 #' Calculate Neighborhood Purity
@@ -201,7 +203,7 @@ calc_neighborhood_purity <- function(data, cluster_labels, k = NULL, is_distance
     mat <- if (nrow(data) == mat_n_cells) as.matrix(data)[seq_len(n_eval), , drop = FALSE] else t(as.matrix(data)[, seq_len(n_eval), drop = FALSE])
     if (threads <= 1L && requireNamespace("bluster", quietly = TRUE)) {
       pur <- tryCatch({
-        res <- bluster::neighborPurity(mat, clusters = cluster_labels, k = k)
+        res <- bluster::neighborPurity(mat, clusters = cluster_labels, k = k, weighted = FALSE)
         as.numeric(res$purity)
       }, error = function(e) NULL)
       if (!is.null(pur)) {
@@ -957,8 +959,8 @@ calc_generative_precision_recall <- function(
   # continuous non-integer values that bypass normalize_counts' integer heuristic).
   # Only skipped if negative entries exist (pre-centered/z-scored/embedding input).
   manifold_lognorm <- function(mat, target_sum = 1e4) {
-    vals <- if (inherits(mat, "Matrix")) mat@x else as.numeric(mat)
-    if (length(vals) > 0L && any(vals < 0, na.rm = TRUE)) {
+    min_val <- if (length(mat) > 0L) min(mat, na.rm = TRUE) else 0
+    if (is.finite(min_val) && min_val < 0) {
       return(as.matrix(mat))
     }
     libs <- as.numeric(Matrix::colSums(mat))
@@ -1130,9 +1132,29 @@ calc_mmd <- function(
   
   if (ncol(ref_mat) < 2 || ncol(sim_mat) < 2) return(NA_real_)
   
-  # Standard library-size log-normalization
-  ref_norm <- normalize_counts(ref_mat)
-  sim_norm <- normalize_counts(sim_mat)
+  # Consistent library-size log1p(CP10k) normalization applied identically to both
+  # reference and simulated matrices (avoids scale mismatch when simulators emit
+  # continuous non-integer values that bypass normalize_counts' integer heuristic).
+  manifold_lognorm_mmd <- function(mat, target_sum = 1e4) {
+    min_val <- if (length(mat) > 0L) min(mat, na.rm = TRUE) else 0
+    if (is.finite(min_val) && min_val < 0) {
+      return(as.matrix(mat))
+    }
+    libs <- as.numeric(Matrix::colSums(mat))
+    libs[!is.finite(libs) | libs <= 0] <- 1
+    if (inherits(mat, "Matrix")) {
+      trip <- Matrix::summary(mat)
+      if (nrow(trip) == 0L) return(as.matrix(mat))
+      scaled_x <- trip$x * (target_sum / libs[trip$j])
+      return(Matrix::sparseMatrix(
+        i = trip$i, j = trip$j, x = log1p(scaled_x),
+        dims = dim(mat), dimnames = dimnames(mat)
+      ))
+    }
+    log1p(sweep(as.matrix(mat), 2L, target_sum / libs, `*`))
+  }
+  ref_norm <- manifold_lognorm_mmd(ref_mat)
+  sim_norm <- manifold_lognorm_mmd(sim_mat)
   
   # Retain top HVGs if feature space is large
   if (nrow(ref_norm) > max_features) {

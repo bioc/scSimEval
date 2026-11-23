@@ -688,12 +688,12 @@ filter_gold_standard_metrics <- function(df) {
   "shannon_entropy"                = "Batch Entropy",
 
   # (V) Biological Signal & Differential Fidelity
-  "accuracy"                       = "DA/DE Accuracy",
-  "precision"                      = "DA/DE Precision",
-  "recall"                         = "DA/DE Recall",
-  "f1_score"                       = "DA/DE F1",
-  "auc"                            = "DA/DE AUC",
-  "pval_dist_score"                = "DA/DE p-val",
+  "accuracy"                       = "DE/DA Accuracy",
+  "precision"                      = "DE/DA Precision",
+  "recall"                         = "DE/DA Recall",
+  "f1_score"                       = "DE/DA F1",
+  "auc"                            = "DE/DA AUC",
+  "pval_dist_score"                = "DE/DA p-val",
   "rna_de_accuracy"                = "DE Accuracy",
   "rna_de_precision"               = "DE Precision",
   "rna_de_recall"                  = "DE Recall",
@@ -812,9 +812,9 @@ filter_gold_standard_metrics <- function(df) {
         if ("Property" %in% colnames(df)) as.character(df$Property) else character(0),
         if ("Metric" %in% colnames(df)) as.character(df$Metric) else character(0)
       )
-      has_multi_txt <- any(grepl("multiomics|cross_modal|foscttm|joint|coupling", all_text, ignore.case = TRUE))
+      has_multi_txt <- any(grepl("multiomics|cross_modal|foscttm|joint|coupling|batch_asw|cell_type_asw|graph_connectivity", all_text, ignore.case = TRUE))
       has_atac_txt  <- any(grepl("scatac|\\batac\\b|differential_accessibility|accessibility_sparsity|curve_rmse", all_text, ignore.case = TRUE))
-      has_rna_txt   <- any(grepl("scrna|\\brna\\b|differential_expression|trajectory|dynverse", all_text, ignore.case = TRUE))
+      has_rna_txt   <- any(grepl("scrna|\\brna\\b|differential_expression|trajectory|dynverse|midpoint_error|slope_error|\\bhim\\b|edge_flip|wcor_features", all_text, ignore.case = TRUE))
 
       if (has_multi_txt || (has_atac_txt && has_rna_txt)) {
         is_multi <- TRUE
@@ -829,6 +829,66 @@ filter_gold_standard_metrics <- function(df) {
   }
 
   if (is_atac) "peak" else if (is_multi) "features" else "gene"
+}
+
+#' Resolve Category V Display Prefix ("DE ", "DA ", or "DE/DA ") from Modality Context
+#' @keywords internal
+#' @noRd
+.resolve_cat5_prefix <- function(df, assay_modality = NULL) {
+  mod_arg <- if (!is.null(assay_modality) && length(assay_modality) > 0 && !is.na(assay_modality[1L])) {
+    tolower(trimws(as.character(assay_modality[1L])))
+  } else {
+    "auto"
+  }
+  if (grepl("rna", mod_arg) && !grepl("atac|all|multi|joint|auto", mod_arg)) return("DE ")
+  if (grepl("atac", mod_arg) && !grepl("rna|all|multi|joint|auto", mod_arg)) return("DA ")
+  if (grepl("multi|joint|both", mod_arg)) return("DE/DA ")
+
+  if ("Modality" %in% colnames(df)) {
+    mods <- unique(as.character(df$Modality[!is.na(df$Modality) & !df$Modality %in% c("Computation", "Total", "scalability")]))
+    has_rna <- any(grepl("rna", mods, ignore.case = TRUE))
+    has_atac <- any(grepl("atac", mods, ignore.case = TRUE))
+    has_multi <- any(grepl("multi|cross|joint", mods, ignore.case = TRUE))
+    if (has_multi || (has_rna && has_atac)) return("DE/DA ")
+    if (has_rna) return("DE ")
+    if (has_atac) return("DA ")
+  }
+
+  if ("Property" %in% colnames(df)) {
+    props <- as.character(df$Property)
+    has_de <- any(grepl("scRNA_differential_expression|differential_expression", props, ignore.case = TRUE))
+    has_da <- any(grepl("scATAC_differential_accessibility|differential_accessibility", props, ignore.case = TRUE))
+    if (has_de && !has_da) return("DE ")
+    if (has_da && !has_de) return("DA ")
+    if (has_de && has_da) return("DE/DA ")
+  }
+
+  fl <- .resolve_modality_summary_type(df, assay_modality = "auto")
+  if (identical(fl, "gene")) "DE " else if (identical(fl, "peak")) "DA " else "DE/DA "
+}
+
+#' Apply Canonical Category V Prefix ("DE ", "DA ", or "DE/DA ") to Display Metric Names
+#' @keywords internal
+#' @noRd
+.apply_cat5_display_labels <- function(disp_m, metrics, categories, cat5_prefix) {
+  c5_map <- c(
+    "accuracy" = "Accuracy", "rna_de_accuracy" = "Accuracy", "atac_da_accuracy" = "Accuracy",
+    "precision" = "Precision", "rna_de_precision" = "Precision", "atac_da_precision" = "Precision",
+    "recall" = "Recall", "rna_de_recall" = "Recall", "atac_da_recall" = "Recall",
+    "f1_score" = "F1-Score", "f1" = "F1-Score", "rna_de_f1" = "F1-Score", "atac_da_f1" = "F1-Score",
+    "auc" = "ROC-AUC", "roc_auc" = "ROC-AUC", "rna_de_auc" = "ROC-AUC", "atac_da_auc" = "ROC-AUC",
+    "pval_dist_score" = "Null P-Value Uniformity",
+    "rna_de_pval_dist_score" = "Null P-Value Uniformity",
+    "atac_da_pval_dist_score" = "Null P-Value Uniformity"
+  )
+  cat_chr <- if (!is.null(categories)) as.character(categories) else rep("", length(metrics))
+  is_c5 <- grepl("^\\(V\\)|Biological Signal|Bio-Signal", cat_chr, ignore.case = TRUE) |
+    metrics %in% names(c5_map)
+  hit <- is_c5 & metrics %in% names(c5_map)
+  if (any(hit)) {
+    disp_m[hit] <- paste0(cat5_prefix, c5_map[metrics[hit]])
+  }
+  disp_m
 }
 
 
@@ -1740,8 +1800,11 @@ plot_metric_boxplots <- function(
   score_type <- match.arg(score_type)
   facet_by   <- match.arg(facet_by)
   df <- .ingest_bubble_data(benchmark_data)
+  df <- standardize_benchmark_categories(df)
+  cat5_prefix <- .resolve_cat5_prefix(df)
 
   if (!is.null(categories)) {
+    categories <- ifelse(categories %in% names(.LEGACY_CATEGORY_MAP), .LEGACY_CATEGORY_MAP[categories], categories)
     df <- df[df$Category %in% categories, , drop = FALSE]
   }
   if (!is.null(metrics)) {
@@ -1763,6 +1826,7 @@ plot_metric_boxplots <- function(
   is_hib <- df$Metric %in% .HIGHER_IS_BETTER_METRICS
   df$Direction <- ifelse(is_hib, "\u2191 Higher is better", "\u2193 Lower is better")
   disp_m <- ifelse(df$Metric %in% names(.METRIC_DISPLAY_LABELS), .METRIC_DISPLAY_LABELS[df$Metric], df$Metric)
+  disp_m <- .apply_cat5_display_labels(disp_m, df$Metric, df$Category, cat5_prefix)
   df$Display_Metric <- paste0(disp_m, ifelse(is_hib, " (\u2191)", " (\u2193)"))
 
   default_sim_cols <- c(
@@ -1919,10 +1983,12 @@ plot_individual_metric_bar <- function(
     df_sub$Metric <- metric
   }
 
+  cat5_prefix <- .resolve_cat5_prefix(df)
   disp_m <- if (metric %in% names(.METRIC_DISPLAY_LABELS)) .METRIC_DISPLAY_LABELS[metric] else metric
+  cat_name <- if (nrow(df_sub) > 0 && !is.na(df_sub$Category[1])) as.character(df_sub$Category[1]) else "Benchmark"
+  disp_m <- .apply_cat5_display_labels(disp_m, metric, cat_name, cat5_prefix)
   is_hib <- metric %in% .HIGHER_IS_BETTER_METRICS
   dir_txt <- if (is_hib) "\u2191 Higher is better" else "\u2193 Lower is better"
-  cat_name <- if (nrow(df_sub) > 0 && !is.na(df_sub$Category[1])) as.character(df_sub$Category[1]) else "Benchmark"
 
   default_sim_cols <- c(
     "scDesign3" = "#1E8449",
@@ -2078,6 +2144,7 @@ plot_category_metric_bars <- function(
 ) {
   score_type <- match.arg(score_type)
   df <- .ingest_bubble_data(benchmark_data)
+  cat5_prefix <- .resolve_cat5_prefix(df)
 
   if ("Category" %in% colnames(df)) {
     cat_chr <- as.character(df$Category)
@@ -2107,6 +2174,7 @@ plot_category_metric_bars <- function(
 
   is_hib <- df$Metric %in% .HIGHER_IS_BETTER_METRICS
   disp_m <- ifelse(df$Metric %in% names(.METRIC_DISPLAY_LABELS), .METRIC_DISPLAY_LABELS[df$Metric], df$Metric)
+  disp_m <- .apply_cat5_display_labels(disp_m, df$Metric, df$Category, cat5_prefix)
   dir_symbol <- ifelse(is_hib, "\u2191", "\u2193")
   df$Display_Metric <- if (score_type == "normalized") disp_m else paste0(disp_m, " (", dir_symbol, ")")
 
@@ -2116,9 +2184,11 @@ plot_category_metric_bars <- function(
   ordered_m <- c(ordered_m, setdiff(unique_metrics, ordered_m))
 
   disp_levels <- character(length(ordered_m))
+  cat_lookup <- stats::setNames(as.character(df$Category), df$Metric)
   for (i in seq_along(ordered_m)) {
     m_i <- ordered_m[i]
     dm <- if (m_i %in% names(.METRIC_DISPLAY_LABELS)) .METRIC_DISPLAY_LABELS[[m_i]] else m_i
+    dm <- .apply_cat5_display_labels(dm, m_i, unname(cat_lookup[m_i]), cat5_prefix)
     ds <- if (m_i %in% .HIGHER_IS_BETTER_METRICS) "\u2191" else "\u2193"
     disp_levels[i] <- if (score_type == "normalized") dm else paste0(dm, " (", ds, ")")
   }
@@ -2722,6 +2792,8 @@ plot_metric_heatmap <- function(
   if (!is.null(metric_name) && is.null(metrics)) metrics <- metric_name
   scale_fill <- match.arg(scale_fill)
   df <- .ingest_bubble_data(benchmark_data)
+  df <- standardize_benchmark_categories(df)
+  cat5_prefix <- .resolve_cat5_prefix(df)
 
   if (anyDuplicated(df[, c("Method", "Metric")])) {
     val_c <- if ("Score_Raw" %in% colnames(df)) "Score_Raw" else if ("Score" %in% colnames(df)) "Score" else "Value"
@@ -2736,6 +2808,7 @@ plot_metric_heatmap <- function(
   }
 
   if (!is.null(category)) {
+    category <- ifelse(category %in% names(.LEGACY_CATEGORY_MAP), .LEGACY_CATEGORY_MAP[category], category)
     df <- df[df$Category %in% category, , drop = FALSE]
   }
   if (!is.null(metrics)) {
@@ -2745,7 +2818,8 @@ plot_metric_heatmap <- function(
 
   # Clean measure display names with polarity indicators
   df$Display_Metric <- if ("Metric" %in% colnames(df)) {
-    ifelse(df$Metric %in% names(.METRIC_DISPLAY_LABELS), .METRIC_DISPLAY_LABELS[df$Metric], df$Metric)
+    disp_m <- ifelse(df$Metric %in% names(.METRIC_DISPLAY_LABELS), .METRIC_DISPLAY_LABELS[df$Metric], df$Metric)
+    .apply_cat5_display_labels(disp_m, df$Metric, df$Category, cat5_prefix)
   } else df$Metric
 
   is_hib <- df$Metric %in% .HIGHER_IS_BETTER_METRICS
@@ -3473,12 +3547,7 @@ plot_metric_pca <- function(
   }
   is_single_modality <- is_rna_view || is_atac_view
 
-  cat5_prefix <- if (is_rna_view) "DE " else if (is_atac_view) "DA " else if ("Modality" %in% colnames(df)) {
-    c5_sub <- df[grepl("^\\(V\\)|Biological Signal|Bio-Signal", df$Display_Category), , drop = FALSE]
-    cand <- if (nrow(c5_sub) > 0) c5_sub$Modality else df$Modality[!grepl("Comp|Scalability|^\\(VIII\\)", df$Display_Category, ignore.case = TRUE)]
-    hr <- any(grepl("RNA", cand, ignore.case = TRUE)); ha <- any(grepl("ATAC", cand, ignore.case = TRUE))
-    if (hr && !ha) "DE " else if (ha && !hr) "DA " else "DE/DA "
-  } else "DE/DA "
+  cat5_prefix <- .resolve_cat5_prefix(df, assay_modality = assay_modality)
 
   if (is_rna_view) {
     keep <- !(df$Metric %in% c("curve_rmse", "Accessibility Sparsity RMSE") |
@@ -3973,6 +4042,7 @@ plot_bubble_matrix <- plot_benchmark_bubble_matrix
     )
     if ("Dataset" %in% colnames(tbl)) res_df$Dataset <- tbl$Dataset
     if ("Modality" %in% colnames(tbl)) res_df$Modality <- tbl$Modality
+    if ("Property" %in% colnames(tbl)) res_df$Property <- tbl$Property
     return(res_df)
   }
 
@@ -4019,6 +4089,7 @@ plot_bubble_matrix <- plot_benchmark_bubble_matrix
                                   Metric = tbl$Metric, Score_Raw = val,
                                   stringsAsFactors = FALSE)
         if ("Modality" %in% colnames(tbl)) rows[[nm]]$Modality <- tbl$Modality
+        if ("Property" %in% colnames(tbl)) rows[[nm]]$Property <- tbl$Property
         if ("Sim_Cores" %in% colnames(tbl)) {
           rows[[nm]]$Sim_Cores <- tbl$Sim_Cores
         } else if (is.list(item) && !is.null(item$resource_usage$sim_cores)) {
@@ -4103,7 +4174,7 @@ normalize_bubble_scores <- function(df) {
     idx     <- metric_key == m_key
     met     <- df$Metric[idx][1]
     raw_val <- df$Score_Raw[idx]
-    if (met %in% c("Runs_Statistic", "Between_Dataset_Silh_Global", "Between_Dataset_Silh_2D_Global")) {
+    if (met %in% c("Runs_Statistic", "Between_Dataset_Silh_Global", "Between_Dataset_Silh_2D_Global", "batch_silhouette")) {
       raw_val <- abs(raw_val)
     }
     non_na  <- raw_val[!is.na(raw_val) & is.finite(raw_val)]

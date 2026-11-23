@@ -14,6 +14,7 @@ evaluate_multiomics_integration(
   n_pcs = 15,
   k = 30,
   threads = 1,
+  pairing = NULL,
   verbose = TRUE
 )
 }
@@ -35,6 +36,8 @@ evaluate_multiomics_integration(
 \item{k}{Number of nearest neighbors for graph-based metrics (default 30).}
 
 \item{threads}{Number of CPU threads for parallel processing (default 1).}
+
+\item{pairing}{Optional pairing mode (\code{"paired"} or \code{"unpaired"}); auto-detected from cell barcodes if \code{NULL}.}
 
 \item{verbose}{Logical; whether to print progress messages (default TRUE).}
 }

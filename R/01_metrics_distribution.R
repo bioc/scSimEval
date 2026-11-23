@@ -273,31 +273,50 @@ extract_feature_properties <- function(data, n_top_cor = 500, modality = NULL, v
 #' @keywords internal
 #' @export
 calc_bhattacharyya <- function(ref, sim, align = TRUE) {
-  if (align) {
-    aligned <- align_distributions(ref, sim)
-    ref <- aligned$ref
-    sim <- aligned$sim
-  }
   ref <- stats::na.omit(as.numeric(ref))
   sim <- stats::na.omit(as.numeric(sim))
-  if (length(ref) == 0 || length(sim) == 0) return(NA_real_)
-  
-  min_val <- min(c(ref, sim), na.rm = TRUE)
-  if (is.finite(min_val) && min_val <= 0) {
-    shift <- abs(min_val) + 1e-6
-    ref <- ref + shift
-    sim <- sim + shift
-  }
-  s_ref <- sum(ref, na.rm = TRUE)
-  s_sim <- sum(sim, na.rm = TRUE)
-  if (s_ref <= 0 || s_sim <= 0) return(NA_real_)
-  
-  p_ref <- ref / s_ref
-  p_sim <- sim / s_sim
+  ref <- ref[is.finite(ref)]
+  sim <- sim[is.finite(sim)]
+  if (length(ref) == 0L || length(sim) == 0L) return(NA_real_)
 
-  bc <- sum(sqrt(p_ref * p_sim), na.rm = TRUE)
-  if (is.na(bc) || bc <= 0) return(Inf)
-  -log(bc)
+  sd_ref <- if (length(ref) >= 2L) stats::sd(ref) else 0
+  sd_sim <- if (length(sim) >= 2L) stats::sd(sim) else 0
+  if (is.na(sd_ref)) sd_ref <- 0
+  if (is.na(sd_sim)) sd_sim <- 0
+
+  # Identical or degenerate point-mass distributions
+  if (sd_ref == 0 && sd_sim == 0) {
+    return(if (ref[1L] == sim[1L]) 0.0 else -log(1e-12))
+  }
+
+  pooled <- c(ref, sim)
+  bw_val <- if (length(pooled) >= 2L) stats::bw.nrd0(pooled) else 0
+  if (is.na(bw_val) || !is.finite(bw_val) || bw_val <= 0) {
+    rng <- max(pooled) - min(pooled)
+    bw_val <- if (is.finite(rng) && rng > 0) rng / 50 else 1e-4
+  }
+
+  xmin <- min(pooled) - 4 * bw_val
+  xmax <- max(pooled) + 4 * bw_val
+  n_grid <- 512L
+
+  d_ref <- stats::density(ref, from = xmin, to = xmax, n = n_grid, bw = bw_val)
+  d_sim <- stats::density(sim, from = xmin, to = xmax, n = n_grid, bw = bw_val)
+  dx <- d_ref$x[2L] - d_ref$x[1L]
+
+  area_ref <- sum((d_ref$y[-1L] + d_ref$y[-n_grid]) / 2) * dx
+  area_sim <- sum((d_sim$y[-1L] + d_sim$y[-n_grid]) / 2) * dx
+  if (!is.finite(area_ref) || area_ref <= 0 || !is.finite(area_sim) || area_sim <= 0) {
+    return(NA_real_)
+  }
+
+  y_ref <- pmax(0, d_ref$y / area_ref)
+  y_sim <- pmax(0, d_sim$y / area_sim)
+  prod_sqrt <- sqrt(y_ref * y_sim)
+  bc <- sum((prod_sqrt[-1L] + prod_sqrt[-n_grid]) / 2) * dx
+  if (!is.finite(bc)) return(NA_real_)
+  bc <- max(1e-12, min(1.0, bc))
+  as.numeric(-log(bc))
 }
 
 #' Calculate Kolmogorov-Smirnov Distance (1D KS)
@@ -424,22 +443,29 @@ calc_rmse <- function(ref, sim, align = TRUE) {
 calc_kde_ise <- function(ref, sim, n_points = 512) {
   ref <- stats::na.omit(as.numeric(ref))
   sim <- stats::na.omit(as.numeric(sim))
-  if (length(ref) < 2 || length(sim) < 2) return(NA_real_)
-  
-  xmin <- min(c(ref, sim))
-  xmax <- max(c(ref, sim))
-  if (xmin == xmax) return(0)
+  ref <- ref[is.finite(ref)]
+  sim <- sim[is.finite(sim)]
+  if (length(ref) < 2L || length(sim) < 2L) return(NA_real_)
   
   pooled <- c(ref, sim)
+  xmin_raw <- min(pooled)
+  xmax_raw <- max(pooled)
+  if (xmin_raw == xmax_raw) return(0)
+  
   bw_val <- stats::bw.nrd0(pooled)
-  if (is.na(bw_val) || !is.finite(bw_val) || bw_val <= 0) bw_val <- "nrd0"
+  if (is.na(bw_val) || !is.finite(bw_val) || bw_val <= 0) {
+    rng <- xmax_raw - xmin_raw
+    bw_val <- if (rng > 0) rng / 50 else 1e-4
+  }
+  xmin <- xmin_raw - 3 * bw_val
+  xmax <- xmax_raw + 3 * bw_val
   
   d_ref <- stats::density(ref, from = xmin, to = xmax, n = n_points, bw = bw_val)
   d_sim <- stats::density(sim, from = xmin, to = xmax, n = n_points, bw = bw_val)
   
-  dx <- d_ref$x[2] - d_ref$x[1]
+  dx <- d_ref$x[2L] - d_ref$x[1L]
   diff_sq <- (d_ref$y - d_sim$y)^2
-  sum((diff_sq[-1] + diff_sq[-length(diff_sq)]) / 2) * dx
+  sum((diff_sq[-1L] + diff_sq[-length(diff_sq)]) / 2) * dx
 }
 
 #' Calculate Kernel Density Overlap Value (OV)
@@ -531,6 +557,7 @@ calc_fasano_franceschini <- function(ref_mat, sim_mat, threads = 1) {
       }
     }
   }
+  NA_real_
 }
 
 #' @title Calculate 2D Bivariate Kernel Density Estimation (KDE) Test Statistic
@@ -580,16 +607,39 @@ calc_emd_2d <- function(ref_mat, sim_mat, n = 25) {
   ref_mat <- as.matrix(stats::na.omit(ref_mat))
   sim_mat <- as.matrix(stats::na.omit(sim_mat))
   if (ncol(ref_mat) != 2 || ncol(sim_mat) != 2) stop("Requires 2-column matrices.")
+  if (nrow(ref_mat) < 2L || nrow(sim_mat) < 2L) return(NA_real_)
   
   if (requireNamespace("MASS", quietly = TRUE) && requireNamespace("emdist", quietly = TRUE)) {
     tryCatch({
-      lims <- c(
-        range(c(ref_mat[, 1], sim_mat[, 1])),
-        range(c(ref_mat[, 2], sim_mat[, 2]))
-      )
-      k_ref <- MASS::kde2d(ref_mat[, 1], ref_mat[, 2], n = n, lims = lims)
-      k_sim <- MASS::kde2d(sim_mat[, 1], sim_mat[, 2], n = n, lims = lims)
-      as.numeric(emdist::emd2d(k_ref$z, k_sim$z, max.iter = 2000L)) / n
+      safe_bw <- function(v) {
+        bw <- tryCatch(MASS::bandwidth.nrd(v), error = function(e) 0)
+        if (!is.finite(bw) || bw <= 0) {
+          s <- stats::sd(v, na.rm = TRUE)
+          bw <- if (is.finite(s) && s > 0) 1.06 * s * (length(v)^(-0.2)) else 0
+        }
+        if (!is.finite(bw) || bw <= 0) {
+          r <- diff(range(v, na.rm = TRUE))
+          bw <- if (is.finite(r) && r > 0) r / 10 else 1e-3
+        }
+        bw
+      }
+      x_all <- c(ref_mat[, 1L], sim_mat[, 1L])
+      y_all <- c(ref_mat[, 2L], sim_mat[, 2L])
+      h_vec <- c(safe_bw(x_all), safe_bw(y_all))
+      rx <- range(x_all, na.rm = TRUE)
+      ry <- range(y_all, na.rm = TRUE)
+      if (rx[1L] == rx[2L]) rx <- rx + c(-1e-3, 1e-3)
+      if (ry[1L] == ry[2L]) ry <- ry + c(-1e-3, 1e-3)
+      lims <- c(rx, ry)
+
+      k_ref <- MASS::kde2d(ref_mat[, 1L], ref_mat[, 2L], h = h_vec, n = n, lims = lims)
+      k_sim <- MASS::kde2d(sim_mat[, 1L], sim_mat[, 2L], h = h_vec, n = n, lims = lims)
+      s_ref <- sum(k_ref$z)
+      s_sim <- sum(k_sim$z)
+      if (!is.finite(s_ref) || s_ref <= 0 || !is.finite(s_sim) || s_sim <= 0) return(NA_real_)
+      z_ref <- k_ref$z / s_ref
+      z_sim <- k_sim$z / s_sim
+      as.numeric(emdist::emd2d(z_ref, z_sim, max.iter = 5000L)) / n
     }, error = function(e) NA_real_)
   } else {
     NA_real_
@@ -630,21 +680,30 @@ calc_runs_test <- function(ref, sim, alternative = c("left.sided", "two.sided"))
     return(list(runs_statistic = NA_real_, runs_pvalue = NA_real_))
   }
 
-  df <- data.frame(
-    val = c(ref, sim),
-    ds = c(rep(1, length(ref)), rep(0, length(sim)))
-  )
-  df <- df[order(df$val), ]
-
-  r <- rle(df$ds)
-  n_runs <- length(r$lengths)
-  n1 <- sum(df$ds == 1)
-  n0 <- sum(df$ds == 0)
+  vals <- c(ref, sim)
+  ds <- c(rep(1L, length(ref)), rep(0L, length(sim)))
+  n1 <- length(ref)
+  n0 <- length(sim)
   mu_r <- 1 + (2 * n1 * n0) / (n1 + n0)
   var_r <- (2 * n1 * n0 * (2 * n1 * n0 - n1 - n0)) / ((n1 + n0)^2 * (n1 + n0 - 1))
 
   if (is.na(var_r) || var_r <= 0) {
     return(list(runs_statistic = 0, runs_pvalue = 1))
+  }
+
+  # Break cross-dataset ties symmetrically via deterministic pseudo-random permutations
+  # averaged over B = 20 draws (avoids stable-sort bias where identical vectors give extreme z)
+  has_cross_ties <- any(ref %in% sim)
+  if (!has_cross_ties) {
+    n_runs <- as.numeric(length(rle(ds[order(vals)])$lengths))
+  } else {
+    idx_seq <- seq_along(vals)
+    n_perm <- 20L
+    runs_vec <- vapply(seq_len(n_perm), function(b) {
+      tie_key <- (sin(idx_seq * 12.9898 + b * 78.233) * 43758.5453) %% 1
+      as.numeric(length(rle(ds[order(vals, tie_key)])$lengths))
+    }, numeric(1))
+    n_runs <- mean(runs_vec)
   }
 
   z <- (n_runs - mu_r) / sqrt(var_r)
@@ -717,7 +776,7 @@ calc_nn_mismatch <- function(ref, sim, k = NULL, subsample_size = 300) {
   
   N <- n1 + n2
   if (is.null(k)) {
-    k <- max(5L, round(0.05 * N))
+    k <- max(10L, round(0.05 * N))
   }
   k <- min(as.integer(k), N - 1L)
   if (k < 1L) return(NA_real_)
@@ -730,8 +789,11 @@ calc_nn_mismatch <- function(ref, sim, k = NULL, subsample_size = 300) {
   
   expected_counts <- k * expected_p
   use_sim_pval <- any(expected_counts < 5)
-  mismatches <- vapply(seq_len(N), function(j) {
-    nn_idx <- order(dmat[j, ])[seq_len(k)]
+  idx_seq <- seq_len(N)
+  mismatches <- vapply(idx_seq, function(j) {
+    # Deterministic per-query tie-breaker prevents index-order bias on zero-inflated ties
+    tie_key <- (sin(idx_seq * 12.9898 + j * 78.233) * 43758.5453) %% 1
+    nn_idx <- order(dmat[j, ], tie_key)[seq_len(k)]
     nn_labels <- factor(labels[nn_idx], levels = c("ref", "sim"))
     tab <- table(nn_labels)
     pval <- tryCatch(

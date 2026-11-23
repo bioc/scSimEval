@@ -17,7 +17,7 @@ evaluate_multiomics_accuracy(
   sim_cores = NULL,
   separate_resources = NULL,
   feature_pairs = NULL,
-  compute_bivariate = FALSE,
+  compute_bivariate = TRUE,
   threads = 1L,
   trajectory_num_trees = 10000L,
   verbose = TRUE
@@ -50,7 +50,7 @@ and \code{sim_cores} when RNA and ATAC layers are simulated separately.}
 
 \item{feature_pairs}{Optional 2-column data.frame of linked feature pairs.}
 
-\item{compute_bivariate}{Logical, whether to compute 2D bivariate tests. Default \code{FALSE}.}
+\item{compute_bivariate}{Logical, whether to compute 2D bivariate tests. Default \code{TRUE}.}
 
 \item{threads}{Integer number of CPU threads. Default is \code{1L}.}
 
@@ -91,10 +91,10 @@ convert via \code{Seurat::as.SingleCellExperiment()}.
 \strong{Multiomics Metric Measurement Capacity (56 Evaluation Measures Suite):}
 \itemize{
   \item \strong{Paired Multiomics (56 Metrics):} Dual unimodal properties (Cat I--II),
-    dual clustering (Cat III), dual batch mixing (Cat IV), dual biological signal (Cat V),
-    cross-modal integration & pairing (Cat VI), scRNA trajectory (Cat VII), and scalability (Cat VIII).
-  \item \strong{Unpaired Multiomics (51 Metrics):} Evaluates both modalities independently
-    with population-level integration & alignment, omitting cell-matched pairing metrics.
+    dual clustering (Cat III), dual batch mixing (Cat IV), dual biological signal (Cat V: 6 DE + 6 DA),
+    cross-modal integration & alignment (Cat VI), scRNA trajectory (Cat VII), and scalability (Cat VIII).
+  \item \strong{Unpaired Multiomics (56 Metrics):} Evaluates both modalities independently
+    across Cat I--V, VII, VIII plus population-level joint integration & alignment (Cat VI).
 }
 }
 \examples{

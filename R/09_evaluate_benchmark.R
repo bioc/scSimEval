@@ -482,10 +482,10 @@
 #' Cell-type and batch annotations are retrieved directly from \code{colData(ref_sce)} and
 #' \code{colData(sim_sce)} using \code{cell_type_col} and \code{batch_col}.
 #' \itemize{
-#'   \item \strong{1. scRNA-seq (45 Metrics):} Categories I, II, III, IV, V, VII, and VIII.
-#'   \item \strong{2. scATAC-seq (32 Metrics):} Categories I, II, III, IV, V, and VIII (trajectory skipped for ATAC).
+#'   \item \strong{1. scRNA-seq (44 Metrics):} Categories I, II, III, IV, V (DE), VII, and VIII.
+#'   \item \strong{2. scATAC-seq (38 Metrics):} Categories I, II, III, IV, V (DA), and VIII (trajectory skipped for ATAC).
 #'   \item \strong{3. Paired Multiomics (56 Metrics):} All 8 categories (I--VIII) via \code{\link{evaluate_multiomics_accuracy}}.
-#'   \item \strong{4. Unpaired Multiomics (51 Metrics):} All 8 categories omitting 5 cell-matched pairing metrics.
+#'   \item \strong{4. Unpaired Multiomics (56 Metrics):} All 8 categories (I--VIII) via \code{\link{evaluate_multiomics_accuracy}} on unpaired RNA and ATAC populations.
 #' }
 #'
 #' @param ref_sce Reference \code{SingleCellExperiment} object.
@@ -611,8 +611,15 @@ evaluate_simulation_accuracy <- function(
   summary_rows <- c(summary_rows, scal$rows)
 
   summary_table <- do.call(rbind, summary_rows)
-  if (!is.null(scal$sim_cores_val) && !is.null(summary_table) && nrow(summary_table) > 0L) {
-    summary_table$Sim_Cores <- scal$sim_cores_val
+  if (!is.null(summary_table) && nrow(summary_table) > 0L) {
+    summary_table$Modality <- ifelse(
+      grepl("Scalability|\\(VIII\\)", summary_table$Category, ignore.case = TRUE),
+      "Computation",
+      modality_resolved
+    )
+    if (!is.null(scal$sim_cores_val)) {
+      summary_table$Sim_Cores <- scal$sim_cores_val
+    }
   }
   if (verbose) message("Unimodal accuracy evaluation complete.")
 
@@ -901,10 +908,10 @@ evaluate_simulation_accuracy <- function(
 #' \strong{Multiomics Metric Measurement Capacity (56 Evaluation Measures Suite):}
 #' \itemize{
 #'   \item \strong{Paired Multiomics (56 Metrics):} Dual unimodal properties (Cat I--II),
-#'     dual clustering (Cat III), dual batch mixing (Cat IV), dual biological signal (Cat V),
-#'     cross-modal integration & pairing (Cat VI), scRNA trajectory (Cat VII), and scalability (Cat VIII).
-#'   \item \strong{Unpaired Multiomics (51 Metrics):} Evaluates both modalities independently
-#'     with population-level integration & alignment, omitting cell-matched pairing metrics.
+#'     dual clustering (Cat III), dual batch mixing (Cat IV), dual biological signal (Cat V: 6 DE + 6 DA),
+#'     cross-modal integration & alignment (Cat VI), scRNA trajectory (Cat VII), and scalability (Cat VIII).
+#'   \item \strong{Unpaired Multiomics (56 Metrics):} Evaluates both modalities independently
+#'     across Cat I--V, VII, VIII plus population-level joint integration & alignment (Cat VI).
 #' }
 #'
 #' @param ref_multi Reference multiomics \code{SingleCellExperiment} (with \code{altExp}) or named list of two SCE objects.
@@ -921,7 +928,7 @@ evaluate_simulation_accuracy <- function(
 #'   giving per-modality \code{elapsed_time}, \code{memory_mb}, \code{time_unit}, \code{memory_unit},
 #'   and \code{sim_cores} when RNA and ATAC layers are simulated separately.
 #' @param feature_pairs Optional 2-column data.frame of linked feature pairs.
-#' @param compute_bivariate Logical, whether to compute 2D bivariate tests. Default \code{FALSE}.
+#' @param compute_bivariate Logical, whether to compute 2D bivariate tests. Default \code{TRUE}.
 #' @param threads Integer number of CPU threads. Default is \code{1L}.
 #' @param trajectory_num_trees Number of Random Forest trees for Category VII \code{wcor_features} (default \code{10000L}).
 #' @param verbose Logical, whether to print progress messages. Default is \code{TRUE}.
@@ -963,7 +970,7 @@ evaluate_multiomics_accuracy <- function(
   sim_cores = NULL,
   separate_resources = NULL,
   feature_pairs = NULL,
-  compute_bivariate = FALSE,
+  compute_bivariate = TRUE,
   threads = 1L,
   trajectory_num_trees = 10000L,
   verbose = TRUE
@@ -1079,7 +1086,7 @@ evaluate_multiomics_accuracy <- function(
       ref_multi = ref_multi, sim_multi = sim_multi,
       cell_types = if (!is.null(ct_m1_sim) && !is.null(ct_m2_sim)) list(ct_m1_sim, ct_m2_sim) else ct_m1_sim,
       batch_info = if (!is.null(bt_m1_sim) && !is.null(bt_m2_sim)) list(bt_m1_sim, bt_m2_sim) else bt_m1_sim,
-      n_pcs = 15L, threads = threads, verbose = verbose
+      n_pcs = 15L, threads = threads, pairing = pairing, verbose = verbose
     ),
     error = function(e) {
       if (verbose) message("Cross-modal integration evaluation note: ", conditionMessage(e))

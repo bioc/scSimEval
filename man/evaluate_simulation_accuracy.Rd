@@ -91,10 +91,10 @@ Users starting from \code{Seurat} objects should convert via
 Cell-type and batch annotations are retrieved directly from \code{colData(ref_sce)} and
 \code{colData(sim_sce)} using \code{cell_type_col} and \code{batch_col}.
 \itemize{
-  \item \strong{1. scRNA-seq (45 Metrics):} Categories I, II, III, IV, V, VII, and VIII.
-  \item \strong{2. scATAC-seq (32 Metrics):} Categories I, II, III, IV, V, and VIII (trajectory skipped for ATAC).
+  \item \strong{1. scRNA-seq (44 Metrics):} Categories I, II, III, IV, V (DE), VII, and VIII.
+  \item \strong{2. scATAC-seq (38 Metrics):} Categories I, II, III, IV, V (DA), and VIII (trajectory skipped for ATAC).
   \item \strong{3. Paired Multiomics (56 Metrics):} All 8 categories (I--VIII) via \code{\link{evaluate_multiomics_accuracy}}.
-  \item \strong{4. Unpaired Multiomics (51 Metrics):} All 8 categories omitting 5 cell-matched pairing metrics.
+  \item \strong{4. Unpaired Multiomics (56 Metrics):} All 8 categories (I--VIII) via \code{\link{evaluate_multiomics_accuracy}} on unpaired RNA and ATAC populations.
 }
 }
 \examples{

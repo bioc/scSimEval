@@ -149,3 +149,100 @@ test_that("Category VII edge_flip, geodesic_correlation, and wcor_features are s
   ))
   expect_equal(calc_dynverse_edge_flip(t1, t2), 0.75, tolerance = 1e-8)
 })
+
+test_that("Category I distributional fixes handle scaling, ties, and sparse 2D density cleanly", {
+  set.seed(42)
+  x <- stats::rnorm(120, mean = 10, sd = 1)
+  expect_equal(calc_bhattacharyya(x, x), 0, tolerance = 1e-8)
+  expect_gt(calc_bhattacharyya(x, 100 * x), 2.0)
+  expect_gt(calc_bhattacharyya(x, x + 50), 2.0)
+  expect_equal(calc_bhattacharyya(rep(1, 50), rep(1, 50)), 0)
+  expect_gt(calc_bhattacharyya(rep(1, 50), rep(100, 50)), 10)
+
+  # Tie-safe Runs test and NN mismatch on zero-inflated vectors
+  x_ties <- c(rep(0, 60), stats::runif(40, 0.1, 1))
+  y_ties <- c(rep(0, 60), stats::runif(40, 0.1, 1))
+  rt_same <- calc_runs_test(x_ties, y_ties)
+  expect_lt(abs(rt_same$runs_statistic), 3.0)
+  expect_lt(calc_nn_mismatch(x_ties, x_ties), 0.15)
+  expect_gt(calc_nn_mismatch(stats::rnorm(50, 0, 0.1), stats::rnorm(50, 10, 0.1)), 0.90)
+
+  # Sparse 2D EMD handles zero-IQR inputs without returning NA
+  m_sp <- cbind(c(rep(0, 80), stats::runif(20, 0.1, 2)), c(rep(1, 80), stats::runif(20, 0.2, 0.9)))
+  emd_same <- calc_emd_2d(m_sp, m_sp)
+  expect_true(is.finite(emd_same))
+  expect_lt(emd_same, 1e-4)
+})
+
+test_that("Category VI unpaired integration respects unpaired layout when n1 == n2", {
+  data("example_soybean_root", package = "scSimEval", envir = environment())
+  res_comb <- evaluate_multiomics_integration(
+    ref_multi = example_soybean_root$reference$combined,
+    sim_multi = example_soybean_root$simulated$scDesign3$combined,
+    pairing = "unpaired",
+    verbose = FALSE
+  )
+  expect_equal(nrow(res_comb$embedding), 200L)
+  expect_true(all(vapply(res_comb$metrics, function(v) is.finite(v) && v >= 0 && v <= 1, logical(1))))
+
+  res_list <- evaluate_multiomics_integration(
+    ref_multi = list(RNA = example_soybean_root$reference$rna, ATAC = example_soybean_root$reference$atac),
+    sim_multi = list(RNA = example_soybean_root$simulated$scDesign3$rna, ATAC = example_soybean_root$simulated$scDesign3$atac),
+    pairing = "unpaired",
+    verbose = FALSE
+  )
+  expect_equal(nrow(res_list$embedding), 200L)
+  expect_true(all(vapply(res_list$metrics, function(v) is.finite(v) && v >= 0 && v <= 1, logical(1))))
+})
+
+test_that("All 4 analysis modes return exact canonical metric counts (44/38/56/56) and DE/DA/DE/DA prefixes", {
+  data("example_rice_bud", package = "scSimEval", envir = environment())
+  data("example_soybean_root", package = "scSimEval", envir = environment())
+
+  count_canonical <- function(tbl) {
+    std <- standardize_benchmark_categories(tbl)
+    sub_key <- ifelse(
+      grepl("^\\(V\\)", std$Category),
+      paste0(std$Category, "||", std$Property, "||", std$Metric),
+      paste0(std$Category, "||", std$Metric)
+    )
+    length(unique(sub_key))
+  }
+
+  r_rna <- evaluate_simulation_accuracy(
+    example_rice_bud$reference$rna, example_rice_bud$simulated$scDesign3$rna,
+    elapsed_time = 87.87, memory_mb = 5713.9, sim_cores = 16L,
+    trajectory_num_trees = 100L, verbose = FALSE
+  )
+  expect_equal(count_canonical(r_rna$metrics_summary_table), 44L)
+  p_rna <- plot_benchmark_bubble_matrix(list(scDesign3 = r_rna))
+  c5_rna <- unique(as.character(p_rna$data$Display_Metric[grepl("Bio-Signal|\\(V\\)", p_rna$data$Display_Category)]))
+  expect_true(all(startsWith(c5_rna, "DE ")))
+
+  r_atac <- evaluate_simulation_accuracy(
+    example_rice_bud$reference$atac, example_rice_bud$simulated$scDesign3$atac,
+    elapsed_time = 87.87, memory_mb = 5713.9, sim_cores = 16L, verbose = FALSE
+  )
+  expect_equal(count_canonical(r_atac$metrics_summary_table), 38L)
+  p_atac <- plot_benchmark_bubble_matrix(list(scDesign3 = r_atac))
+  c5_atac <- unique(as.character(p_atac$data$Display_Metric[grepl("Bio-Signal|\\(V\\)", p_atac$data$Display_Category)]))
+  expect_true(all(startsWith(c5_atac, "DA ")))
+
+  r_pair <- evaluate_multiomics_accuracy(
+    list(RNA = example_rice_bud$reference$rna, ATAC = example_rice_bud$reference$atac),
+    list(RNA = example_rice_bud$simulated$scDesign3$rna, ATAC = example_rice_bud$simulated$scDesign3$atac),
+    pairing = "paired", elapsed_time = 87.87, memory_mb = 5713.9, sim_cores = 16L,
+    trajectory_num_trees = 100L, verbose = FALSE
+  )
+  expect_equal(count_canonical(r_pair$benchmark_summary_table), 56L)
+  p_pair <- plot_benchmark_bubble_matrix(list(scDesign3 = r_pair))
+  c5_pair <- unique(as.character(p_pair$data$Display_Metric[grepl("Bio-Signal|\\(V\\)", p_pair$data$Display_Category)]))
+  expect_true(all(startsWith(c5_pair, "DE/DA ")))
+
+  r_unp <- evaluate_multiomics_accuracy(
+    example_soybean_root$reference$combined, example_soybean_root$simulated$scMultiSim$combined,
+    pairing = "unpaired", elapsed_time = 107.55, memory_mb = 1354.5, sim_cores = 16L,
+    trajectory_num_trees = 100L, verbose = FALSE
+  )
+  expect_equal(count_canonical(r_unp$benchmark_summary_table), 56L)
+})

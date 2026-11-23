@@ -774,7 +774,7 @@ validate_multiomics_input <- function(obj,
         if (!is.null(rd_req) && rd_req %in% rd_nms) {
           return(as.matrix(SingleCellExperiment::reducedDim(sce_o, rd_req)))
         }
-        joint_pref <- c("integrated", "joint", "wnn", "wnn.umap", "harmony_joint", "multivi", "mofa", "cca")
+        joint_pref <- c("integrated", "integrated.cca", "joint", "wnn", "wnn.umap", "harmony_joint", "multivi", "mofa", "cca")
         hit <- rd_nms[tolower(rd_nms) %in% joint_pref]
         if (length(hit) > 0L) as.matrix(SingleCellExperiment::reducedDim(sce_o, hit[1L])) else NULL
       }
@@ -827,6 +827,22 @@ validate_multiomics_input <- function(obj,
                                    cell_type_col = cell_type_col, batch_col = batch_col)
           v2 <- validate_sc_object(m2_obj, paste0(arg_name, " (ATAC)"), reduction_name = reduction_name,
                                    cell_type_col = cell_type_col, batch_col = batch_col)
+          rd_nms_u <- SingleCellExperiment::reducedDimNames(obj)
+          joint_pref_u <- c("integrated", "integrated.cca", "joint", "wnn", "wnn.umap", "harmony_joint", "multivi", "mofa", "cca")
+          emb_u <- NULL
+          if (!is.null(rd_nms_u) && length(rd_nms_u) > 0L) {
+            hit_u <- if (!is.null(reduction_name) && reduction_name %in% rd_nms_u) {
+              reduction_name
+            } else {
+              rd_nms_u[tolower(rd_nms_u) %in% joint_pref_u]
+            }
+            if (length(hit_u) > 0L) {
+              raw_emb_u <- as.matrix(SingleCellExperiment::reducedDim(obj, hit_u[1L]))
+              if (nrow(raw_emb_u) >= max(c(rna_idx, atac_idx))) {
+                emb_u <- raw_emb_u[c(rna_idx, atac_idx), , drop = FALSE]
+              }
+            }
+          }
           return(list(
             m1 = m1,
             m2 = m2,
@@ -836,7 +852,7 @@ validate_multiomics_input <- function(obj,
             m2_name = alt_names[1L],
             cell_types = stats::setNames(list(v1$cell_types, v2$cell_types), c(m1_nm, alt_names[1L])),
             batch_info = stats::setNames(list(v1$batch_info, v2$batch_info), c(m1_nm, alt_names[1L])),
-            embedding = NULL
+            embedding = emb_u
           ))
         }
       }
@@ -846,7 +862,7 @@ validate_multiomics_input <- function(obj,
       v <- validate_sc_object(obj, arg_name, reduction_name = reduction_name,
                               cell_type_col = cell_type_col, batch_col = batch_col)
       rd_nms_obj <- SingleCellExperiment::reducedDimNames(obj)
-      joint_pref <- c("integrated", "joint", "wnn", "wnn.umap", "harmony_joint", "multivi", "mofa", "cca")
+      joint_pref <- c("integrated", "integrated.cca", "joint", "wnn", "wnn.umap", "harmony_joint", "multivi", "mofa", "cca")
       emb_obj <- if (!is.null(reduction_name) && reduction_name %in% rd_nms_obj) {
         as.matrix(SingleCellExperiment::reducedDim(obj, reduction_name))
       } else {
