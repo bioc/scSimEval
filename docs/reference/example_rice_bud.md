@@ -60,10 +60,10 @@ example_rice_bud$reference$combined
 #> dim: 100 100 
 #> metadata(0):
 #> assays(1): counts
-#> rownames(100): Os04g0188433 Os05g0202800 ... Os06g0553200 Os04g0578600
+#> rownames(100): Os05g0257100 Os06g0142400 ... Os05g0550300 Os12g0181500
 #> rowData names(0):
-#> colnames(100): AAACCGGCAAGTGTTT-1 AAACGGATCGATCAGT-1 ...
-#>   TTTGGTGCATGTCAGC-1 TTTGTGTTCATAACGC-1
+#> colnames(100): GTACTTAAGCTCAATA-1 CTTGACGAGTAGCGGG-1 ...
+#>   GTCAGGCTCCTCACAC-1 TAATTGCCAGCATGGA-1
 #> colData names(7): orig.ident nCount_RNA ... nCount_ATAC nFeature_ATAC
 #> reducedDimNames(1): PCA
 #> mainExpName: NULL
@@ -94,6 +94,7 @@ res <- evaluate_multiomics_accuracy(
 )
 #> Warning: Zero sample variances detected, have been offset away from zero
 #> Warning: Zero sample variances detected, have been offset away from zero
+#> Warning: shoving 'interior' knots matching boundary knots to inside
 head(res$benchmark_summary_table, 8)
 #>                    Category     Property                      Metric
 #> 1 Distributional Properties library_size                 Wasserstein
@@ -105,13 +106,13 @@ head(res$benchmark_summary_table, 8)
 #> 7 Distributional Properties library_size Between_Dataset_Silh_Global
 #> 8 Distributional Properties library_size                         MAE
 #>         Value Modality
-#> 1 22.87000000      RNA
-#> 2  0.20000000      RNA
-#> 3 10.00000000      RNA
-#> 4  0.00564741      RNA
-#> 5 -2.83556062      RNA
-#> 6  0.06500000      RNA
-#> 7  0.02451093      RNA
-#> 8 22.87000000      RNA
+#> 1 15.51000000      RNA
+#> 2  0.15000000      RNA
+#> 3  8.00000000      RNA
+#> 4  0.02549834      RNA
+#> 5 -0.18431144      RNA
+#> 6  0.01500000      RNA
+#> 7  0.01042318      RNA
+#> 8 15.51000000      RNA
 # }
 ```

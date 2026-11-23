@@ -86,9 +86,9 @@ A list containing:
 
 - da_summary_table:
 
-  Tidy summary data.frame with 6 scATAC-seq DA metrics: `da_score`,
-  `pval_dist_score`, `true_proportion`, `accuracy`, `precision`,
-  `recall`, `f1_score`, and `auc`
+  Tidy summary data.frame with 6 scATAC-seq DA metrics:
+  `pval_dist_score`, `accuracy`, `precision`, `recall`, `f1_score`, and
+  `auc`
 
 - pairwise_results:
 
@@ -115,13 +115,13 @@ A list containing:
 
 Category V is divided into two distinct sub-categories:
 
-- **Sub-category V-A (scRNA-seq Differential Expression)**: Computes 8
-  metrics: `de_score`, `pval_dist_score`, `true_proportion`, `accuracy`,
-  `precision`, `recall`, `f1_score`, and `auc`.
+- **Sub-category V-A (scRNA-seq Differential Expression)**: Computes 6
+  metrics: `pval_dist_score`, `accuracy`, `precision`, `recall`,
+  `f1_score`, and `auc`.
 
 - **Sub-category V-B (scATAC-seq Differential Accessibility)**: Computes
-  8 metrics: `da_score`, `pval_dist_score`, `true_proportion`,
-  `accuracy`, `precision`, `recall`, `f1_score`, and `auc`.
+  6 metrics: `pval_dist_score`, `accuracy`, `precision`, `recall`,
+  `f1_score`, and `auc`.
 
 If `batch_ref` or `batch_sim` is NULL, the analysis is gracefully
 skipped, adhering to the strict rule that single-cell ATAC-seq
@@ -141,15 +141,15 @@ res <- evaluate_atac_da_fidelity(
   batch_ref = rep_id,
   batch_sim = rep_id
 )
-#> Warning: Zero sample variances detected, have been offset away from zero
+#> Warning: shoving 'interior' knots matching boundary knots to inside
 res$da_summary_table
 #>                             SubCategory          Metric     Value
-#> 1 scATAC-seq Differential Accessibility pval_dist_score 0.8350425
-#> 2 scATAC-seq Differential Accessibility        accuracy 0.9967857
-#> 3 scATAC-seq Differential Accessibility       precision 0.8928571
-#> 4 scATAC-seq Differential Accessibility          recall 0.8928571
-#> 5 scATAC-seq Differential Accessibility        f1_score 0.8928571
-#> 6 scATAC-seq Differential Accessibility             auc 0.9740260
+#> 1 scATAC-seq Differential Accessibility pval_dist_score 0.8577467
+#> 2 scATAC-seq Differential Accessibility        accuracy 0.9867857
+#> 3 scATAC-seq Differential Accessibility       precision 0.0000000
+#> 4 scATAC-seq Differential Accessibility          recall 0.0000000
+#> 5 scATAC-seq Differential Accessibility        f1_score 0.0000000
+#> 6 scATAC-seq Differential Accessibility             auc 0.5356770
 #>                                                         Direction
 #> 1    Higher is better (1.0 = uniform null p-values, no inflation)
 #> 2             Higher is better (1.0 = perfect DAR classification)

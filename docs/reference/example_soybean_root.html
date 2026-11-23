@@ -23,7 +23,7 @@ scDesign3, and scCross) and observed scalability benchmarks."><meta property="og
 
     <a class="navbar-brand me-2" href="../index.html">scSimEval</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.99.13</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.99.14</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -113,12 +113,12 @@ alongside simulated outputs from 3 unpaired multiomics simulators (<code>scMulti
 <span class="r-out co"><span class="r-pr">#&gt;</span> dim: 100 200 </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> metadata(0):</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> assays(1): counts</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> rownames(100): Glyma.06G242900 Glyma.12G154300 ... Glyma.13G272000</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   Glyma.04G048100</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> rownames(100): Glyma.18G226500 Glyma.17G030100 ... Glyma.10G257900</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   Glyma.03G201000</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> rowData names(0):</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> colnames(200): RNA_1 RNA_2 ... ATAC_99 ATAC_100</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> colData names(8): orig.ident nCount_RNA ... nCount_ATAC nFeature_ATAC</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> reducedDimNames(1): PCA</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> reducedDimNames(2): PCA integrated</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> mainExpName: NULL</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> altExpNames(1): ATAC</span>
 <span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/dim.html" class="external-link">dim</a></span><span class="op">(</span><span class="va">example_soybean_root</span><span class="op">$</span><span class="va">reference</span><span class="op">$</span><span class="va">rna</span><span class="op">)</span></span></span>
@@ -129,13 +129,13 @@ alongside simulated outputs from 3 unpaired multiomics simulators (<code>scMulti
 <span class="r-out co"><span class="r-pr">#&gt;</span> [1] "scMultiSim" "scDesign3"  "scCross"   </span>
 <span class="r-in"><span><span class="va">example_soybean_root</span><span class="op">$</span><span class="va">scalability_benchmarks</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>       Method Runtime_Seconds PeakRAM_MiB Sim_Cores RNA_Runtime_Seconds</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 1 scMultiSim          107.55    1354.500        16              107.55</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 2  scDesign3          504.30   14073.900         4               69.20</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 3    scCross         1791.52    2053.928        16             1791.52</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 1 scMultiSim         107.548    1354.500        16             107.548</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 2  scDesign3         475.670   14073.900         4              40.570</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 3    scCross        1791.520    2053.928        16            1791.520</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>   RNA_PeakRAM_MiB RNA_Sim_Cores ATAC_Runtime_Seconds ATAC_PeakRAM_MiB</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 1        1354.500            16               107.55         1354.500</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 2        2736.100            16               435.10        14073.900</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 3        2053.928            16              1791.52         2053.928</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 1        1354.500            16              107.548         1354.500</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 2        1420.400            16              435.100        14073.900</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 3        2053.928            16             1791.520         2053.928</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>   ATAC_Sim_Cores</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 1             16</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 2              4</span>
@@ -149,6 +149,8 @@ alongside simulated outputs from 3 unpaired multiomics simulators (<code>scMulti
 <span class="r-in"><span>  pairing <span class="op">=</span> <span class="st">"unpaired"</span>,</span></span>
 <span class="r-in"><span>  verbose <span class="op">=</span> <span class="cn">FALSE</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
+<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>Zero sample variances detected, have been offset away from zero</span>
+<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>Zero sample variances detected, have been offset away from zero</span>
 <span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">res</span><span class="op">$</span><span class="va">benchmark_summary_table</span>, <span class="fl">8</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>                    Category     Property                      Metric</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 1 Distributional Properties library_size                 Wasserstein</span>
@@ -160,14 +162,14 @@ alongside simulated outputs from 3 unpaired multiomics simulators (<code>scMulti
 <span class="r-out co"><span class="r-pr">#&gt;</span> 7 Distributional Properties library_size Between_Dataset_Silh_Global</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 8 Distributional Properties library_size                         MAE</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>         Value Modality</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 1 37.61000000      RNA</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 2  0.65000000      RNA</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 3 38.00000000      RNA</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 4  0.07370043      RNA</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 5 -7.37245762      RNA</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 6  0.50500000      RNA</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 7  0.27304482      RNA</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 8 37.61000000      RNA</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 1 22.14000000      RNA</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 2  0.15000000      RNA</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 3  4.00000000      RNA</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 4  0.07221240      RNA</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 5  0.00000000      RNA</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 6  0.06500000      RNA</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 7  0.02502098      RNA</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 8 22.14000000      RNA</span>
 <span class="r-in"><span><span class="co"># }</span></span></span>
 </code></pre></div>
     </div>

@@ -71,7 +71,7 @@ ds <- list("DemoCohort" = list(ref = example_scrna$ref, sim = example_scrna$sim)
 res <- evaluate_multiple_datasets(ds, verbose = FALSE)
 res$dataset_overview
 #>      Dataset  Data_Name    Modality Total_Metrics Mean_KS_Distance
-#> 1 DemoCohort DemoCohort Single-Cell           168           0.1232
+#> 1 DemoCohort DemoCohort Single-Cell           168           0.1236
 #>   Mean_Wasserstein Mean_RMSE
-#> 1           3.7466    7.2937
+#> 1           2.9486    3.8346
 ```

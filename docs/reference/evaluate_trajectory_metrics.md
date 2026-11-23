@@ -151,7 +151,7 @@ res <- evaluate_trajectory_metrics(
 unlist(res[c("him", "edge_flip", "geodesic_correlation",
              "F1_branches", "wcor_features", "n_hvgs")])
 #>                  him            edge_flip geodesic_correlation 
-#>            0.5893282            0.4000000            0.5980102 
+#>            0.7174952            0.7142857            0.5410924 
 #>          F1_branches        wcor_features               n_hvgs 
-#>            0.3948717            0.4157592           47.0000000 
+#>            0.3423683            0.3748147          100.0000000 
 ```

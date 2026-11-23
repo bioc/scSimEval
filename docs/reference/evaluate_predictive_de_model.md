@@ -68,15 +68,15 @@ A named list summarizing held-out cell-type classification performance:
 data(example_scrna, package = "scSimEval")
 evaluate_predictive_de_model(example_scrna$ref, group = example_scrna$cell_types)
 #> $accuracy
-#> [1] 0.45
+#> [1] 0.35
 #> 
 #> $precision
-#> [1] 0.4375
+#> [1] 0.2986111
 #> 
 #> $recall
-#> [1] 0.46875
+#> [1] 0.3333333
 #> 
 #> $F1
-#> [1] 0.4508929
+#> [1] 0.2787879
 #> 
 ```

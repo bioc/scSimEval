@@ -11,7 +11,8 @@
 <link rel="apple-touch-icon" sizes="180x180" href="../apple-touch-icon.png">
 <link rel="icon" sizes="any" href="../favicon.ico">
 <link rel="manifest" href="../site.webmanifest">
-<script src="../lightswitch.js"></script><script src="../deps/jquery-3.6.0/jquery-3.6.0.min.js"></script><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<!-- katex math --><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css" integrity="sha384-nB0miv6/jRmo5UMMR1wu3Gz6NLsoTkbqJghGIsx//Rlm+ZU03BU6SQNC66uf4l5+" crossorigin="anonymous">
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js" integrity="sha384-7zkQWkzuo3B5mTepMUcHkMB5jZaolc2xDwL6VFqjFALcbeS9Ggm/Yr2r3Dy4lfFg" crossorigin="anonymous"></script><script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js" integrity="sha384-43gviWU0YVjaDtb/GhzOouOXtZMP/7XUzwPTstBeZFe/+rCMvRwr4yROQP43s0Xk" crossorigin="anonymous" onload="renderMathInElement(document.body);"></script><script src="../katex-auto.js"></script><script src="../lightswitch.js"></script><script src="../deps/jquery-3.6.0/jquery-3.6.0.min.js"></script><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 <link href="../deps/bootstrap-5.3.8/bootstrap.min.css" rel="stylesheet">
 <script src="../deps/bootstrap-5.3.8/bootstrap.bundle.min.js"></script><link href="../deps/font-awesome-6.5.2/css/all.min.css" rel="stylesheet">
 <link href="../deps/font-awesome-6.5.2/css/v4-shims.min.css" rel="stylesheet">
@@ -29,7 +30,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">scSimEval</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.99.13</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.99.14</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -100,25 +101,21 @@ regulation, enhancer-promoter dynamics, and epigenomic priming.</p>
 computational and statistical challenges beyond unimodal simulation: *
 <strong>Cell-Level Cross-Modality Pairing:</strong> Simulated data must
 preserve the 1-to-1 correspondence between cellular barcodes in the RNA
-and ATAC modalities—column
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>i</mi><annotation encoding="application/x-tex">i</annotation></semantics></math>
-in the RNA count matrix represents the exact same physical cell as
-column
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>i</mi><annotation encoding="application/x-tex">i</annotation></semantics></math>
-in the ATAC matrix. * <strong>Biological Coupling &amp; Cross-Modal
-Concordance:</strong> Open chromatin at regulatory loci typically
-precedes or correlates with gene transcription. Simulation algorithms
-must preserve biological correlation between peak accessibility and
-target gene expression without introducing synthetic alignment
-artifacts. * <strong>Asymmetric Sparsity &amp; Modality Noise
-Profiles:</strong> scRNA-seq expression exhibits continuous distribution
-with count-dependent logistic dropouts (80–90% zeros), whereas
-scATAC-seq peak accessibility is near-binary and subject to extreme
-diploid-limited sparsity (90–98% zeros). Simulators must balance these
-divergent biophysical properties concurrently. * <strong>Unified Latent
-Geometry:</strong> Joint low-dimensional embeddings must capture
-continuous developmental kinetics and distinct cell-type clusters
-congruently across both modalities.</p>
+and ATAC modalities—column <span class="math inline">i</span> in the RNA
+count matrix represents the exact same physical cell as column <span class="math inline">i</span> in the ATAC matrix. * <strong>Biological
+Coupling &amp; Cross-Modal Concordance:</strong> Open chromatin at
+regulatory loci typically precedes or correlates with gene
+transcription. Simulation algorithms must preserve biological
+correlation between peak accessibility and target gene expression
+without introducing synthetic alignment artifacts. * <strong>Asymmetric
+Sparsity &amp; Modality Noise Profiles:</strong> scRNA-seq expression
+exhibits continuous distribution with count-dependent logistic dropouts
+(80–90% zeros), whereas scATAC-seq peak accessibility is near-binary and
+subject to extreme diploid-limited sparsity (90–98% zeros). Simulators
+must balance these divergent biophysical properties concurrently. *
+<strong>Unified Latent Geometry:</strong> Joint low-dimensional
+embeddings must capture continuous developmental kinetics and distinct
+cell-type clusters congruently across both modalities.</p>
 <p><strong><code>scSimEval</code></strong> provides a standardized,
 reference-based benchmarking framework to evaluate paired single-cell
 multiomics simulations across <strong>all 8 active evaluation categories
@@ -134,8 +131,7 @@ modalities.</li>
 <strong>Category II: Sparsity &amp; Zero-Inflation Dynamics</strong>
 — Logistic dropout curves for scRNA-seq and quadratic
 accessibility-sparsity curves for scATAC-seq, quantifying curve RMSE and
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msup><mi>R</mi><mn>2</mn></msup><annotation encoding="application/x-tex">R^2</annotation></semantics></math>
-fit discrepancy.</li>
+<span class="math inline">R^2</span> fit discrepancy.</li>
 <li>
 <strong>Category III: Cellular Manifold &amp; Clustering
 Concordance</strong> — Latent manifold preservation, Maximum Mean
@@ -145,10 +141,8 @@ Information (NMI).</li>
 <li>
 <strong>Category IV: Technical Variation &amp; Batch Mixing
 Dynamics</strong> — Batch Silhouette Width, Principal Component
-Regression
-(<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>P</mi><mi>C</mi><mi>R</mi><mspace width="0.222em"></mspace><msup><mi>R</mi><mn>2</mn></msup></mrow><annotation encoding="application/x-tex">PCR\ R^2</annotation></semantics></math>),
-Cell-Specific Mixing Score (CMS), and Inverse Simpson’s Index
-(ISI).</li>
+Regression (<span class="math inline">PCR\ R^2</span>), Cell-Specific
+Mixing Score (CMS), and Inverse Simpson’s Index (ISI).</li>
 <li>
 <strong>Category V: Biological Signal &amp; Differential
 Fidelity</strong> — Pseudobulk <code>edgeR-QLF</code> statistical
@@ -157,9 +151,8 @@ genes (DEG) and differentially accessible peaks (DA).</li>
 <li>
 <strong>Category VI: Multiomics Integration &amp; Alignment</strong>
 — Cross-modality feature correlation preservation, joint-embedding Batch
-ASW, joint Cell-Type ASW, within-cell-type
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>k</mi><annotation encoding="application/x-tex">k</annotation></semantics></math>-NN
-graph connectivity, and joint clustering ARI/NMI.</li>
+ASW, joint Cell-Type ASW, within-cell-type <span class="math inline">k</span>-NN graph connectivity, and joint clustering
+ARI/NMI.</li>
 <li>
 <strong>Category VII: Trajectory &amp; Lineage Topology</strong> —
 Milestone graph topology similarity (HIM, edge-flip), geodesic distance
@@ -176,21 +169,16 @@ Efficiency</strong> — Hardware-normalized execution runtime
 </h4>
 <p>Raw metrics span disparate physical units (distances, runtimes, MiB
 RAM, correlation coefficients). <code>scSimEval</code> standardizes all
-raw metrics into <strong>direction-aware fidelity scores in
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo stretchy="true" form="prefix">[</mo><mn>0</mn><mo>,</mo><mn>1</mn><mo stretchy="true" form="postfix">]</mo></mrow><annotation encoding="application/x-tex">[0, 1]</annotation></semantics></math></strong>,
-where
-<strong><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mn>1.0</mn><annotation encoding="application/x-tex">1.0</annotation></semantics></math>
-indicates ideal biological fidelity</strong>: * For distance and error
-metrics where lower values represent superior accuracy (e.g.,
-Wasserstein, MMD, dropout RMSE), scores are inverted:
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mtext mathvariant="normal">Score</mtext><mo>=</mo><mo>exp</mo><mrow><mo stretchy="true" form="prefix">(</mo><mo>−</mo><mi>γ</mi><mo>⋅</mo><mtext mathvariant="normal">distance</mtext><mo stretchy="true" form="postfix">)</mo></mrow></mrow><annotation encoding="application/x-tex">\text{Score} = \exp(-\gamma \cdot \text{distance})</annotation></semantics></math>.
-* For bounded concordance indices where higher values represent superior
-fidelity (e.g., ARI, NMI, Generative Precision, DA ROC-AUC), scores are
-scaled linearly to
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo stretchy="true" form="prefix">[</mo><mn>0</mn><mo>,</mo><mn>1</mn><mo stretchy="true" form="postfix">]</mo></mrow><annotation encoding="application/x-tex">[0, 1]</annotation></semantics></math>.
-* For mixing and balance metrics where values closer to zero indicate
-optimal batch mixing without clustering artifacts (e.g., Batch
-Silhouette), scores are centered symmetrically.</p>
+raw metrics into <strong>direction-aware fidelity scores in <span class="math inline">[0, 1]</span></strong>, where <strong><span class="math inline">1.0</span> indicates ideal biological
+fidelity</strong>: * For distance and error metrics where lower values
+represent superior accuracy (e.g., Wasserstein, MMD, dropout RMSE),
+scores are inverted: <span class="math inline">\text{Score} =
+\exp(-\gamma \cdot \text{distance})</span>. * For bounded concordance
+indices where higher values represent superior fidelity (e.g., ARI, NMI,
+Generative Precision, DA ROC-AUC), scores are scaled linearly to <span class="math inline">[0, 1]</span>. * For mixing and balance metrics
+where values closer to zero indicate optimal batch mixing without
+clustering artifacts (e.g., Batch Silhouette), scores are centered
+symmetrically.</p>
 <hr>
 </div>
 </div>
@@ -356,7 +344,7 @@ analyses:</p>
 <span>  memory_mb         <span class="op">=</span> <span class="fl">3398.40</span>,             <span class="co"># Simulation peak RAM</span></span>
 <span>  memory_unit       <span class="op">=</span> <span class="st">"MiB"</span>,</span>
 <span>  sim_cores         <span class="op">=</span> <span class="fl">16L</span>,                 <span class="co"># Allocated simulation cores</span></span>
-<span>  compute_bivariate <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>  compute_bivariate <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>  threads           <span class="op">=</span> <span class="fl">16L</span>,                 <span class="co"># Multiprocessing threads for evaluation</span></span>
 <span>  verbose           <span class="op">=</span> <span class="cn">TRUE</span></span>
 <span><span class="op">)</span></span>
@@ -396,7 +384,7 @@ study:</p>
 <span>    memory_mb         <span class="op">=</span> <span class="va">cfg</span><span class="op">$</span><span class="va">mem</span>,</span>
 <span>    memory_unit       <span class="op">=</span> <span class="va">cfg</span><span class="op">$</span><span class="va">munit</span>,</span>
 <span>    sim_cores         <span class="op">=</span> <span class="va">cfg</span><span class="op">$</span><span class="va">cores</span>,</span>
-<span>    compute_bivariate <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>    compute_bivariate <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>    threads           <span class="op">=</span> <span class="fl">16L</span>,</span>
 <span>    verbose           <span class="op">=</span> <span class="cn">FALSE</span></span>
 <span>  <span class="op">)</span></span>
@@ -426,9 +414,8 @@ categories. * <strong><code>Metric</code></strong>: Standardized metric
 identifier. * <strong><code>Score_Raw</code></strong>: Unnormalized raw
 empirical value (physical units: seconds, MiB, KS statistic,
 correlation). * <strong><code>Score</code></strong>: Standardized
-direction-aware fidelity score normalized to
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo stretchy="true" form="prefix">[</mo><mn>0</mn><mo>,</mo><mn>1</mn><mo stretchy="true" form="postfix">]</mo></mrow><annotation encoding="application/x-tex">[0, 1]</annotation></semantics></math>
-(<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mn>1.0</mn><mo>=</mo><mtext mathvariant="normal">best</mtext></mrow><annotation encoding="application/x-tex">1.0 = \text{best}</annotation></semantics></math>).</p>
+direction-aware fidelity score normalized to <span class="math inline">[0, 1]</span> (<span class="math inline">1.0 =
+\text{best}</span>).</p>
 <div class="section level4">
 <h4 id="overall-fidelity-leaderboard">Overall Fidelity Leaderboard<a class="anchor" aria-label="anchor" href="#overall-fidelity-leaderboard"></a>
 </h4>
@@ -444,12 +431,12 @@ benchmark:</p>
 <span><span class="va">leaderboard</span><span class="op">$</span><span class="va">Average_Fidelity</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/sprintf.html" class="external-link">sprintf</a></span><span class="op">(</span><span class="st">"%.1f%%"</span>, <span class="va">leaderboard</span><span class="op">$</span><span class="va">Score_Norm</span> <span class="op">*</span> <span class="fl">100</span><span class="op">)</span></span>
 <span><span class="va">leaderboard</span><span class="op">[</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Rank"</span>, <span class="st">"Method"</span>, <span class="st">"Average_Fidelity"</span>, <span class="st">"Score_Norm"</span><span class="op">)</span><span class="op">]</span></span>
 <span><span class="co">#&gt;   Rank     Method Average_Fidelity Score_Norm</span></span>
-<span><span class="co">#&gt; 4    1  scDesign3            73.4%  0.7336138</span></span>
-<span><span class="co">#&gt; 1    2    Matilda            63.6%  0.6355499</span></span>
-<span><span class="co">#&gt; 5    3    scMoMtF            55.5%  0.5547216</span></span>
-<span><span class="co">#&gt; 2    4      MOSim            50.2%  0.5016296</span></span>
-<span><span class="co">#&gt; 3    5    scCross            45.9%  0.4586984</span></span>
-<span><span class="co">#&gt; 6    6 scMultiSim            43.3%  0.4334542</span></span></code></pre></div>
+<span><span class="co">#&gt; 4    1  scDesign3            73.9%  0.7392961</span></span>
+<span><span class="co">#&gt; 3    2    scCross            69.3%  0.6933401</span></span>
+<span><span class="co">#&gt; 2    3      MOSim            64.0%  0.6402302</span></span>
+<span><span class="co">#&gt; 5    4    scMoMtF            57.2%  0.5717726</span></span>
+<span><span class="co">#&gt; 1    5    Matilda            51.1%  0.5111116</span></span>
+<span><span class="co">#&gt; 6    6 scMultiSim            46.8%  0.4679488</span></span></code></pre></div>
 <p>Below we inspect representative metric scores across active
 evaluation categories:</p>
 </div>
@@ -461,20 +448,20 @@ feature means, and feature variances for both RNA genes and ATAC
 peaks:</p>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/subset.html" class="external-link">subset</a></span><span class="op">(</span><span class="va">final_benchmark_df</span>, <span class="fu"><a href="https://rdrr.io/r/base/grep.html" class="external-link">grepl</a></span><span class="op">(</span><span class="st">"Distributional"</span>, <span class="va">Category</span><span class="op">)</span><span class="op">)</span><span class="op">[</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Method"</span>, <span class="st">"Modality"</span>, <span class="st">"Property"</span>, <span class="st">"Metric"</span>, <span class="st">"Value"</span>, <span class="st">"Score"</span><span class="op">)</span><span class="op">]</span>, <span class="fl">6</span><span class="op">)</span></span>
-<span><span class="co">#&gt;                  Method Modality     Property         Metric         Value</span></span>
-<span><span class="co">#&gt; scMultiSim.1 scMultiSim      RNA library_size    Wasserstein  1.733455e+03</span></span>
-<span><span class="co">#&gt; scMultiSim.2 scMultiSim      RNA library_size             KS  5.880703e-01</span></span>
-<span><span class="co">#&gt; scMultiSim.3 scMultiSim      RNA library_size            MAD  1.862000e+03</span></span>
-<span><span class="co">#&gt; scMultiSim.4 scMultiSim      RNA library_size  Bhattacharyya  9.225393e-03</span></span>
-<span><span class="co">#&gt; scMultiSim.5 scMultiSim      RNA library_size Runs_Statistic -2.092800e+01</span></span>
-<span><span class="co">#&gt; scMultiSim.6 scMultiSim      RNA library_size    NN_Mismatch  8.100000e-01</span></span>
-<span><span class="co">#&gt;                      Score</span></span>
-<span><span class="co">#&gt; scMultiSim.1  1.733455e+03</span></span>
-<span><span class="co">#&gt; scMultiSim.2  5.880703e-01</span></span>
-<span><span class="co">#&gt; scMultiSim.3  1.862000e+03</span></span>
-<span><span class="co">#&gt; scMultiSim.4  9.225393e-03</span></span>
-<span><span class="co">#&gt; scMultiSim.5 -2.092800e+01</span></span>
-<span><span class="co">#&gt; scMultiSim.6  8.100000e-01</span></span></code></pre></div>
+<span><span class="co">#&gt;                  Method Modality     Property         Metric        Value</span></span>
+<span><span class="co">#&gt; scMultiSim.1 scMultiSim      RNA library_size    Wasserstein 1733.4547494</span></span>
+<span><span class="co">#&gt; scMultiSim.2 scMultiSim      RNA library_size             KS    0.5886313</span></span>
+<span><span class="co">#&gt; scMultiSim.3 scMultiSim      RNA library_size            MAD 1862.0000000</span></span>
+<span><span class="co">#&gt; scMultiSim.4 scMultiSim      RNA library_size  Bhattacharyya    0.2552854</span></span>
+<span><span class="co">#&gt; scMultiSim.5 scMultiSim      RNA library_size Runs_Statistic  -20.6688218</span></span>
+<span><span class="co">#&gt; scMultiSim.6 scMultiSim      RNA library_size    NN_Mismatch    0.7933333</span></span>
+<span><span class="co">#&gt;                  Score</span></span>
+<span><span class="co">#&gt; scMultiSim.1 0.0000000</span></span>
+<span><span class="co">#&gt; scMultiSim.2 0.4169945</span></span>
+<span><span class="co">#&gt; scMultiSim.3 0.0000000</span></span>
+<span><span class="co">#&gt; scMultiSim.4 0.8444606</span></span>
+<span><span class="co">#&gt; scMultiSim.5 0.6015398</span></span>
+<span><span class="co">#&gt; scMultiSim.6 0.2117040</span></span></code></pre></div>
 </div>
 <div class="section level4">
 <h4 id="category-ii-sparsity-zero-inflation-dynamics">3.2 Category II: Sparsity &amp; Zero-Inflation Dynamics<a class="anchor" aria-label="anchor" href="#category-ii-sparsity-zero-inflation-dynamics"></a>
@@ -484,19 +471,19 @@ quadratic accessibility-sparsity curve fidelity for scATAC-seq:</p>
 <div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/subset.html" class="external-link">subset</a></span><span class="op">(</span><span class="va">final_benchmark_df</span>, <span class="fu"><a href="https://rdrr.io/r/base/grep.html" class="external-link">grepl</a></span><span class="op">(</span><span class="st">"Sparsity"</span>, <span class="va">Category</span><span class="op">)</span><span class="op">)</span><span class="op">[</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Method"</span>, <span class="st">"Modality"</span>, <span class="st">"Property"</span>, <span class="st">"Metric"</span>, <span class="st">"Value"</span>, <span class="st">"Score"</span><span class="op">)</span><span class="op">]</span>, <span class="fl">6</span><span class="op">)</span></span>
 <span><span class="co">#&gt;                    Method Modality                     Property</span></span>
-<span><span class="co">#&gt; scMultiSim.141 scMultiSim      RNA                dropout_curve</span></span>
-<span><span class="co">#&gt; scMultiSim.142 scMultiSim      RNA                dropout_curve</span></span>
-<span><span class="co">#&gt; scMultiSim.143 scMultiSim      RNA                dropout_curve</span></span>
-<span><span class="co">#&gt; scMultiSim.144 scMultiSim      RNA          excess_zero_weights</span></span>
-<span><span class="co">#&gt; scMultiSim.278 scMultiSim     ATAC accessibility_sparsity_curve</span></span>
-<span><span class="co">#&gt; scMultiSim.279 scMultiSim     ATAC accessibility_sparsity_curve</span></span>
-<span><span class="co">#&gt;                                        Metric      Value      Score</span></span>
-<span><span class="co">#&gt; scMultiSim.141                    slope_error 0.07438266 0.07438266</span></span>
-<span><span class="co">#&gt; scMultiSim.142                 midpoint_error 0.40435684 0.40435684</span></span>
-<span><span class="co">#&gt; scMultiSim.143                 r2_discrepancy 0.10550345 0.10550345</span></span>
-<span><span class="co">#&gt; scMultiSim.144 excess_zero_weight_discrepancy 0.16975955 0.16975955</span></span>
-<span><span class="co">#&gt; scMultiSim.278                     curve_rmse 0.05517719 0.05517719</span></span>
-<span><span class="co">#&gt; scMultiSim.279                 r2_discrepancy 0.01240594 0.01240594</span></span></code></pre></div>
+<span><span class="co">#&gt; scMultiSim.157 scMultiSim      RNA                dropout_curve</span></span>
+<span><span class="co">#&gt; scMultiSim.158 scMultiSim      RNA                dropout_curve</span></span>
+<span><span class="co">#&gt; scMultiSim.159 scMultiSim      RNA                dropout_curve</span></span>
+<span><span class="co">#&gt; scMultiSim.160 scMultiSim      RNA          excess_zero_weights</span></span>
+<span><span class="co">#&gt; scMultiSim.310 scMultiSim     ATAC accessibility_sparsity_curve</span></span>
+<span><span class="co">#&gt; scMultiSim.311 scMultiSim     ATAC accessibility_sparsity_curve</span></span>
+<span><span class="co">#&gt;                                        Metric      Value     Score</span></span>
+<span><span class="co">#&gt; scMultiSim.157                    slope_error 0.07438266 0.9736935</span></span>
+<span><span class="co">#&gt; scMultiSim.158                 midpoint_error 0.40435684 0.9558971</span></span>
+<span><span class="co">#&gt; scMultiSim.159                 r2_discrepancy 0.10550345 0.8999481</span></span>
+<span><span class="co">#&gt; scMultiSim.160 excess_zero_weight_discrepancy 0.16975955 0.0000000</span></span>
+<span><span class="co">#&gt; scMultiSim.310                     curve_rmse 0.05517719 0.9286860</span></span>
+<span><span class="co">#&gt; scMultiSim.311                 r2_discrepancy 0.01240594 0.9865843</span></span></code></pre></div>
 </div>
 <div class="section level4">
 <h4 id="category-iii-cellular-manifold-clustering-concordance">3.3 Category III: Cellular Manifold &amp; Clustering
@@ -507,37 +494,29 @@ Recall, Average Silhouette Width (ASW), ARI, and NMI:</p>
 <div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/subset.html" class="external-link">subset</a></span><span class="op">(</span><span class="va">final_benchmark_df</span>, <span class="fu"><a href="https://rdrr.io/r/base/grep.html" class="external-link">grepl</a></span><span class="op">(</span><span class="st">"Manifold"</span>, <span class="va">Category</span><span class="op">)</span><span class="op">)</span><span class="op">[</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Method"</span>, <span class="st">"Property"</span>, <span class="st">"Metric"</span>, <span class="st">"Value"</span>, <span class="st">"Score"</span><span class="op">)</span><span class="op">]</span>, <span class="fl">6</span><span class="op">)</span></span>
 <span><span class="co">#&gt;                    Method Property               Metric     Value     Score</span></span>
-<span><span class="co">#&gt; scMultiSim.145 scMultiSim manifold                  MMD 0.5179121 0.5179121</span></span>
-<span><span class="co">#&gt; scMultiSim.146 scMultiSim manifold Generative_Precision 0.0000000 0.0000000</span></span>
-<span><span class="co">#&gt; scMultiSim.147 scMultiSim manifold    Generative_Recall 0.0000000 0.0000000</span></span>
-<span><span class="co">#&gt; scMultiSim.281 scMultiSim manifold                  MMD 0.5947054 0.5947054</span></span>
-<span><span class="co">#&gt; scMultiSim.282 scMultiSim manifold Generative_Precision 1.0000000 1.0000000</span></span>
-<span><span class="co">#&gt; scMultiSim.283 scMultiSim manifold    Generative_Recall 0.0000000 0.0000000</span></span></code></pre></div>
+<span><span class="co">#&gt; scMultiSim.161 scMultiSim manifold                  MMD 0.5377625 0.0000000</span></span>
+<span><span class="co">#&gt; scMultiSim.162 scMultiSim manifold Generative_Precision 0.0000000 0.0000000</span></span>
+<span><span class="co">#&gt; scMultiSim.163 scMultiSim manifold    Generative_Recall 0.0000000 0.0000000</span></span>
+<span><span class="co">#&gt; scMultiSim.313 scMultiSim manifold                  MMD 0.3010231 0.4441426</span></span>
+<span><span class="co">#&gt; scMultiSim.314 scMultiSim manifold Generative_Precision 0.0000000 0.0000000</span></span>
+<span><span class="co">#&gt; scMultiSim.315 scMultiSim manifold    Generative_Recall 0.0000000 0.0000000</span></span></code></pre></div>
 </div>
 <div class="section level4">
 <h4 id="category-iv-technical-variation-batch-mixing-dynamics">3.4 Category IV: Technical Variation &amp; Batch Mixing
 Dynamics<a class="anchor" aria-label="anchor" href="#category-iv-technical-variation-batch-mixing-dynamics"></a>
 </h4>
 <p>Evaluates batch silhouette widths, Principal Component Regression
-(<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>P</mi><mi>C</mi><mi>R</mi><mspace width="0.222em"></mspace><msup><mi>R</mi><mn>2</mn></msup></mrow><annotation encoding="application/x-tex">PCR\ R^2</annotation></semantics></math>),
-Cell-Specific Mixing Scores (CMS), and Inverse Simpson’s Index
-(ISI):</p>
+(<span class="math inline">PCR\ R^2</span>), Cell-Specific Mixing Scores
+(CMS), and Inverse Simpson’s Index (ISI):</p>
 <div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/subset.html" class="external-link">subset</a></span><span class="op">(</span><span class="va">final_benchmark_df</span>, <span class="fu"><a href="https://rdrr.io/r/base/grep.html" class="external-link">grepl</a></span><span class="op">(</span><span class="st">"Batch"</span>, <span class="va">Category</span><span class="op">)</span><span class="op">)</span><span class="op">[</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Method"</span>, <span class="st">"Property"</span>, <span class="st">"Metric"</span>, <span class="st">"Value"</span>, <span class="st">"Score"</span><span class="op">)</span><span class="op">]</span>, <span class="fl">6</span><span class="op">)</span></span>
-<span><span class="co">#&gt;                    Method     Property           Metric         Value</span></span>
-<span><span class="co">#&gt; scMultiSim.292 scMultiSim batch_mixing batch_silhouette -0.0003841231</span></span>
-<span><span class="co">#&gt; scMultiSim.293 scMultiSim batch_mixing           pcr_r2  0.0004387975</span></span>
-<span><span class="co">#&gt; scMultiSim.294 scMultiSim batch_mixing              cms  0.5456430007</span></span>
-<span><span class="co">#&gt; scMultiSim.295 scMultiSim batch_mixing              isi  1.9922011943</span></span>
-<span><span class="co">#&gt; scMultiSim.296 scMultiSim batch_mixing   cross_batch_F1  0.2376656697</span></span>
-<span><span class="co">#&gt; scMultiSim.297 scMultiSim batch_mixing batch_silhouette -0.0043904205</span></span>
-<span><span class="co">#&gt;                        Score</span></span>
-<span><span class="co">#&gt; scMultiSim.292 -0.0003841231</span></span>
-<span><span class="co">#&gt; scMultiSim.293  0.0004387975</span></span>
-<span><span class="co">#&gt; scMultiSim.294  0.5456430007</span></span>
-<span><span class="co">#&gt; scMultiSim.295  1.9922011943</span></span>
-<span><span class="co">#&gt; scMultiSim.296  0.2376656697</span></span>
-<span><span class="co">#&gt; scMultiSim.297 -0.0043904205</span></span></code></pre></div>
+<span><span class="co">#&gt;                    Method     Property           Metric         Value     Score</span></span>
+<span><span class="co">#&gt; scMultiSim.326 scMultiSim batch_mixing batch_silhouette  0.2739589365 0.0000000</span></span>
+<span><span class="co">#&gt; scMultiSim.327 scMultiSim batch_mixing           pcr_r2  0.2857831030 0.0000000</span></span>
+<span><span class="co">#&gt; scMultiSim.328 scMultiSim batch_mixing              cms  0.0009110089 0.0000000</span></span>
+<span><span class="co">#&gt; scMultiSim.329 scMultiSim batch_mixing              isi  1.0717908249 0.0000000</span></span>
+<span><span class="co">#&gt; scMultiSim.330 scMultiSim batch_mixing   cross_batch_F1  0.9519095287 0.8229665</span></span>
+<span><span class="co">#&gt; scMultiSim.331 scMultiSim batch_mixing batch_silhouette -0.0004310513 0.8958994</span></span></code></pre></div>
 </div>
 <div class="section level4">
 <h4 id="category-v-biological-signal-differential-fidelity">3.5 Category V: Biological Signal &amp; Differential Fidelity<a class="anchor" aria-label="anchor" href="#category-v-biological-signal-differential-fidelity"></a>
@@ -548,37 +527,35 @@ replicates, assessing marker gene detection (DEG) and accessible peak
 <div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/subset.html" class="external-link">subset</a></span><span class="op">(</span><span class="va">final_benchmark_df</span>, <span class="fu"><a href="https://rdrr.io/r/base/grep.html" class="external-link">grepl</a></span><span class="op">(</span><span class="st">"Differential"</span>, <span class="va">Category</span><span class="op">)</span><span class="op">)</span><span class="op">[</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Method"</span>, <span class="st">"Modality"</span>, <span class="st">"Property"</span>, <span class="st">"Metric"</span>, <span class="st">"Value"</span>, <span class="st">"Score"</span><span class="op">)</span><span class="op">]</span>, <span class="fl">6</span><span class="op">)</span></span>
 <span><span class="co">#&gt;                    Method Modality                      Property</span></span>
-<span><span class="co">#&gt; scMultiSim.302 scMultiSim      RNA scRNA_differential_expression</span></span>
-<span><span class="co">#&gt; scMultiSim.303 scMultiSim      RNA scRNA_differential_expression</span></span>
-<span><span class="co">#&gt; scMultiSim.304 scMultiSim      RNA scRNA_differential_expression</span></span>
-<span><span class="co">#&gt; scMultiSim.305 scMultiSim      RNA scRNA_differential_expression</span></span>
-<span><span class="co">#&gt; scMultiSim.306 scMultiSim      RNA scRNA_differential_expression</span></span>
-<span><span class="co">#&gt; scMultiSim.307 scMultiSim      RNA scRNA_differential_expression</span></span>
+<span><span class="co">#&gt; scMultiSim.336 scMultiSim      RNA scRNA_differential_expression</span></span>
+<span><span class="co">#&gt; scMultiSim.337 scMultiSim      RNA scRNA_differential_expression</span></span>
+<span><span class="co">#&gt; scMultiSim.338 scMultiSim      RNA scRNA_differential_expression</span></span>
+<span><span class="co">#&gt; scMultiSim.339 scMultiSim      RNA scRNA_differential_expression</span></span>
+<span><span class="co">#&gt; scMultiSim.340 scMultiSim      RNA scRNA_differential_expression</span></span>
+<span><span class="co">#&gt; scMultiSim.341 scMultiSim      RNA scRNA_differential_expression</span></span>
 <span><span class="co">#&gt;                         Metric     Value     Score</span></span>
-<span><span class="co">#&gt; scMultiSim.302 pval_dist_score 0.9275682 0.9275682</span></span>
-<span><span class="co">#&gt; scMultiSim.303        accuracy 0.6896265 0.6896265</span></span>
-<span><span class="co">#&gt; scMultiSim.304       precision 0.0000000 0.0000000</span></span>
-<span><span class="co">#&gt; scMultiSim.305          recall 0.0000000 0.0000000</span></span>
-<span><span class="co">#&gt; scMultiSim.306        f1_score 0.0000000 0.0000000</span></span>
-<span><span class="co">#&gt; scMultiSim.307             auc 0.4975034 0.4975034</span></span></code></pre></div>
+<span><span class="co">#&gt; scMultiSim.336 pval_dist_score 0.8084200 1.0000000</span></span>
+<span><span class="co">#&gt; scMultiSim.337        accuracy 0.6896265 0.4864477</span></span>
+<span><span class="co">#&gt; scMultiSim.338       precision 0.0000000 0.0000000</span></span>
+<span><span class="co">#&gt; scMultiSim.339          recall 0.0000000 0.0000000</span></span>
+<span><span class="co">#&gt; scMultiSim.340        f1_score 0.0000000 0.0000000</span></span>
+<span><span class="co">#&gt; scMultiSim.341             auc 0.4983087 0.0182858</span></span></code></pre></div>
 </div>
 <div class="section level4">
 <h4 id="category-vi-multiomics-integration-alignment">3.6 Category VI: Multiomics Integration &amp; Alignment<a class="anchor" aria-label="anchor" href="#category-vi-multiomics-integration-alignment"></a>
 </h4>
 <p>Quantifies cross-modality correlation preservation, joint-embedding
-Batch ASW, joint Cell-Type ASW, and within-cell-type
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>k</mi><annotation encoding="application/x-tex">k</annotation></semantics></math>-NN
-graph connectivity:</p>
+Batch ASW, joint Cell-Type ASW, and within-cell-type <span class="math inline">k</span>-NN graph connectivity:</p>
 <div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">c6_scores</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/subset.html" class="external-link">subset</a></span><span class="op">(</span><span class="va">df_norm</span>, <span class="fu"><a href="https://rdrr.io/r/base/grep.html" class="external-link">grepl</a></span><span class="op">(</span><span class="st">"Multiomics Integration"</span>, <span class="va">Category</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/stats/aggregate.html" class="external-link">aggregate</a></span><span class="op">(</span><span class="va">Score_Norm</span> <span class="op">~</span> <span class="va">Method</span>, data <span class="op">=</span> <span class="va">c6_scores</span>, FUN <span class="op">=</span> <span class="va">mean</span>, na.rm <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
 <span><span class="co">#&gt;       Method Score_Norm</span></span>
-<span><span class="co">#&gt; 1    Matilda  0.7971246</span></span>
-<span><span class="co">#&gt; 2      MOSim  0.5659553</span></span>
-<span><span class="co">#&gt; 3    scCross  0.4000000</span></span>
-<span><span class="co">#&gt; 4  scDesign3  0.8332856</span></span>
-<span><span class="co">#&gt; 5    scMoMtF  0.7911663</span></span>
-<span><span class="co">#&gt; 6 scMultiSim  0.8511651</span></span></code></pre></div>
+<span><span class="co">#&gt; 1    Matilda  0.3525804</span></span>
+<span><span class="co">#&gt; 2      MOSim  0.8292954</span></span>
+<span><span class="co">#&gt; 3    scCross  0.7841360</span></span>
+<span><span class="co">#&gt; 4  scDesign3  0.7175338</span></span>
+<span><span class="co">#&gt; 5    scMoMtF  0.6604631</span></span>
+<span><span class="co">#&gt; 6 scMultiSim  0.7430944</span></span></code></pre></div>
 </div>
 <div class="section level4">
 <h4 id="category-vii-trajectory-lineage-topology">3.7 Category VII: Trajectory &amp; Lineage Topology<a class="anchor" aria-label="anchor" href="#category-vii-trajectory-lineage-topology"></a>
@@ -588,19 +565,19 @@ graph connectivity:</p>
 <div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/subset.html" class="external-link">subset</a></span><span class="op">(</span><span class="va">final_benchmark_df</span>, <span class="fu"><a href="https://rdrr.io/r/base/grep.html" class="external-link">grepl</a></span><span class="op">(</span><span class="st">"Trajectory"</span>, <span class="va">Category</span><span class="op">)</span><span class="op">)</span><span class="op">[</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Method"</span>, <span class="st">"Property"</span>, <span class="st">"Metric"</span>, <span class="st">"Value"</span>, <span class="st">"Score"</span><span class="op">)</span><span class="op">]</span>, <span class="fl">6</span><span class="op">)</span></span>
 <span><span class="co">#&gt;                    Method            Property               Metric     Value</span></span>
-<span><span class="co">#&gt; scMultiSim.314 scMultiSim trajectory_topology                  him 0.4461884</span></span>
-<span><span class="co">#&gt; scMultiSim.315 scMultiSim trajectory_topology            edge_flip 0.2000000</span></span>
-<span><span class="co">#&gt; scMultiSim.316 scMultiSim   geodesic_ordering geodesic_correlation 0.0000000</span></span>
-<span><span class="co">#&gt; scMultiSim.317 scMultiSim  branch_concordance          F1_branches 0.2643715</span></span>
-<span><span class="co">#&gt; scMultiSim.318 scMultiSim    dynamic_features        wcor_features 0.0000000</span></span>
-<span><span class="co">#&gt; scDesign3.314   scDesign3 trajectory_topology                  him 0.9782019</span></span>
+<span><span class="co">#&gt; scMultiSim.348 scMultiSim trajectory_topology                  him 0.5194584</span></span>
+<span><span class="co">#&gt; scMultiSim.349 scMultiSim trajectory_topology            edge_flip 0.6666667</span></span>
+<span><span class="co">#&gt; scMultiSim.350 scMultiSim   geodesic_ordering geodesic_correlation 0.1007088</span></span>
+<span><span class="co">#&gt; scMultiSim.351 scMultiSim  branch_concordance          F1_branches 0.2708273</span></span>
+<span><span class="co">#&gt; scMultiSim.352 scMultiSim    dynamic_features        wcor_features 0.2662628</span></span>
+<span><span class="co">#&gt; scDesign3.348   scDesign3 trajectory_topology                  him 0.9868552</span></span>
 <span><span class="co">#&gt;                    Score</span></span>
-<span><span class="co">#&gt; scMultiSim.314 0.4461884</span></span>
-<span><span class="co">#&gt; scMultiSim.315 0.2000000</span></span>
-<span><span class="co">#&gt; scMultiSim.316 0.0000000</span></span>
-<span><span class="co">#&gt; scMultiSim.317 0.2643715</span></span>
-<span><span class="co">#&gt; scMultiSim.318 0.0000000</span></span>
-<span><span class="co">#&gt; scDesign3.314  0.9782019</span></span></code></pre></div>
+<span><span class="co">#&gt; scMultiSim.348 0.1837090</span></span>
+<span><span class="co">#&gt; scMultiSim.349 0.5000000</span></span>
+<span><span class="co">#&gt; scMultiSim.350 0.1044738</span></span>
+<span><span class="co">#&gt; scMultiSim.351 0.0000000</span></span>
+<span><span class="co">#&gt; scMultiSim.352 0.2739079</span></span>
+<span><span class="co">#&gt; scDesign3.348  1.0000000</span></span></code></pre></div>
 </div>
 <div class="section level4">
 <h4 id="category-viii-computational-scalability-efficiency">3.8 Category VIII: Computational Scalability &amp; Efficiency<a class="anchor" aria-label="anchor" href="#category-viii-computational-scalability-efficiency"></a>
@@ -610,31 +587,31 @@ core-seconds and resident peak memory per allocated core:</p>
 <div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/subset.html" class="external-link">subset</a></span><span class="op">(</span><span class="va">final_benchmark_df</span>, <span class="fu"><a href="https://rdrr.io/r/base/grep.html" class="external-link">grepl</a></span><span class="op">(</span><span class="st">"Scalability"</span>, <span class="va">Category</span><span class="op">)</span><span class="op">)</span><span class="op">[</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Method"</span>, <span class="st">"Property"</span>, <span class="st">"Metric"</span>, <span class="st">"Value"</span>, <span class="st">"Score"</span><span class="op">)</span><span class="op">]</span></span>
 <span><span class="co">#&gt;                    Method       Property              Metric       Value</span></span>
-<span><span class="co">#&gt; scMultiSim.324 scMultiSim resource_usage        core_seconds 2299.360000</span></span>
-<span><span class="co">#&gt; scMultiSim.325 scMultiSim resource_usage memory_per_core_mib  154.075000</span></span>
-<span><span class="co">#&gt; scDesign3.324   scDesign3 resource_usage        core_seconds  772.800000</span></span>
-<span><span class="co">#&gt; scDesign3.325   scDesign3 resource_usage memory_per_core_mib  212.400000</span></span>
-<span><span class="co">#&gt; MOSim.324           MOSim resource_usage        core_seconds 1498.880000</span></span>
-<span><span class="co">#&gt; MOSim.325           MOSim resource_usage memory_per_core_mib   68.481250</span></span>
-<span><span class="co">#&gt; scCross.324       scCross resource_usage        core_seconds 6829.280000</span></span>
-<span><span class="co">#&gt; scCross.325       scCross resource_usage memory_per_core_mib   68.995953</span></span>
-<span><span class="co">#&gt; scMoMtF.324       scMoMtF resource_usage        core_seconds  120.640000</span></span>
-<span><span class="co">#&gt; scMoMtF.325       scMoMtF resource_usage memory_per_core_mib    9.537935</span></span>
-<span><span class="co">#&gt; Matilda.324       Matilda resource_usage        core_seconds  509.280000</span></span>
-<span><span class="co">#&gt; Matilda.325       Matilda resource_usage memory_per_core_mib    9.973049</span></span>
-<span><span class="co">#&gt;                      Score</span></span>
-<span><span class="co">#&gt; scMultiSim.324 2299.360000</span></span>
-<span><span class="co">#&gt; scMultiSim.325  154.075000</span></span>
-<span><span class="co">#&gt; scDesign3.324   772.800000</span></span>
-<span><span class="co">#&gt; scDesign3.325   212.400000</span></span>
-<span><span class="co">#&gt; MOSim.324      1498.880000</span></span>
-<span><span class="co">#&gt; MOSim.325        68.481250</span></span>
-<span><span class="co">#&gt; scCross.324    6829.280000</span></span>
-<span><span class="co">#&gt; scCross.325      68.995953</span></span>
-<span><span class="co">#&gt; scMoMtF.324     120.640000</span></span>
-<span><span class="co">#&gt; scMoMtF.325       9.537935</span></span>
-<span><span class="co">#&gt; Matilda.324     509.280000</span></span>
-<span><span class="co">#&gt; Matilda.325       9.973049</span></span></code></pre></div>
+<span><span class="co">#&gt; scMultiSim.358 scMultiSim resource_usage        core_seconds 2299.360000</span></span>
+<span><span class="co">#&gt; scMultiSim.359 scMultiSim resource_usage memory_per_core_mib  154.075000</span></span>
+<span><span class="co">#&gt; scDesign3.358   scDesign3 resource_usage        core_seconds  772.800000</span></span>
+<span><span class="co">#&gt; scDesign3.359   scDesign3 resource_usage memory_per_core_mib  212.400000</span></span>
+<span><span class="co">#&gt; MOSim.358           MOSim resource_usage        core_seconds 1498.880000</span></span>
+<span><span class="co">#&gt; MOSim.359           MOSim resource_usage memory_per_core_mib   68.481250</span></span>
+<span><span class="co">#&gt; scCross.358       scCross resource_usage        core_seconds 6829.280000</span></span>
+<span><span class="co">#&gt; scCross.359       scCross resource_usage memory_per_core_mib   68.995953</span></span>
+<span><span class="co">#&gt; scMoMtF.358       scMoMtF resource_usage        core_seconds  120.640000</span></span>
+<span><span class="co">#&gt; scMoMtF.359       scMoMtF resource_usage memory_per_core_mib    9.537935</span></span>
+<span><span class="co">#&gt; Matilda.358       Matilda resource_usage        core_seconds  509.280000</span></span>
+<span><span class="co">#&gt; Matilda.359       Matilda resource_usage memory_per_core_mib    9.973049</span></span>
+<span><span class="co">#&gt;                    Score</span></span>
+<span><span class="co">#&gt; scMultiSim.358 0.6752367</span></span>
+<span><span class="co">#&gt; scMultiSim.359 0.2875106</span></span>
+<span><span class="co">#&gt; scDesign3.358  0.9027880</span></span>
+<span><span class="co">#&gt; scDesign3.359  0.0000000</span></span>
+<span><span class="co">#&gt; MOSim.358      0.7945575</span></span>
+<span><span class="co">#&gt; MOSim.359      0.7094414</span></span>
+<span><span class="co">#&gt; scCross.358    0.0000000</span></span>
+<span><span class="co">#&gt; scCross.359    0.7069042</span></span>
+<span><span class="co">#&gt; scMoMtF.358    1.0000000</span></span>
+<span><span class="co">#&gt; scMoMtF.359    1.0000000</span></span>
+<span><span class="co">#&gt; Matilda.358    0.9420687</span></span>
+<span><span class="co">#&gt; Matilda.359    0.9978551</span></span></code></pre></div>
 <hr>
 </div>
 </div>
@@ -653,11 +630,10 @@ scores</strong>.</p>
 entire paired multiomics benchmarking study. Each column represents an
 individual evaluation metric, grouped by category, while each row
 represents a simulator. Bubble size and color gradient encode the
-normalized fidelity score
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo stretchy="true" form="prefix">[</mo><mn>0</mn><mo>,</mo><mn>1</mn><mo stretchy="true" form="postfix">]</mo></mrow><annotation encoding="application/x-tex">[0, 1]</annotation></semantics></math>:</p>
+normalized fidelity score <span class="math inline">[0, 1]</span>:</p>
 <div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">p_bubble</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/plot_benchmark_bubble_matrix.html">plot_benchmark_bubble_matrix</a></span><span class="op">(</span><span class="va">final_benchmark_df</span>, base_size <span class="op">=</span> <span class="fl">12</span><span class="op">)</span></span>
-<span><span class="fu">ggsave</span><span class="op">(</span><span class="st">"figures/paired_benchmark_bubble_matrix.png"</span>, plot <span class="op">=</span> <span class="va">p_bubble</span>, width <span class="op">=</span> <span class="fl">18</span>, height <span class="op">=</span> <span class="fl">9</span>, dpi <span class="op">=</span> <span class="fl">300</span><span class="op">)</span></span></code></pre></div>
+<code class="sourceCode R"><span><span class="va">p_bubble</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/plot_benchmark_bubble_matrix.html">plot_benchmark_bubble_matrix</a></span><span class="op">(</span><span class="va">final_benchmark_df</span>, assay_modality <span class="op">=</span> <span class="st">"all"</span>, base_size <span class="op">=</span> <span class="fl">12</span><span class="op">)</span></span>
+<span><span class="fu">ggsave</span><span class="op">(</span><span class="st">"figures/paired_benchmark_bubble_matrix.png"</span>, plot <span class="op">=</span> <span class="va">p_bubble</span>, width <span class="op">=</span> <span class="fl">28</span>, height <span class="op">=</span> <span class="fl">9.5</span>, dpi <span class="op">=</span> <span class="fl">300</span><span class="op">)</span></span></code></pre></div>
 <div class="figure">
 <img src="figures/paired_benchmark_bubble_matrix.png" class="r-plt" alt="**Figure 1: Comparative Bubble Matrix across paired multiomics evaluation metrics.** Visualizes normalized fidelity scores across all 8 active categories for the 6 evaluated single-cell simulation algorithms." width="100%"><p class="caption">
 <strong>Figure 1: Comparative Bubble Matrix across paired multiomics
@@ -910,7 +886,7 @@ and ground-truth validation.</li>
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/sessionInfo.html" class="external-link">sessionInfo</a></span><span class="op">(</span><span class="op">)</span></span>
 <span><span class="co">#&gt; R version 4.6.2 (2026-10-29)</span></span>
 <span><span class="co">#&gt; Platform: x86_64-pc-linux-gnu</span></span>
-<span><span class="co">#&gt; Running under: Ubuntu 24.04.5 LTS</span></span>
+<span><span class="co">#&gt; Running under: Ubuntu 24.04.4 LTS</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; Matrix products: default</span></span>
 <span><span class="co">#&gt; BLAS:   /usr/lib/x86_64-linux-gnu/blas/libblas.so.3.12.0 </span></span>
@@ -932,11 +908,11 @@ and ground-truth validation.</li>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; loaded via a namespace (and not attached):</span></span>
 <span><span class="co">#&gt;   [1] pbapply_1.7-5               gridExtra_2.3.1            </span></span>
-<span><span class="co">#&gt;   [3] scSimEval_0.99.12           rlang_1.3.0                </span></span>
+<span><span class="co">#&gt;   [3] scSimEval_0.99.14           rlang_1.3.0                </span></span>
 <span><span class="co">#&gt;   [5] magrittr_2.0.5              RcppAnnoy_0.0.23           </span></span>
 <span><span class="co">#&gt;   [7] otel_0.3.0                  matrixStats_1.5.0          </span></span>
 <span><span class="co">#&gt;   [9] ggridges_0.5.7              compiler_4.6.2             </span></span>
-<span><span class="co">#&gt;  [11] png_0.1-9                   systemfonts_1.3.3          </span></span>
+<span><span class="co">#&gt;  [11] png_0.1-9                   systemfonts_1.3.4          </span></span>
 <span><span class="co">#&gt;  [13] vctrs_0.7.3                 reshape2_1.4.5             </span></span>
 <span><span class="co">#&gt;  [15] stringr_1.6.0               pkgconfig_2.0.3            </span></span>
 <span><span class="co">#&gt;  [17] fastmap_1.2.0               XVector_0.52.0             </span></span>
@@ -944,7 +920,7 @@ and ground-truth validation.</li>
 <span><span class="co">#&gt;  [21] xfun_0.62                   cachem_1.1.0               </span></span>
 <span><span class="co">#&gt;  [23] jsonlite_2.0.0              DelayedArray_0.38.2        </span></span>
 <span><span class="co">#&gt;  [25] BiocParallel_1.46.0         irlba_2.4.1                </span></span>
-<span><span class="co">#&gt;  [27] parallel_4.6.2              cluster_2.1.8.3            </span></span>
+<span><span class="co">#&gt;  [27] parallel_4.6.2              cluster_2.1.8.2            </span></span>
 <span><span class="co">#&gt;  [29] R6_2.6.1                    ica_1.0-3                  </span></span>
 <span><span class="co">#&gt;  [31] bslib_0.12.0                stringi_1.8.9              </span></span>
 <span><span class="co">#&gt;  [33] RColorBrewer_1.1-3          parallelly_1.50.0          </span></span>
@@ -958,7 +934,7 @@ and ground-truth validation.</li>
 <span><span class="co">#&gt;  [49] yaml_2.3.12                 codetools_0.2-20           </span></span>
 <span><span class="co">#&gt;  [51] listenv_1.1.0               lattice_0.23-1             </span></span>
 <span><span class="co">#&gt;  [53] tibble_3.3.1                plyr_1.8.9                 </span></span>
-<span><span class="co">#&gt;  [55] Biobase_2.72.0              S7_0.2.2                   </span></span>
+<span><span class="co">#&gt;  [55] Biobase_2.72.0              S7_1.0.0                   </span></span>
 <span><span class="co">#&gt;  [57] evaluate_1.0.5              Rtsne_0.17                 </span></span>
 <span><span class="co">#&gt;  [59] future_1.82.0               fastDummies_1.7.6          </span></span>
 <span><span class="co">#&gt;  [61] desc_1.4.3                  pillar_1.11.1              </span></span>
@@ -973,11 +949,11 @@ and ground-truth validation.</li>
 <span><span class="co">#&gt;  [79] dotCall64_1.2               cowplot_1.2.0              </span></span>
 <span><span class="co">#&gt;  [81] grid_4.6.2                  SingleCellExperiment_1.34.0</span></span>
 <span><span class="co">#&gt;  [83] patchwork_1.3.2             cli_3.6.6                  </span></span>
-<span><span class="co">#&gt;  [85] textshaping_1.0.5           spam_2.11-4                </span></span>
+<span><span class="co">#&gt;  [85] textshaping_1.1.0           spam_2.11-4                </span></span>
 <span><span class="co">#&gt;  [87] S4Arrays_1.12.1             dplyr_1.2.1                </span></span>
 <span><span class="co">#&gt;  [89] uwot_0.2.5                  gtable_0.3.6               </span></span>
 <span><span class="co">#&gt;  [91] pls_2.9-0                   ggsci_5.2.0                </span></span>
-<span><span class="co">#&gt;  [93] sass_0.4.10                 digest_0.6.39              </span></span>
+<span><span class="co">#&gt;  [93] sass_0.5.0                  digest_0.6.39              </span></span>
 <span><span class="co">#&gt;  [95] progressr_1.1.0             BiocGenerics_0.58.1        </span></span>
 <span><span class="co">#&gt;  [97] SparseArray_1.12.3          ggrepel_0.9.8              </span></span>
 <span><span class="co">#&gt;  [99] htmlwidgets_1.6.4           SeuratObject_5.4.0         </span></span>
@@ -1433,6 +1409,31 @@ document.addEventListener("DOMContentLoaded", function() {
     });
   }
   initDocPlotZoom();
+
+  /* Click-to-zoom lightbox for Reference example plots (without mutating <pre><code> DOM) */
+  document.querySelectorAll("#main pre .r-plt img, #main .r-plt.img img").forEach(function(img) {
+    img.title = "Click to inspect full-size plot";
+    img.addEventListener("click", function() {
+      window.scOpenLightbox(img.src);
+    });
+  });
+
+  /* Ensure KaTeX renders all Reference Rd \\(...\\) and $...$ equations reliably */
+  function renderScSimEvalMath() {
+    if (typeof renderMathInElement === "function") {
+      renderMathInElement(document.body, {
+        delimiters: [
+          { left: "$", right: "$", display: true },
+          { left: "\\[", right: "\\]", display: true },
+          { left: "\\(", right: "\\)", display: false }
+        ],
+        ignoredTags: ["script", "noscript", "style", "textarea", "pre", "code", "option"],
+        throwOnError: false
+      });
+    }
+  }
+  renderScSimEvalMath();
+  window.addEventListener("load", renderScSimEvalMath);
 });
 </script>
 </body>

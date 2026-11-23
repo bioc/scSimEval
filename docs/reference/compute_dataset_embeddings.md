@@ -89,18 +89,18 @@ emb <- compute_dataset_embeddings(
   cell_types = example_scrna$cell_types
 )
 head(emb)
-#>              Cell_ID        Dim1       Dim2   Dataset      Role Dataset_Type
-#> 1 AAACCGGCAAGTGTTT-1 -0.49065503  0.3989727 Reference Reference    Reference
-#> 2 AAACGGATCGATCAGT-1  1.10728518  1.1790269 Reference Reference    Reference
-#> 3 AACAGCAAGGTTAGAG-1 -1.10536298  2.2994250 Reference Reference    Reference
-#> 4 AACCTAATCAAGTGAG-1 -0.04908856 -3.0515676 Reference Reference    Reference
-#> 5 AAGGTGCAGGGTCCAC-1 -2.96960934 -0.3985537 Reference Reference    Reference
-#> 6 AAGTTTGTCCACCTGT-1 -0.91385993  1.4372928 Reference Reference    Reference
-#>           Cell_Type   Cluster Library_Size Detected_Features   Batch
-#> 1   Parenchyma_cell Cluster_3            6                 5 Batch 1
-#> 2   Parenchyma_cell Cluster_4            2                 2 Batch 1
-#> 3         Epidermis Cluster_8           18                11 Batch 1
-#> 4    Bud_primordium Cluster_4           17                11 Batch 1
-#> 5 Vascular_cylinder Cluster_5          271                14 Batch 1
-#> 6     Root_meristem Cluster_3           10                 8 Batch 1
+#>              Cell_ID      Dim1        Dim2   Dataset      Role Dataset_Type
+#> 1 GTACTTAAGCTCAATA-1  1.281574  2.05128620 Reference Reference    Reference
+#> 2 CTTGACGAGTAGCGGG-1  2.460906  0.01632259 Reference Reference    Reference
+#> 3 AAAGCACCAACCCTCC-1  2.786740 -0.33215095 Reference Reference    Reference
+#> 4 CGCACAATCTTGATGA-1  2.183438  0.60949848 Reference Reference    Reference
+#> 5 AGCTACTAGCGAGTAA-1  1.330224  0.52773355 Reference Reference    Reference
+#> 6 CTTACTAGTCTCAGCC-1 -1.490763  1.46527765 Reference Reference    Reference
+#>   Cell_Type   Cluster Library_Size Detected_Features   Batch
+#> 1  Bud_axis Cluster_1           54                28 Batch 1
+#> 2  Bud_axis Cluster_4           53                20 Batch 1
+#> 3  Bud_axis Cluster_4           39                21 Batch 1
+#> 4  Bud_axis Cluster_4           28                17 Batch 1
+#> 5  Bud_axis Cluster_4           79                37 Batch 1
+#> 6  Bud_axis Cluster_6           55                24 Batch 1
 ```

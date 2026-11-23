@@ -32,5 +32,5 @@ Non-negative numeric root mean squared difference.
 ref <- stats::rnorm(50)
 sim <- stats::rnorm(50)
 calc_rmse(ref, sim)
-#> [1] 0.2020698
+#> [1] 0.2998728
 ```

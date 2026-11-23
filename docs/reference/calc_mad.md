@@ -32,5 +32,5 @@ Non-negative numeric MAD value.
 ref <- stats::rnorm(50)
 sim <- stats::rnorm(50)
 calc_mad(ref, sim)
-#> [1] 0.166428
+#> [1] 0.05549627
 ```

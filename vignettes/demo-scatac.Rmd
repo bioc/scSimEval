@@ -108,7 +108,7 @@ eval_result <- evaluate_simulation_accuracy(
   memory_mb         = 1354.50,             # Simulation peak RAM
   memory_unit       = "MiB",
   sim_cores         = 16L,                 # Allocated simulation cores
-  compute_bivariate = FALSE,
+  compute_bivariate = TRUE,
   threads           = 16,                  # Multiprocessing threads for evaluation
   verbose           = TRUE
 )
@@ -144,7 +144,7 @@ for (sim_name in names(simulator_suite)) {
     memory_mb         = cfg$mem,
     memory_unit       = cfg$mem_u,
     sim_cores         = cfg$cores,
-    compute_bivariate = FALSE,
+    compute_bivariate = TRUE,
     threads           = 16,
     verbose           = FALSE
   )
@@ -159,7 +159,7 @@ for (sim_name in names(simulator_suite)) {
 # Consolidate into unified benchmark data frame
 final_benchmark_df <- do.call(rbind, all_benchmark_results)
 final_benchmark_df <- standardize_benchmark_categories(final_benchmark_df)
-saveRDS(final_benchmark_df, "scSimEval_benchmark_results.rds")
+saveRDS(final_benchmark_df, "scatac_benchmark_results.rds")
 ```
 
 ---
@@ -168,9 +168,9 @@ saveRDS(final_benchmark_df, "scSimEval_benchmark_results.rds")
 
 ```{r load-results, echo = FALSE}
 # Load pre-computed benchmark results archive
-res_file <- "scSimEval_benchmark_results.rds"
+res_file <- "scatac_benchmark_results.rds"
 if (!file.exists(res_file)) {
-  res_file <- "/root/scSimEval_analysis/demo_analysis/scATAC-seq_soy_root/scSimEval_benchmark_results.rds"
+  res_file <- "/root/scSimEval_analysis_files/demo_analysis/scATAC-seq_soy_root/scSimEval_benchmark_results.rds"
 }
 if (!file.exists(res_file)) {
   res_file <- system.file("extdata", "scSimEval_benchmark_results.rds", package = "scSimEval")
@@ -241,8 +241,8 @@ head(subset(final_benchmark_df, grepl("Scalability", Category))[, c("Method", "P
 The comparative bubble matrix provides a high-level overview of the entire benchmarking study. Each column represents an individual evaluation metric, grouped by category, while each row represents a simulator. Bubble size and color gradient encode the normalized fidelity score $[0, 1]$:
 
 ```r
-p_bubble <- plot_benchmark_bubble_matrix(final_benchmark_df, base_size = 12)
-ggsave("figures/scATAC_benchmark_bubble_matrix.png", plot = p_bubble, width = 16, height = 8.5, dpi = 300)
+p_bubble <- plot_benchmark_bubble_matrix(final_benchmark_df, assay_modality = "ATAC", base_size = 12)
+ggsave("figures/scATAC_benchmark_bubble_matrix.png", plot = p_bubble, width = 24, height = 8.5, dpi = 300)
 ```
 
 ```{r fig-bubble, echo = FALSE, out.width = "100%", fig.cap = "**Figure 1: Comparative Bubble Matrix across scATAC-seq evaluation metrics.** Visualizes normalized fidelity scores across all 6 active categories for the 3 evaluated single-cell epigenomic simulation algorithms."}

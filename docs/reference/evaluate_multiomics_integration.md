@@ -37,6 +37,7 @@ evaluate_multiomics_integration(
   n_pcs = 15,
   k = 30,
   threads = 1,
+  pairing = NULL,
   verbose = TRUE
 )
 ```
@@ -86,6 +87,11 @@ evaluate_multiomics_integration(
 
   Number of CPU threads for parallel processing (default 1).
 
+- pairing:
+
+  Optional pairing mode (`"paired"` or `"unpaired"`); auto-detected from
+  cell barcodes if `NULL`.
+
 - verbose:
 
   Logical; whether to print progress messages (default TRUE).
@@ -117,7 +123,6 @@ res <- evaluate_multiomics_integration(
   sim_multi = example_multiomics$sim_multi,
   cell_types = ct
 )
-#> Using precomputed dimensional reduction from sim_multi for Category VI.
 unlist(res[vapply(res, function(x) is.numeric(x) && length(x) == 1L, logical(1))])
 #> NULL
 ```

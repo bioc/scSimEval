@@ -91,34 +91,6 @@ res <- calc_simpipe_distribution_score(
   sim_data = example_scrna$sim,
   sim_celltypes = example_scrna$cell_types
 )
-#> Warning: At least one library size is zero
-#> Warning: At least one library size is zero
-#> Warning: At least one library size is zero
-#> Warning: At least one library size is zero
-#> Warning: At least one library size is zero
-#> Warning: At least one library size is zero
-#> Warning: At least one library size is zero
-#> Warning: At least one library size is zero
-#> Warning: At least one library size is zero
-#> Warning: At least one library size is zero
-#> Warning: At least one library size is zero
-#> Warning: At least one library size is zero
-#> Warning: At least one library size is zero
-#> Warning: At least one library size is zero
-#> Warning: At least one library size is zero
-#> Warning: At least one library size is zero
-#> Warning: At least one library size is zero
-#> Warning: At least one library size is zero
-#> Warning: At least one library size is zero
-#> Warning: At least one library size is zero
-#> Warning: At least one library size is zero
-#> Warning: At least one library size is zero
-#> Warning: At least one library size is zero
-#> Warning: At least one library size is zero
-#> Warning: At least one library size is zero
-#> Warning: At least one library size is zero
-#> Warning: At least one library size is zero
-#> Warning: At least one library size is zero
 res$distribution_score
-#> [1] 0
+#> [1] 0.1071429
 ```

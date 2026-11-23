@@ -28,6 +28,5 @@ NMI value between 0 and 1.
 pred <- factor(rep(c("A", "B"), each = 20))
 truth <- factor(rep(c("A", "B"), each = 20))
 calc_nmi(pred, truth)
-#> A 
-#> 1 
+#> [1] 1
 ```

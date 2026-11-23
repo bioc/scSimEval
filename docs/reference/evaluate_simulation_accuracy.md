@@ -178,17 +178,18 @@ Measures Suite):** Cell-type and batch annotations are retrieved
 directly from `colData(ref_sce)` and `colData(sim_sce)` using
 `cell_type_col` and `batch_col`.
 
-- **1. scRNA-seq (45 Metrics):** Categories I, II, III, IV, V, VII, and
-  VIII.
+- **1. scRNA-seq (44 Metrics):** Categories I, II, III, IV, V (DE), VII,
+  and VIII.
 
-- **2. scATAC-seq (32 Metrics):** Categories I, II, III, IV, V, and VIII
-  (trajectory skipped for ATAC).
+- **2. scATAC-seq (38 Metrics):** Categories I, II, III, IV, V (DA), and
+  VIII (trajectory skipped for ATAC).
 
 - **3. Paired Multiomics (56 Metrics):** All 8 categories (I–VIII) via
   [`evaluate_multiomics_accuracy`](https://kabilanbio.github.io/scSimEval/reference/evaluate_multiomics_accuracy.md).
 
-- **4. Unpaired Multiomics (51 Metrics):** All 8 categories omitting 5
-  cell-matched pairing metrics.
+- **4. Unpaired Multiomics (56 Metrics):** All 8 categories (I–VIII) via
+  [`evaluate_multiomics_accuracy`](https://kabilanbio.github.io/scSimEval/reference/evaluate_multiomics_accuracy.md)
+  on unpaired RNA and ATAC populations.
 
 ## Examples
 
@@ -210,15 +211,15 @@ head(res$metrics_summary_table, 10)
 #> 8  Distributional Properties library_size                         MAE
 #> 9  Distributional Properties library_size                        RMSE
 #> 10 Distributional Properties library_size                     KDE_ISE
-#>          Value
-#> 1  22.87000000
-#> 2   0.20000000
-#> 3  10.00000000
-#> 4   0.00564741
-#> 5  -2.83556062
-#> 6   0.06500000
-#> 7   0.02451093
-#> 8  22.87000000
-#> 9  45.22554588
-#> 10  0.00123334
+#>            Value  Modality
+#> 1  15.5100000000 scRNA-seq
+#> 2   0.1500000000 scRNA-seq
+#> 3   8.0000000000 scRNA-seq
+#> 4   0.0254983351 scRNA-seq
+#> 5  -0.1843114404 scRNA-seq
+#> 6   0.0150000000 scRNA-seq
+#> 7   0.0104231754 scRNA-seq
+#> 8  15.5100000000 scRNA-seq
+#> 9  22.4661968299 scRNA-seq
+#> 10  0.0005628587 scRNA-seq
 ```

@@ -100,9 +100,9 @@ A list containing:
 
 - deg_summary_table:
 
-  Tidy summary data.frame with 6 scRNA-seq DE metrics: `de_score`,
-  `pval_dist_score`, `true_proportion`, `accuracy`, `precision`,
-  `recall`, `f1_score`, and `auc`
+  Tidy summary data.frame with 6 scRNA-seq DE metrics:
+  `pval_dist_score`, `accuracy`, `precision`, `recall`, `f1_score`, and
+  `auc`
 
 - pairwise_results:
 
@@ -133,13 +133,13 @@ A list containing:
 
 Category V is divided into two distinct sub-categories:
 
-- **Sub-category V-A (scRNA-seq Differential Expression)**: Computes 8
-  metrics: `de_score`, `pval_dist_score`, `true_proportion`, `accuracy`,
-  `precision`, `recall`, `f1_score`, and `auc`.
+- **Sub-category V-A (scRNA-seq Differential Expression)**: Computes 6
+  metrics: `pval_dist_score`, `accuracy`, `precision`, `recall`,
+  `f1_score`, and `auc`.
 
 - **Sub-category V-B (scATAC-seq Differential Accessibility)**: Computes
-  8 metrics: `da_score`, `pval_dist_score`, `true_proportion`,
-  `accuracy`, `precision`, `recall`, `f1_score`, and `auc`.
+  6 metrics: `pval_dist_score`, `accuracy`, `precision`, `recall`,
+  `f1_score`, and `auc`.
 
 If `batch_ref` or `batch_sim` is NULL, the analysis is gracefully
 skipped, adhering to the strict rule that single-cell biological signal
@@ -161,12 +161,12 @@ res <- evaluate_deg_fidelity(
 )
 res$deg_summary_table
 #>                         SubCategory          Metric     Value
-#> 1 scRNA-seq Differential Expression pval_dist_score 0.4968177
-#> 2 scRNA-seq Differential Expression        accuracy 0.9575000
-#> 3 scRNA-seq Differential Expression       precision 0.3774637
-#> 4 scRNA-seq Differential Expression          recall 0.2700747
-#> 5 scRNA-seq Differential Expression        f1_score 0.2800467
-#> 6 scRNA-seq Differential Expression             auc 0.9345132
+#> 1 scRNA-seq Differential Expression pval_dist_score 0.8091448
+#> 2 scRNA-seq Differential Expression        accuracy 0.9300000
+#> 3 scRNA-seq Differential Expression       precision 0.4220779
+#> 4 scRNA-seq Differential Expression          recall 0.3779070
+#> 5 scRNA-seq Differential Expression        f1_score 0.3987730
+#> 6 scRNA-seq Differential Expression             auc 0.8532752
 #>                                                         Direction
 #> 1    Higher is better (1.0 = uniform null p-values, no inflation)
 #> 2             Higher is better (1.0 = perfect DEG classification)

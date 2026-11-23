@@ -25,13 +25,13 @@ Derived from `example_scrna$batch_info`.
 ``` r
 data(example_batch_info)
 head(example_batch_info)
-#> AAACCGGCAAGTGTTT-1 AAACGGATCGATCAGT-1 AACAGCAAGGTTAGAG-1 AACCTAATCAAGTGAG-1 
+#> GTACTTAAGCTCAATA-1 CTTGACGAGTAGCGGG-1 AAAGCACCAACCCTCC-1 CGCACAATCTTGATGA-1 
 #>             Bud_21             Bud_21             Bud_21             Bud_21 
-#> AAGGTGCAGGGTCCAC-1 AAGTTTGTCCACCTGT-1 
+#> AGCTACTAGCGAGTAA-1 CTTACTAGTCTCAGCC-1 
 #>             Bud_21             Bud_21 
 #> Levels: Bud_21 Bud_22
 table(example_batch_info)
 #> example_batch_info
 #> Bud_21 Bud_22 
-#>     61     39 
+#>     52     48 
 ```

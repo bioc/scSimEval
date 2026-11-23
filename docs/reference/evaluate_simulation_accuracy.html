@@ -17,7 +17,7 @@ Seurat::as.SingleCellExperiment()."><meta property="og:image" content="https://k
 
     <a class="navbar-brand me-2" href="../index.html">scSimEval</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.99.13</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.99.14</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -209,10 +209,10 @@ Users starting from <code>Seurat</code> objects should convert via
 
 <p><strong>Metric Measurement Capacity across 4 Analysis Options (56 Evaluation Measures Suite):</strong>
 Cell-type and batch annotations are retrieved directly from <code>colData(ref_sce)</code> and
-<code>colData(sim_sce)</code> using <code>cell_type_col</code> and <code>batch_col</code>.</p><ul><li><p><strong>1. scRNA-seq (45 Metrics):</strong> Categories I, II, III, IV, V, VII, and VIII.</p></li>
-<li><p><strong>2. scATAC-seq (32 Metrics):</strong> Categories I, II, III, IV, V, and VIII (trajectory skipped for ATAC).</p></li>
+<code>colData(sim_sce)</code> using <code>cell_type_col</code> and <code>batch_col</code>.</p><ul><li><p><strong>1. scRNA-seq (44 Metrics):</strong> Categories I, II, III, IV, V (DE), VII, and VIII.</p></li>
+<li><p><strong>2. scATAC-seq (38 Metrics):</strong> Categories I, II, III, IV, V (DA), and VIII (trajectory skipped for ATAC).</p></li>
 <li><p><strong>3. Paired Multiomics (56 Metrics):</strong> All 8 categories (I–VIII) via <code><a href="evaluate_multiomics_accuracy.html">evaluate_multiomics_accuracy</a></code>.</p></li>
-<li><p><strong>4. Unpaired Multiomics (51 Metrics):</strong> All 8 categories omitting 5 cell-matched pairing metrics.</p></li>
+<li><p><strong>4. Unpaired Multiomics (56 Metrics):</strong> All 8 categories (I–VIII) via <code><a href="evaluate_multiomics_accuracy.html">evaluate_multiomics_accuracy</a></code> on unpaired RNA and ATAC populations.</p></li>
 </ul></div>
 
     <div class="section level2">
@@ -234,17 +234,17 @@ Cell-type and batch annotations are retrieved directly from <code>colData(ref_sc
 <span class="r-out co"><span class="r-pr">#&gt;</span> 8  Distributional Properties library_size                         MAE</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 9  Distributional Properties library_size                        RMSE</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 10 Distributional Properties library_size                     KDE_ISE</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>          Value</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 1  22.87000000</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 2   0.20000000</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 3  10.00000000</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 4   0.00564741</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 5  -2.83556062</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 6   0.06500000</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 7   0.02451093</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 8  22.87000000</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 9  45.22554588</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 10  0.00123334</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>            Value  Modality</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 1  15.5100000000 scRNA-seq</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 2   0.1500000000 scRNA-seq</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 3   8.0000000000 scRNA-seq</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 4   0.0254983351 scRNA-seq</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 5  -0.1843114404 scRNA-seq</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 6   0.0150000000 scRNA-seq</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 7   0.0104231754 scRNA-seq</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 8  15.5100000000 scRNA-seq</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 9  22.4661968299 scRNA-seq</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 10  0.0005628587 scRNA-seq</span>
 </code></pre></div>
     </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>

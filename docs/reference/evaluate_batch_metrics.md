@@ -84,18 +84,18 @@ data(example_scrna, package = "scSimEval")
 evaluate_batch_metrics(example_scrna$ref, example_scrna$batch_info,
                        cell_types = example_scrna$cell_types)
 #> $batch_silhouette
-#> [1] -0.004276818
+#> [1] 0.0006972662
 #> 
 #> $pcr_r2
-#> [1] 0.008842181
+#> [1] 0.01063511
 #> 
 #> $cms
-#> [1] 0.5522989
+#> [1] 0.511102
 #> 
 #> $isi
-#> [1] 1.895012
+#> [1] 1.941011
 #> 
 #> $cross_batch_F1
-#> [1] 0.3293309
+#> [1] 0.3071933
 #> 
 ```

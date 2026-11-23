@@ -25,7 +25,7 @@ evaluate_multiomics_accuracy(
   sim_cores = NULL,
   separate_resources = NULL,
   feature_pairs = NULL,
-  compute_bivariate = FALSE,
+  compute_bivariate = TRUE,
   threads = 1L,
   trajectory_num_trees = 10000L,
   verbose = TRUE
@@ -92,7 +92,7 @@ evaluate_multiomics_accuracy(
 
 - compute_bivariate:
 
-  Logical, whether to compute 2D bivariate tests. Default `FALSE`.
+  Logical, whether to compute 2D bivariate tests. Default `TRUE`.
 
 - threads:
 
@@ -172,12 +172,13 @@ Suite):**
 
 - **Paired Multiomics (56 Metrics):** Dual unimodal properties (Cat
   I–II), dual clustering (Cat III), dual batch mixing (Cat IV), dual
-  biological signal (Cat V), cross-modal integration & pairing (Cat VI),
-  scRNA trajectory (Cat VII), and scalability (Cat VIII).
+  biological signal (Cat V: 6 DE + 6 DA), cross-modal integration &
+  alignment (Cat VI), scRNA trajectory (Cat VII), and scalability (Cat
+  VIII).
 
-- **Unpaired Multiomics (51 Metrics):** Evaluates both modalities
-  independently with population-level integration & alignment, omitting
-  cell-matched pairing metrics.
+- **Unpaired Multiomics (56 Metrics):** Evaluates both modalities
+  independently across Cat I–V, VII, VIII plus population-level joint
+  integration & alignment (Cat VI).
 
 ## Examples
 
@@ -190,6 +191,7 @@ res <- evaluate_multiomics_accuracy(
 )
 #> Warning: Zero sample variances detected, have been offset away from zero
 #> Warning: Zero sample variances detected, have been offset away from zero
+#> Warning: shoving 'interior' knots matching boundary knots to inside
 head(res$benchmark_summary_table, 10)
 #>                     Category     Property                      Metric
 #> 1  Distributional Properties library_size                 Wasserstein
@@ -202,15 +204,15 @@ head(res$benchmark_summary_table, 10)
 #> 8  Distributional Properties library_size                         MAE
 #> 9  Distributional Properties library_size                        RMSE
 #> 10 Distributional Properties library_size                     KDE_ISE
-#>          Value Modality
-#> 1  22.87000000      rna
-#> 2   0.20000000      rna
-#> 3  10.00000000      rna
-#> 4   0.00564741      rna
-#> 5  -2.83556062      rna
-#> 6   0.06500000      rna
-#> 7   0.02451093      rna
-#> 8  22.87000000      rna
-#> 9  45.22554588      rna
-#> 10  0.00123334      rna
+#>            Value Modality
+#> 1  15.5100000000      rna
+#> 2   0.1500000000      rna
+#> 3   8.0000000000      rna
+#> 4   0.0254983351      rna
+#> 5  -0.1843114404      rna
+#> 6   0.0150000000      rna
+#> 7   0.0104231754      rna
+#> 8  15.5100000000      rna
+#> 9  22.4661968299      rna
+#> 10  0.0005628587      rna
 ```

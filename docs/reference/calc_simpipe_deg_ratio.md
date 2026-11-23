@@ -108,21 +108,8 @@ res <- calc_simpipe_deg_ratio(
   ref_celltypes = example_scrna$cell_types,
   sim_celltypes = example_scrna$cell_types
 )
-#> Warning: At least one library size is zero
-#> Warning: At least one library size is zero
-#> Warning: At least one library size is zero
-#> Warning: At least one library size is zero
-#> Warning: At least one library size is zero
-#> Warning: At least one library size is zero
-#> Warning: At least one library size is zero
-#> Warning: At least one library size is zero
-#> Warning: At least one library size is zero
-#> Warning: At least one library size is zero
-#> Warning: At least one library size is zero
-#> Warning: At least one library size is zero
-#> Warning: At least one library size is zero
 res$P
-#> [1] 0.5572306
+#> [1] 0.4886583
 res$deg_ratio
-#> [1] 0.7615385
+#> [1] 0.9433962
 ```

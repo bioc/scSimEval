@@ -53,15 +53,15 @@ accessibility-sparsity curves:
 data(example_scatac, package = "scSimEval")
 evaluate_accessibility_sparsity_curve(example_scatac$ref, example_scatac$sim)
 #> $curve_rmse
-#> [1] 0.03827511
+#> [1] 0.05246273
 #> 
 #> $r2_discrepancy
-#> [1] 0.2758995
+#> [1] 0.2598379
 #> 
 #> $ref_r_squared
-#> [1] 0.9101528
+#> [1] 0.8882643
 #> 
 #> $sim_r_squared
-#> [1] 0.6342533
+#> [1] 0.6284264
 #> 
 ```

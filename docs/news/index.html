@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">scSimEval</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.99.13</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.99.14</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -48,6 +48,13 @@
     </div>
 
     <div class="section level2">
+<h2 class="pkg-version" data-toc-text="0.99.14" id="scsimeval-09914">scSimEval 0.99.14<a class="anchor" aria-label="anchor" href="#scsimeval-09914"></a></h2>
+<ul><li>
+<strong>Scientific Verification &amp; Accuracy Fixes Across All 56 Measures</strong>: Verified and hardened all 8 evaluation categories, including density-based Bhattacharyya distance, tie-safe Wald-Wolfowitz runs and k-NN mismatch tests, sparse-safe normalized 2D EMD, scale-consistent MMD and Generative Precision/Recall, dense-simulator dropout curve fallback, unpaired multiomics Category VI integration alignment, and consistent modality-aware Category V (<code>DE</code> / <code>DA</code> / <code>DE/DA</code>) display labels.</li>
+<li>
+<strong>Updated Curated Example Datasets &amp; Scalability Benchmarks</strong>: Regenerated all bundled Rice Bud (paired, 1 reference + 6 simulators) and Soybean Root (unpaired, 1 reference + 3 simulators) example datasets (100 balanced cells across all cell types, 100 HVGs / 100 HVPs) alongside the paired multiomics saved-results <code>.rds</code> archive and updated empirical scalability benchmarks, returning exact 56/56/44/38 metrics across paired multiomics, unpaired multiomics, scRNA-seq, and scATAC-seq analyses.</li>
+</ul></div>
+    <div class="section level2">
 <h2 class="pkg-version" data-toc-text="0.99.13" id="scsimeval-09913">scSimEval 0.99.13<a class="anchor" aria-label="anchor" href="#scsimeval-09913"></a></h2>
 <ul><li>
 <strong>Curated User-Focused Reference Documentation</strong>: Streamlined the <code>pkgdown</code> Reference tab from 14 sprawling sections (~120 topics) down to 5 clear sections featuring the 36 essential user-facing workflows, scoring/embedding functions, publication visualizations, category evaluation suites, and bundled datasets (low-level kernels and individual <code>calc_*</code> helpers remain exported in <code>NAMESPACE</code> and documented via <code>@keywords internal</code>).</li>
@@ -75,11 +82,11 @@
 <li>
 <strong>Standardized SingleCellExperiment API</strong>: Core evaluation workflows (<code>evaluate_simulation_accuracy</code>, <code>evaluate_multiomics_accuracy</code>, <code>extract_dataset_summary</code>) now natively require and operate directly on standard Bioconductor <code>SingleCellExperiment</code> objects with standardized <code>colData</code> annotations.</li>
 <li>
-<strong>Bioconductor Multiomics via <code>altExp</code></strong>: Upgraded multiomics evaluation pipelines to represent paired multimodal data (scRNA-seq + scATAC-seq) using Bioconductor’s standard <code>altExp()</code> assay representation.</li>
+<strong>Bioconductor Multiomics via <code>altExp</code></strong>: Upgraded multiomics evaluation pipelines to represent paired multimodal data (scRNA-seq + scATAC-seq) using Bioconductor’s standard <code><a href="https://rdrr.io/pkg/SingleCellExperiment/man/altExps.html" class="external-link">altExp()</a></code> assay representation.</li>
 <li>
 <strong>Streamlined Dependencies</strong>: Replaced direct dependencies on heavy external single-cell ecosystems (<code>Seurat</code>, <code>Signac</code>) by moving optional adapters to <code>Suggests</code>, drastically reducing dependency overhead.</li>
 <li>
-<strong>Accessor Method Compliance</strong>: Eliminated all direct S4 <code>@</code> slot accesses across metric computation, trajectories, and dimension reductions in favor of formal accessor methods (<code>assay()</code>, <code>assays()</code>, <code>colData()</code>, <code>reducedDim()</code>, <code>altExp()</code>).</li>
+<strong>Accessor Method Compliance</strong>: Eliminated all direct S4 <code>@</code> slot accesses across metric computation, trajectories, and dimension reductions in favor of formal accessor methods (<code><a href="https://rdrr.io/pkg/SummarizedExperiment/man/SummarizedExperiment-class.html" class="external-link">assay()</a></code>, <code><a href="https://rdrr.io/pkg/SummarizedExperiment/man/SummarizedExperiment-class.html" class="external-link">assays()</a></code>, <code><a href="https://rdrr.io/pkg/SummarizedExperiment/man/SummarizedExperiment-class.html" class="external-link">colData()</a></code>, <code><a href="https://rdrr.io/pkg/SingleCellExperiment/man/reducedDims.html" class="external-link">reducedDim()</a></code>, <code><a href="https://rdrr.io/pkg/SingleCellExperiment/man/altExps.html" class="external-link">altExp()</a></code>).</li>
 <li>
 <strong>Clean Condition &amp; Error Handling</strong>: Removed all instances of <code><a href="https://rdrr.io/r/base/warning.html" class="external-link">suppressWarnings()</a></code>, <code><a href="https://rdrr.io/r/base/message.html" class="external-link">suppressMessages()</a></code>, <code><a href="https://rdrr.io/r/base/bindenv.html" class="external-link">unlockBinding()</a></code>, and global variable assignments (<code>&lt;&lt;-</code>) to adhere to strict Bioconductor code hygiene standards.</li>
 <li>

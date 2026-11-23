@@ -1,5 +1,24 @@
 # Changelog
 
+## scSimEval 0.99.14
+
+- **Scientific Verification & Accuracy Fixes Across All 56 Measures**:
+  Verified and hardened all 8 evaluation categories, including
+  density-based Bhattacharyya distance, tie-safe Wald-Wolfowitz runs and
+  k-NN mismatch tests, sparse-safe normalized 2D EMD, scale-consistent
+  MMD and Generative Precision/Recall, dense-simulator dropout curve
+  fallback, unpaired multiomics Category VI integration alignment, and
+  consistent modality-aware Category V (`DE` / `DA` / `DE/DA`) display
+  labels.
+- **Updated Curated Example Datasets & Scalability Benchmarks**:
+  Regenerated all bundled Rice Bud (paired, 1 reference + 6 simulators)
+  and Soybean Root (unpaired, 1 reference + 3 simulators) example
+  datasets (100 balanced cells across all cell types, 100 HVGs / 100
+  HVPs) alongside the paired multiomics saved-results `.rds` archive and
+  updated empirical scalability benchmarks, returning exact 56/56/44/38
+  metrics across paired multiomics, unpaired multiomics, scRNA-seq, and
+  scATAC-seq analyses.
+
 ## scSimEval 0.99.13
 
 - **Curated User-Focused Reference Documentation**: Streamlined the
@@ -62,16 +81,21 @@
   standardized `colData` annotations.
 - **Bioconductor Multiomics via `altExp`**: Upgraded multiomics
   evaluation pipelines to represent paired multimodal data (scRNA-seq +
-  scATAC-seq) using Bioconductor’s standard `altExp()` assay
-  representation.
+  scATAC-seq) using Bioconductor’s standard
+  [`altExp()`](https://rdrr.io/pkg/SingleCellExperiment/man/altExps.html)
+  assay representation.
 - **Streamlined Dependencies**: Replaced direct dependencies on heavy
   external single-cell ecosystems (`Seurat`, `Signac`) by moving
   optional adapters to `Suggests`, drastically reducing dependency
   overhead.
 - **Accessor Method Compliance**: Eliminated all direct S4 `@` slot
   accesses across metric computation, trajectories, and dimension
-  reductions in favor of formal accessor methods (`assay()`, `assays()`,
-  `colData()`, `reducedDim()`, `altExp()`).
+  reductions in favor of formal accessor methods
+  ([`assay()`](https://rdrr.io/pkg/SummarizedExperiment/man/SummarizedExperiment-class.html),
+  [`assays()`](https://rdrr.io/pkg/SummarizedExperiment/man/SummarizedExperiment-class.html),
+  [`colData()`](https://rdrr.io/pkg/SummarizedExperiment/man/SummarizedExperiment-class.html),
+  [`reducedDim()`](https://rdrr.io/pkg/SingleCellExperiment/man/reducedDims.html),
+  [`altExp()`](https://rdrr.io/pkg/SingleCellExperiment/man/altExps.html)).
 - **Clean Condition & Error Handling**: Removed all instances of
   [`suppressWarnings()`](https://rdrr.io/r/base/warning.html),
   [`suppressMessages()`](https://rdrr.io/r/base/message.html),

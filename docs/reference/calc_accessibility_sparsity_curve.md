@@ -65,22 +65,22 @@ accessibility to non-zero proportion (NZP):
 data(example_scatac, package = "scSimEval")
 calc_accessibility_sparsity_curve(example_scatac$ref)
 #> $c0
-#> [1] 0.02037692
+#> [1] 0.02833341
 #> 
 #> $c1
-#> [1] 0.3903363
+#> [1] 0.3916258
 #> 
 #> $c2
-#> [1] -0.06539262
+#> [1] -0.08619656
 #> 
 #> $r_squared
-#> [1] 0.9101528
+#> [1] 0.8882643
 #> 
 #> $spearman_cor
-#> [1] 0.9324406
+#> [1] 0.9212479
 #> 
 #> $pearson_cor
-#> [1] 0.9521563
+#> [1] 0.9184381
 #> 
 #> $poly_degree
 #> [1] 2
@@ -88,16 +88,16 @@ calc_accessibility_sparsity_curve(example_scatac$ref)
 #> $model
 #> 
 #> Call:
-#> stats::lm(formula = y ~ stats::poly(x, degree = poly_degree, 
-#>     raw = TRUE), data = df)
+#> stats::lm(formula = y ~ stats::poly(x, degree = eff_deg, raw = TRUE), 
+#>     data = df)
 #> 
 #> Coefficients:
-#>                                       (Intercept)  
-#>                                           0.02038  
-#> stats::poly(x, degree = poly_degree, raw = TRUE)1  
-#>                                           0.39034  
-#> stats::poly(x, degree = poly_degree, raw = TRUE)2  
-#>                                          -0.06539  
+#>                                   (Intercept)  
+#>                                       0.02833  
+#> stats::poly(x, degree = eff_deg, raw = TRUE)1  
+#>                                       0.39163  
+#> stats::poly(x, degree = eff_deg, raw = TRUE)2  
+#>                                      -0.08620  
 #> 
 #> 
 ```

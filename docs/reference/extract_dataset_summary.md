@@ -105,9 +105,9 @@ dataset with columns:
 data(example_scrna, package = "scSimEval")
 extract_dataset_summary(example_scrna$ref, role = "Reference", method_name = "Empirical")
 #>   Dataset / Simulator      Role  Modality Cells (N) Features (P) Sparsity
-#> 1           Empirical Reference scRNA-seq       100          100   92.06%
+#> 1           Empirical Reference scRNA-seq       100          100   74.17%
 #>   Cell Types (Groups) Batches Median Lib Size Median Detected Features
-#> 1                   8       2            15.0                        7
+#> 1                   8       2            52.0                       24
 #>   Mean Expression
-#> 1           0.376
+#> 1           0.735
 ```

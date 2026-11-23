@@ -40,5 +40,5 @@ identical distributions, 0 = disjoint; higher is better).
 ref <- stats::rnorm(50)
 sim <- stats::rnorm(50)
 calc_overlap(ref, sim)
-#> [1] 0.7366472
+#> [1] 0.9275293
 ```

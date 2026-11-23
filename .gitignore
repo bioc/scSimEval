@@ -1,35 +1,45 @@
-# R session files
+# R session and IDE files
 .Rproj.user
 .Rhistory
 .RData
 .Ruserdata
-scSimEval.Rproj
+*.Rproj
 
-# R build artifacts
+# R build, check, and Bioconductor artifacts
 *.tar.gz
 *.Rcheck/
+*.BiocCheck/
 Meta/
-scSimEval.BiocCheck/
 
-# Vignette HTML outputs in vignettes/ (docs/ holds the published site)
+# Vignette build intermediates in vignettes/ (docs/ holds the published pkgdown site)
 vignettes/*.html
+vignettes/*.R
+vignettes/*_files/
+vignettes/*_cache/
 
-# Development-only directories (not needed by users)
+# Test artifacts
+**/Rplots.pdf
+Rplots.pdf
+tests/testthat/_snaps/
+
+# Development-only directories
 examples/
 data-raw/
 scratch/
 
-# Temporary files
+# Agent/local scratch and temporary files
+AGENTS.md
 *.tmp
 *.log
-Rplots.pdf
+*.bak
+*~
 
 # OS generated files
 .DS_Store
 Thumbs.db
 Desktop.ini
 
-# Google Analytics credentials and runtime cache
+# Credentials and runtime caches
 *google_key.json
 *.key.json
 pageviews_cache.rds

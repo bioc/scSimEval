@@ -55,5 +55,5 @@ dim(example_scatac$sim)
 table(example_scatac$batch_info)
 #> 
 #> Bud_21 Bud_22 
-#>     61     39 
+#>     52     48 
 ```

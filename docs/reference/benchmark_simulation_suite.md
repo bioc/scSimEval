@@ -123,21 +123,21 @@ print(res)
 #> =====================================================================
 head(res$benchmark_summary_table, 8)
 #>     Method                      Category                      Metric Score_Norm
-#> 1 Splatter (I) Distributional Properties Between_Dataset_Silh_Global     0.9872
-#> 2 Splatter (I) Distributional Properties               Bhattacharyya     0.9907
-#> 3 Splatter (I) Distributional Properties                     KDE_ISE     0.8996
-#> 4 Splatter (I) Distributional Properties                          KS     0.8768
-#> 5 Splatter (I) Distributional Properties                         MAD     0.6454
-#> 6 Splatter (I) Distributional Properties                         MAE     0.6194
-#> 7 Splatter (I) Distributional Properties                 NN_Mismatch     0.7832
-#> 8 Splatter (I) Distributional Properties                        RMSE     0.5627
+#> 1 Splatter (I) Distributional Properties Between_Dataset_Silh_Global     0.9950
+#> 2 Splatter (I) Distributional Properties               Bhattacharyya     0.9821
+#> 3 Splatter (I) Distributional Properties                     KDE_ISE     0.9528
+#> 4 Splatter (I) Distributional Properties                          KS     0.8764
+#> 5 Splatter (I) Distributional Properties                         MAD     0.6875
+#> 6 Splatter (I) Distributional Properties                         MAE     0.6584
+#> 7 Splatter (I) Distributional Properties                 NN_Mismatch     0.9752
+#> 8 Splatter (I) Distributional Properties                        RMSE     0.6092
 #>   Score_Raw  Score Simulator
-#> 1    0.0069 0.9872  Splatter
-#> 2    0.0093 0.9907  Splatter
-#> 3    0.1004 0.8996  Splatter
-#> 4    0.1232 0.8768  Splatter
-#> 5    1.8449 0.6454  Splatter
-#> 6    3.7466 0.6194  Splatter
-#> 7    0.2168 0.7832  Splatter
-#> 8    7.2937 0.5627  Splatter
+#> 1    0.0032 0.9950  Splatter
+#> 2    0.0179 0.9821  Splatter
+#> 3    0.0472 0.9528  Splatter
+#> 4    0.1236 0.8764  Splatter
+#> 5    2.3106 0.6875  Splatter
+#> 6    2.9486 0.6584  Splatter
+#> 7    0.0248 0.9752  Splatter
+#> 8    3.8346 0.6092  Splatter
 ```

@@ -19,7 +19,7 @@ convert via Seurat::as.SingleCellExperiment()."><meta property="og:image" conten
 
     <a class="navbar-brand me-2" href="../index.html">scSimEval</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.99.13</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.99.14</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -85,7 +85,7 @@ convert via <code><a href="https://satijalab.org/seurat/reference/as.SingleCellE
 <span>  sim_cores <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  separate_resources <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  feature_pairs <span class="op">=</span> <span class="cn">NULL</span>,</span>
-<span>  compute_bivariate <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>  compute_bivariate <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>  threads <span class="op">=</span> <span class="fl">1L</span>,</span>
 <span>  trajectory_num_trees <span class="op">=</span> <span class="fl">10000L</span>,</span>
 <span>  verbose <span class="op">=</span> <span class="cn">TRUE</span></span>
@@ -147,7 +147,7 @@ and <code>sim_cores</code> when RNA and ATAC layers are simulated separately.</p
 
 
 <dt id="arg-compute-bivariate">compute_bivariate<a class="anchor" aria-label="anchor" href="#arg-compute-bivariate"></a></dt>
-<dd><p>Logical, whether to compute 2D bivariate tests. Default <code>FALSE</code>.</p></dd>
+<dd><p>Logical, whether to compute 2D bivariate tests. Default <code>TRUE</code>.</p></dd>
 
 
 <dt id="arg-threads">threads<a class="anchor" aria-label="anchor" href="#arg-threads"></a></dt>
@@ -207,10 +207,10 @@ and <code>sim_cores</code> when RNA and ATAC layers are simulated separately.</p
     <p><img src="figures/workflow_diagram.png" width="800" alt="scSimEval Unified Benchmarking Workflow Diagram"></p>
 
 <p><strong>Multiomics Metric Measurement Capacity (56 Evaluation Measures Suite):</strong></p><ul><li><p><strong>Paired Multiomics (56 Metrics):</strong> Dual unimodal properties (Cat I–II),
-    dual clustering (Cat III), dual batch mixing (Cat IV), dual biological signal (Cat V),
-    cross-modal integration &amp; pairing (Cat VI), scRNA trajectory (Cat VII), and scalability (Cat VIII).</p></li>
-<li><p><strong>Unpaired Multiomics (51 Metrics):</strong> Evaluates both modalities independently
-    with population-level integration &amp; alignment, omitting cell-matched pairing metrics.</p></li>
+    dual clustering (Cat III), dual batch mixing (Cat IV), dual biological signal (Cat V: 6 DE + 6 DA),
+    cross-modal integration &amp; alignment (Cat VI), scRNA trajectory (Cat VII), and scalability (Cat VIII).</p></li>
+<li><p><strong>Unpaired Multiomics (56 Metrics):</strong> Evaluates both modalities independently
+    across Cat I–V, VII, VIII plus population-level joint integration &amp; alignment (Cat VI).</p></li>
 </ul></div>
 
     <div class="section level2">
@@ -223,6 +223,7 @@ and <code>sim_cores</code> when RNA and ATAC layers are simulated separately.</p
 <span class="r-in"><span><span class="op">)</span></span></span>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>Zero sample variances detected, have been offset away from zero</span>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>Zero sample variances detected, have been offset away from zero</span>
+<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>shoving 'interior' knots matching boundary knots to inside</span>
 <span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">res</span><span class="op">$</span><span class="va">benchmark_summary_table</span>, <span class="fl">10</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>                     Category     Property                      Metric</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 1  Distributional Properties library_size                 Wasserstein</span>
@@ -235,17 +236,17 @@ and <code>sim_cores</code> when RNA and ATAC layers are simulated separately.</p
 <span class="r-out co"><span class="r-pr">#&gt;</span> 8  Distributional Properties library_size                         MAE</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 9  Distributional Properties library_size                        RMSE</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 10 Distributional Properties library_size                     KDE_ISE</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>          Value Modality</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 1  22.87000000      rna</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 2   0.20000000      rna</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 3  10.00000000      rna</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 4   0.00564741      rna</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 5  -2.83556062      rna</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 6   0.06500000      rna</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 7   0.02451093      rna</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 8  22.87000000      rna</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 9  45.22554588      rna</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 10  0.00123334      rna</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>            Value Modality</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 1  15.5100000000      rna</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 2   0.1500000000      rna</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 3   8.0000000000      rna</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 4   0.0254983351      rna</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 5  -0.1843114404      rna</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 6   0.0150000000      rna</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 7   0.0104231754      rna</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 8  15.5100000000      rna</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 9  22.4661968299      rna</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 10  0.0005628587      rna</span>
 </code></pre></div>
     </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>

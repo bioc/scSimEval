@@ -13,7 +13,7 @@ and simulated scRNA-seq datasets using biological replicate pseudobulks and edge
 
     <a class="navbar-brand me-2" href="../index.html">scSimEval</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.99.13</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.99.14</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -150,7 +150,7 @@ and simulated scRNA-seq datasets using biological replicate pseudobulks and edge
     <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
     <p>A list containing:</p>
 <dl><dt>deg_summary_table</dt>
-<dd><p>Tidy summary data.frame with 6 scRNA-seq DE metrics: <code>de_score</code>, <code>pval_dist_score</code>, <code>true_proportion</code>, <code>accuracy</code>, <code>precision</code>, <code>recall</code>, <code>f1_score</code>, and <code>auc</code></p></dd>
+<dd><p>Tidy summary data.frame with 6 scRNA-seq DE metrics: <code>pval_dist_score</code>, <code>accuracy</code>, <code>precision</code>, <code>recall</code>, <code>f1_score</code>, and <code>auc</code></p></dd>
 
   <dt>pairwise_results</dt>
 <dd><p>Detailed contrast-level data.frame with per-contrast metrics and confusion matrix counts</p></dd>
@@ -173,12 +173,12 @@ and simulated scRNA-seq datasets using biological replicate pseudobulks and edge
 </dl></div>
     <div class="section level2">
     <h2 id="details">Details<a class="anchor" aria-label="anchor" href="#details"></a></h2>
-    <p>Category V is divided into two distinct sub-categories:</p><ul><li><p><strong>Sub-category V-A (scRNA-seq Differential Expression)</strong>: Computes 8 metrics:
-    <code>de_score</code>, <code>pval_dist_score</code>, <code>true_proportion</code>, <code>accuracy</code>,
-    <code>precision</code>, <code>recall</code>, <code>f1_score</code>, and <code>auc</code>.</p></li>
-<li><p><strong>Sub-category V-B (scATAC-seq Differential Accessibility)</strong>: Computes 8 metrics:
-    <code>da_score</code>, <code>pval_dist_score</code>, <code>true_proportion</code>, <code>accuracy</code>,
-    <code>precision</code>, <code>recall</code>, <code>f1_score</code>, and <code>auc</code>.</p></li>
+    <p>Category V is divided into two distinct sub-categories:</p><ul><li><p><strong>Sub-category V-A (scRNA-seq Differential Expression)</strong>: Computes 6 metrics:
+    <code>pval_dist_score</code>, <code>accuracy</code>, <code>precision</code>, <code>recall</code>,
+    <code>f1_score</code>, and <code>auc</code>.</p></li>
+<li><p><strong>Sub-category V-B (scATAC-seq Differential Accessibility)</strong>: Computes 6 metrics:
+    <code>pval_dist_score</code>, <code>accuracy</code>, <code>precision</code>, <code>recall</code>,
+    <code>f1_score</code>, and <code>auc</code>.</p></li>
 </ul><p>If <code>batch_ref</code> or <code>batch_sim</code> is NULL, the analysis is gracefully skipped,
 adhering to the strict rule that single-cell biological signal evaluation requires
 genuine biological replicates to prevent false positive inflation and pseudoreplication bias.</p>
@@ -198,12 +198,12 @@ genuine biological replicates to prevent false positive inflation and pseudorepl
 <span class="r-in"><span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="va">res</span><span class="op">$</span><span class="va">deg_summary_table</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>                         SubCategory          Metric     Value</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 1 scRNA-seq Differential Expression pval_dist_score 0.4968177</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 2 scRNA-seq Differential Expression        accuracy 0.9575000</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 3 scRNA-seq Differential Expression       precision 0.3774637</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 4 scRNA-seq Differential Expression          recall 0.2700747</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 5 scRNA-seq Differential Expression        f1_score 0.2800467</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 6 scRNA-seq Differential Expression             auc 0.9345132</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 1 scRNA-seq Differential Expression pval_dist_score 0.8091448</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 2 scRNA-seq Differential Expression        accuracy 0.9300000</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 3 scRNA-seq Differential Expression       precision 0.4220779</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 4 scRNA-seq Differential Expression          recall 0.3779070</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 5 scRNA-seq Differential Expression        f1_score 0.3987730</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 6 scRNA-seq Differential Expression             auc 0.8532752</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>                                                         Direction</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 1    Higher is better (1.0 = uniform null p-values, no inflation)</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 2             Higher is better (1.0 = perfect DEG classification)</span>

@@ -11,7 +11,8 @@
 <link rel="apple-touch-icon" sizes="180x180" href="../apple-touch-icon.png">
 <link rel="icon" sizes="any" href="../favicon.ico">
 <link rel="manifest" href="../site.webmanifest">
-<script src="../lightswitch.js"></script><script src="../deps/jquery-3.6.0/jquery-3.6.0.min.js"></script><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<!-- katex math --><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css" integrity="sha384-nB0miv6/jRmo5UMMR1wu3Gz6NLsoTkbqJghGIsx//Rlm+ZU03BU6SQNC66uf4l5+" crossorigin="anonymous">
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js" integrity="sha384-7zkQWkzuo3B5mTepMUcHkMB5jZaolc2xDwL6VFqjFALcbeS9Ggm/Yr2r3Dy4lfFg" crossorigin="anonymous"></script><script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js" integrity="sha384-43gviWU0YVjaDtb/GhzOouOXtZMP/7XUzwPTstBeZFe/+rCMvRwr4yROQP43s0Xk" crossorigin="anonymous" onload="renderMathInElement(document.body);"></script><script src="../katex-auto.js"></script><script src="../lightswitch.js"></script><script src="../deps/jquery-3.6.0/jquery-3.6.0.min.js"></script><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 <link href="../deps/bootstrap-5.3.8/bootstrap.min.css" rel="stylesheet">
 <script src="../deps/bootstrap-5.3.8/bootstrap.bundle.min.js"></script><link href="../deps/font-awesome-6.5.2/css/all.min.css" rel="stylesheet">
 <link href="../deps/font-awesome-6.5.2/css/v4-shims.min.css" rel="stylesheet">
@@ -29,7 +30,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">scSimEval</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.99.13</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.99.14</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -155,7 +156,7 @@ paired/unpaired RNA+ATAC integration, and <code>core_seconds</code> /
 <h2 id="installation">Installation<a class="anchor" aria-label="anchor" href="#installation"></a>
 </h2>
 <p>Install the package from Bioconductor with:</p>
-<div class="sourceCode" id="cb0"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw">if</span> <span class="op">(</span><span class="op">!</span><span class="fu"><a href="https://rdrr.io/r/base/ns-load.html" class="external-link">requireNamespace</a></span><span class="op">(</span><span class="st">"BiocManager"</span>, quietly <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span><span class="op">)</span> <span class="op">{</span></span>
 <span>    <span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html" class="external-link">install.packages</a></span><span class="op">(</span><span class="st">"BiocManager"</span><span class="op">)</span></span>
 <span><span class="op">}</span></span>
@@ -170,7 +171,7 @@ on <strong><code>SingleCellExperiment</code></strong> objects containing
 raw counts (<code>assays(sce)$counts</code>) and cell metadata columns
 (<code>cell_type</code> and <code>batch</code> in
 <code>colData(sce)</code>):</p>
-<div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Optional conversion if starting from Seurat:</span></span>
 <span><span class="co"># ref_sce &lt;- Seurat::as.SingleCellExperiment(ref_seurat)</span></span>
 <span><span class="co"># sim_sce &lt;- Seurat::as.SingleCellExperiment(sim_seurat)</span></span></code></pre></div>
@@ -188,7 +189,7 @@ raw counts (<code>assays(sce)$counts</code>) and cell metadata columns
 <code>sim</code> are <code>SingleCellExperiment</code> objects with
 <code>cell_type</code> and <code>batch</code> already stored in
 <code>colData</code>):</p>
-<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://kabilanbio.github.io/scSimEval/">scSimEval</a></span><span class="op">)</span></span>
 <span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va">SingleCellExperiment</span><span class="op">)</span></span>
 <span></span>
@@ -198,28 +199,28 @@ raw counts (<code>assays(sce)$counts</code>) and cell metadata columns
 <span><span class="co">#&gt; dim: 100 100 </span></span>
 <span><span class="co">#&gt; metadata(0):</span></span>
 <span><span class="co">#&gt; assays(1): counts</span></span>
-<span><span class="co">#&gt; rownames(100): Os04g0188433 Os05g0202800 ... Os06g0553200 Os04g0578600</span></span>
+<span><span class="co">#&gt; rownames(100): Os05g0257100 Os06g0142400 ... Os05g0550300 Os12g0181500</span></span>
 <span><span class="co">#&gt; rowData names(0):</span></span>
-<span><span class="co">#&gt; colnames(100): AAACCGGCAAGTGTTT-1 AAACGGATCGATCAGT-1 ...</span></span>
-<span><span class="co">#&gt;   TTTGGTGCATGTCAGC-1 TTTGTGTTCATAACGC-1</span></span>
-<span><span class="co">#&gt; colData names(2): cell_type batch</span></span>
+<span><span class="co">#&gt; colnames(100): GTACTTAAGCTCAATA-1 CTTGACGAGTAGCGGG-1 ...</span></span>
+<span><span class="co">#&gt;   GTCAGGCTCCTCACAC-1 TAATTGCCAGCATGGA-1</span></span>
+<span><span class="co">#&gt; colData names(5): orig.ident nCount_RNA nFeature_RNA cell_type batch</span></span>
 <span><span class="co">#&gt; reducedDimNames(1): PCA</span></span>
 <span><span class="co">#&gt; mainExpName: NULL</span></span>
 <span><span class="co">#&gt; altExpNames(0):</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/pkg/SummarizedExperiment/man/SummarizedExperiment-class.html" class="external-link">colData</a></span><span class="op">(</span><span class="va">example_scrna</span><span class="op">$</span><span class="va">ref</span><span class="op">)</span>, <span class="fl">3</span><span class="op">)</span></span>
-<span><span class="co">#&gt; DataFrame with 3 rows and 2 columns</span></span>
-<span><span class="co">#&gt;                          cell_type    batch</span></span>
-<span><span class="co">#&gt;                           &lt;factor&gt; &lt;factor&gt;</span></span>
-<span><span class="co">#&gt; AAACCGGCAAGTGTTT-1 Parenchyma_cell   Bud_21</span></span>
-<span><span class="co">#&gt; AAACGGATCGATCAGT-1 Parenchyma_cell   Bud_21</span></span>
-<span><span class="co">#&gt; AACAGCAAGGTTAGAG-1 Epidermis         Bud_21</span></span></code></pre></div>
+<span><span class="co">#&gt; DataFrame with 3 rows and 5 columns</span></span>
+<span><span class="co">#&gt;                      orig.ident nCount_RNA nFeature_RNA cell_type    batch</span></span>
+<span><span class="co">#&gt;                     &lt;character&gt;  &lt;numeric&gt;    &lt;integer&gt;  &lt;factor&gt; &lt;factor&gt;</span></span>
+<span><span class="co">#&gt; GTACTTAAGCTCAATA-1 Rice_Bud_Ref         54           28  Bud_axis   Bud_21</span></span>
+<span><span class="co">#&gt; CTTGACGAGTAGCGGG-1 Rice_Bud_Ref         53           20  Bud_axis   Bud_21</span></span>
+<span><span class="co">#&gt; AAAGCACCAACCCTCC-1 Rice_Bud_Ref         39           21  Bud_axis   Bud_21</span></span></code></pre></div>
 <p>Run <code><a href="../reference/evaluate_simulation_accuracy.html">evaluate_simulation_accuracy()</a></code> on
 <code>ref_sce</code> and <code>sim_sce</code>. Here we include timing
 and memory metadata to compute Category VIII scalability metrics
 (<code>compute_bivariate = FALSE</code> and
 <code>include_trajectory = FALSE</code> keep this quick-start vignette
 fast):</p>
-<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">scrna_res</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/evaluate_simulation_accuracy.html">evaluate_simulation_accuracy</a></span><span class="op">(</span></span>
 <span>  ref_sce            <span class="op">=</span> <span class="va">example_scrna</span><span class="op">$</span><span class="va">ref</span>,</span>
 <span>  sim_sce            <span class="op">=</span> <span class="va">example_scrna</span><span class="op">$</span><span class="va">sim</span>,</span>
@@ -247,34 +248,34 @@ fast):</p>
 <span><span class="co">#&gt; 8  Distributional Properties library_size                         MAE</span></span>
 <span><span class="co">#&gt; 9  Distributional Properties library_size                        RMSE</span></span>
 <span><span class="co">#&gt; 10 Distributional Properties library_size                     KDE_ISE</span></span>
-<span><span class="co">#&gt;          Value Sim_Cores</span></span>
-<span><span class="co">#&gt; 1  22.87000000         2</span></span>
-<span><span class="co">#&gt; 2   0.20000000         2</span></span>
-<span><span class="co">#&gt; 3  10.00000000         2</span></span>
-<span><span class="co">#&gt; 4   0.00564741         2</span></span>
-<span><span class="co">#&gt; 5  -2.83556062         2</span></span>
-<span><span class="co">#&gt; 6   0.06500000         2</span></span>
-<span><span class="co">#&gt; 7   0.02451093         2</span></span>
-<span><span class="co">#&gt; 8  22.87000000         2</span></span>
-<span><span class="co">#&gt; 9  45.22554588         2</span></span>
-<span><span class="co">#&gt; 10  0.00123334         2</span></span></code></pre></div>
+<span><span class="co">#&gt;            Value  Modality Sim_Cores</span></span>
+<span><span class="co">#&gt; 1  15.5100000000 scRNA-seq         2</span></span>
+<span><span class="co">#&gt; 2   0.1500000000 scRNA-seq         2</span></span>
+<span><span class="co">#&gt; 3   8.0000000000 scRNA-seq         2</span></span>
+<span><span class="co">#&gt; 4   0.0254983351 scRNA-seq         2</span></span>
+<span><span class="co">#&gt; 5  -0.1843114404 scRNA-seq         2</span></span>
+<span><span class="co">#&gt; 6   0.0150000000 scRNA-seq         2</span></span>
+<span><span class="co">#&gt; 7   0.0104231754 scRNA-seq         2</span></span>
+<span><span class="co">#&gt; 8  15.5100000000 scRNA-seq         2</span></span>
+<span><span class="co">#&gt; 9  22.4661968299 scRNA-seq         2</span></span>
+<span><span class="co">#&gt; 10  0.0005628587 scRNA-seq         2</span></span></code></pre></div>
 <div class="section level3">
 <h3 id="visualizing-results">Visualizing Results<a class="anchor" aria-label="anchor" href="#visualizing-results"></a>
 </h3>
 <p>We can summarize overall category scores or inspect distributional
 Q-Q / density concordance directly from the returned evaluation
 object:</p>
-<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="../reference/plot_evaluation_summary.html">plot_evaluation_summary</a></span><span class="op">(</span><span class="va">scrna_res</span><span class="op">)</span></span></code></pre></div>
-<p><img src="scSimEval-workflow_files/figure-html/plot-scrna-1.png" class="r-plt" alt="" width="864"></p>
 <div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="../reference/plot_evaluation_summary.html">plot_evaluation_summary</a></span><span class="op">(</span><span class="va">scrna_res</span><span class="op">)</span></span></code></pre></div>
+<p><img src="scSimEval-workflow_files/figure-html/plot-scrna-1.png" class="r-plt" alt="" width="1350"></p>
+<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/plot_distribution_qc.html">plot_distribution_qc</a></span><span class="op">(</span></span>
 <span>  ref_data   <span class="op">=</span> <span class="va">example_scrna</span><span class="op">$</span><span class="va">ref</span>,</span>
 <span>  sim_data   <span class="op">=</span> <span class="va">example_scrna</span><span class="op">$</span><span class="va">sim</span>,</span>
 <span>  layout     <span class="op">=</span> <span class="st">"qq"</span>,</span>
 <span>  properties <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"library_size"</span>, <span class="st">"zero_fraction_cell"</span>, <span class="st">"mean_expression"</span><span class="op">)</span></span>
 <span><span class="op">)</span></span></code></pre></div>
-<p><img src="scSimEval-workflow_files/figure-html/plot-qc-1.png" class="r-plt" alt="" width="864"></p>
+<p><img src="scSimEval-workflow_files/figure-html/plot-qc-1.png" class="r-plt" alt="" width="1350"></p>
 <hr>
 </div>
 </div>
@@ -285,7 +286,7 @@ scATAC-seq)<a class="anchor" aria-label="anchor" href="#quick-start-tutorial-pai
 <p>For simultaneous co-assay simulations,
 <code><a href="../reference/evaluate_multiomics_accuracy.html">evaluate_multiomics_accuracy()</a></code> jointly evaluates both
 unimodal layers plus Category VI cross-modal alignment:</p>
-<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="st">"example_multiomics"</span>, package <span class="op">=</span> <span class="st">"scSimEval"</span><span class="op">)</span></span>
 <span></span>
 <span><span class="va">multi_res</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/evaluate_multiomics_accuracy.html">evaluate_multiomics_accuracy</a></span><span class="op">(</span></span>
@@ -312,7 +313,7 @@ unimodal layers plus Category VI cross-modal alignment:</p>
 <span><span class="co">#&gt;    Cellular Manifold &amp; Clustering Concordance </span></span>
 <span><span class="co">#&gt;                                            16 </span></span>
 <span><span class="co">#&gt;                     Distributional Properties </span></span>
-<span><span class="co">#&gt;                                           270 </span></span>
+<span><span class="co">#&gt;                                           302 </span></span>
 <span><span class="co">#&gt;            Sparsity &amp; Zero-Inflation Dynamics </span></span>
 <span><span class="co">#&gt;                                             7 </span></span>
 <span><span class="co">#&gt;   Technical Variation &amp; Batch Mixing Dynamics </span></span>
@@ -348,11 +349,11 @@ exports are available in the companion package
 <div class="section level2">
 <h2 id="session-information">Session Information<a class="anchor" aria-label="anchor" href="#session-information"></a>
 </h2>
-<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/sessionInfo.html" class="external-link">sessionInfo</a></span><span class="op">(</span><span class="op">)</span></span>
 <span><span class="co">#&gt; R version 4.6.2 (2026-10-29)</span></span>
 <span><span class="co">#&gt; Platform: x86_64-pc-linux-gnu</span></span>
-<span><span class="co">#&gt; Running under: Ubuntu 24.04.5 LTS</span></span>
+<span><span class="co">#&gt; Running under: Ubuntu 24.04.4 LTS</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; Matrix products: default</span></span>
 <span><span class="co">#&gt; BLAS:   /usr/lib/x86_64-linux-gnu/blas/libblas.so.3.12.0 </span></span>
@@ -379,50 +380,72 @@ exports are available in the companion package
 <span><span class="co">#&gt;  [5] Seqinfo_1.2.0               IRanges_2.46.0             </span></span>
 <span><span class="co">#&gt;  [7] S4Vectors_0.50.3            BiocGenerics_0.58.1        </span></span>
 <span><span class="co">#&gt;  [9] generics_0.1.4              MatrixGenerics_1.24.0      </span></span>
-<span><span class="co">#&gt; [11] matrixStats_1.5.0           scSimEval_0.99.12          </span></span>
+<span><span class="co">#&gt; [11] matrixStats_1.5.0           scSimEval_0.99.14          </span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; loaded via a namespace (and not attached):</span></span>
-<span><span class="co">#&gt;   [1] RColorBrewer_1.1-3  jsonlite_2.0.0      magrittr_2.0.5     </span></span>
-<span><span class="co">#&gt;   [4] ggbeeswarm_0.7.3    SuppDists_1.1-9.9   farver_2.1.2       </span></span>
-<span><span class="co">#&gt;   [7] rmarkdown_2.32      fs_2.1.0            ragg_1.5.2         </span></span>
-<span><span class="co">#&gt;  [10] vctrs_0.7.3         htmltools_0.5.9     S4Arrays_1.12.1    </span></span>
-<span><span class="co">#&gt;  [13] BiocNeighbors_2.6.0 SparseArray_1.12.3  sass_0.4.10        </span></span>
-<span><span class="co">#&gt;  [16] sctransform_0.4.3   parallelly_1.50.0   KernSmooth_2.23-27 </span></span>
-<span><span class="co">#&gt;  [19] bslib_0.12.0        htmlwidgets_1.6.4   desc_1.4.3         </span></span>
-<span><span class="co">#&gt;  [22] ica_1.0-3           plyr_1.8.9          cachem_1.1.0       </span></span>
-<span><span class="co">#&gt;  [25] igraph_2.3.4        lifecycle_1.0.5     pkgconfig_2.0.3    </span></span>
-<span><span class="co">#&gt;  [28] rsvd_2.0.0          Matrix_1.7-6        R6_2.6.1           </span></span>
-<span><span class="co">#&gt;  [31] fastmap_1.2.0       future_1.82.0       digest_0.6.39      </span></span>
-<span><span class="co">#&gt;  [34] patchwork_1.3.2     Seurat_6.0.0        scater_1.40.2      </span></span>
-<span><span class="co">#&gt;  [37] RSpectra_0.16-2     irlba_2.4.1         textshaping_1.0.5  </span></span>
-<span><span class="co">#&gt;  [40] beachmat_2.28.0     labeling_0.4.3      progressr_1.1.0    </span></span>
-<span><span class="co">#&gt;  [43] httr_1.4.9          abind_1.4-8         compiler_4.6.2     </span></span>
-<span><span class="co">#&gt;  [46] proxy_0.4-29        withr_3.0.3         S7_0.2.2           </span></span>
-<span><span class="co">#&gt;  [49] BiocParallel_1.46.0 viridis_0.6.5       fastDummies_1.7.6  </span></span>
-<span><span class="co">#&gt;  [52] MASS_7.3-66         DelayedArray_0.38.2 ggsci_5.2.0        </span></span>
-<span><span class="co">#&gt;  [55] tools_4.6.2         ranger_0.18.0       vipor_0.4.7        </span></span>
-<span><span class="co">#&gt;  [58] otel_0.3.0          beeswarm_0.4.0      future.apply_1.21.0</span></span>
-<span><span class="co">#&gt;  [61] glue_1.8.1          grid_4.6.2          Rtsne_0.17         </span></span>
-<span><span class="co">#&gt;  [64] cluster_2.1.8.3     reshape2_1.4.5      gtable_0.3.6       </span></span>
-<span><span class="co">#&gt;  [67] class_7.3-24        data.table_1.18.6.1 BiocSingular_1.28.1</span></span>
-<span><span class="co">#&gt;  [70] ScaledMatrix_1.20.0 sp_2.2-4            XVector_0.52.0     </span></span>
-<span><span class="co">#&gt;  [73] RcppAnnoy_0.0.23    ggrepel_0.9.8       RANN_2.6.3         </span></span>
-<span><span class="co">#&gt;  [76] pillar_1.11.1       stringr_1.6.0       spam_2.11-4        </span></span>
-<span><span class="co">#&gt;  [79] RcppHNSW_0.7.0      limma_3.68.5        splines_4.6.2      </span></span>
-<span><span class="co">#&gt;  [82] dplyr_1.2.1         lattice_0.23-1      tidyselect_1.2.1   </span></span>
-<span><span class="co">#&gt;  [85] locfit_1.5-9.12     CDI_1.10.0          scuttle_1.22.0     </span></span>
-<span><span class="co">#&gt;  [88] pbapply_1.7-5       knitr_1.52          gridExtra_2.3.1    </span></span>
-<span><span class="co">#&gt;  [91] edgeR_4.10.7        scattermore_1.2     RhpcBLASctl_0.23-42</span></span>
-<span><span class="co">#&gt;  [94] xfun_0.62           pls_2.9-0           statmod_1.5.2      </span></span>
-<span><span class="co">#&gt;  [97] stringi_1.8.9       yaml_2.3.12         evaluate_1.0.5     </span></span>
-<span><span class="co">#&gt; [100] codetools_0.2-20    kSamples_1.2-12     tibble_3.3.1       </span></span>
-<span><span class="co">#&gt; [103] cli_3.6.6           uwot_0.2.5          RcppParallel_6.2.1 </span></span>
-<span><span class="co">#&gt; [106] systemfonts_1.3.3   jquerylib_0.1.4     Rcpp_1.1.2         </span></span>
-<span><span class="co">#&gt; [109] globals_0.20.0      png_0.1-9           parallel_4.6.2     </span></span>
-<span><span class="co">#&gt; [112] pkgdown_2.2.1       ggplot2_4.0.4       dotCall64_1.2      </span></span>
-<span><span class="co">#&gt; [115] mclust_6.1.3        listenv_1.1.0       viridisLite_0.4.3  </span></span>
-<span><span class="co">#&gt; [118] scales_1.4.0        ggridges_0.5.7      e1071_1.7-17       </span></span>
-<span><span class="co">#&gt; [121] SeuratObject_5.4.0  rlang_1.3.0         cowplot_1.2.0</span></span></code></pre></div>
+<span><span class="co">#&gt;   [1] RColorBrewer_1.1-3             jsonlite_2.0.0                </span></span>
+<span><span class="co">#&gt;   [3] magrittr_2.0.5                 ggbeeswarm_0.7.3              </span></span>
+<span><span class="co">#&gt;   [5] SuppDists_1.1-9.9              farver_2.1.2                  </span></span>
+<span><span class="co">#&gt;   [7] rmarkdown_2.32                 fs_2.1.0                      </span></span>
+<span><span class="co">#&gt;   [9] ragg_1.5.2                     vctrs_0.7.3                   </span></span>
+<span><span class="co">#&gt;  [11] htmltools_0.5.9                S4Arrays_1.12.1               </span></span>
+<span><span class="co">#&gt;  [13] BiocNeighbors_2.6.0            SparseArray_1.12.3            </span></span>
+<span><span class="co">#&gt;  [15] sass_0.5.0                     sctransform_0.4.3             </span></span>
+<span><span class="co">#&gt;  [17] parallelly_1.50.0              KernSmooth_2.23-27            </span></span>
+<span><span class="co">#&gt;  [19] bslib_0.12.0                   htmlwidgets_1.6.4             </span></span>
+<span><span class="co">#&gt;  [21] desc_1.4.3                     ica_1.0-3                     </span></span>
+<span><span class="co">#&gt;  [23] plyr_1.8.9                     cachem_1.1.0                  </span></span>
+<span><span class="co">#&gt;  [25] igraph_2.3.4                   lifecycle_1.0.5               </span></span>
+<span><span class="co">#&gt;  [27] pkgconfig_2.0.3                rsvd_2.0.0                    </span></span>
+<span><span class="co">#&gt;  [29] Matrix_1.7-6                   R6_2.6.1                      </span></span>
+<span><span class="co">#&gt;  [31] fastmap_1.2.0                  future_1.82.0                 </span></span>
+<span><span class="co">#&gt;  [33] digest_0.6.39                  patchwork_1.3.2               </span></span>
+<span><span class="co">#&gt;  [35] Seurat_6.0.0                   scater_1.40.2                 </span></span>
+<span><span class="co">#&gt;  [37] RSpectra_0.16-2                irlba_2.4.1                   </span></span>
+<span><span class="co">#&gt;  [39] textshaping_1.1.0              beachmat_2.28.0               </span></span>
+<span><span class="co">#&gt;  [41] labeling_0.4.3                 progressr_1.1.0               </span></span>
+<span><span class="co">#&gt;  [43] httr_1.4.9                     abind_1.4-8                   </span></span>
+<span><span class="co">#&gt;  [45] compiler_4.6.2                 proxy_0.4-29                  </span></span>
+<span><span class="co">#&gt;  [47] fasano.franceschini.test_2.2.2 withr_3.0.3                   </span></span>
+<span><span class="co">#&gt;  [49] S7_1.0.0                       BiocParallel_1.46.0           </span></span>
+<span><span class="co">#&gt;  [51] viridis_0.6.5                  fastDummies_1.7.6             </span></span>
+<span><span class="co">#&gt;  [53] MASS_7.3-66                    DelayedArray_0.38.2           </span></span>
+<span><span class="co">#&gt;  [55] ggsci_5.2.0                    tools_4.6.2                   </span></span>
+<span><span class="co">#&gt;  [57] ranger_0.18.0                  vipor_0.4.7                   </span></span>
+<span><span class="co">#&gt;  [59] otel_0.3.0                     beeswarm_0.4.0                </span></span>
+<span><span class="co">#&gt;  [61] future.apply_1.21.0            glue_1.8.1                    </span></span>
+<span><span class="co">#&gt;  [63] grid_4.6.2                     Rtsne_0.17                    </span></span>
+<span><span class="co">#&gt;  [65] cluster_2.1.8.2                reshape2_1.4.5                </span></span>
+<span><span class="co">#&gt;  [67] gtable_0.3.6                   class_7.3-24                  </span></span>
+<span><span class="co">#&gt;  [69] data.table_1.18.6.1            ScaledMatrix_1.20.0           </span></span>
+<span><span class="co">#&gt;  [71] BiocSingular_1.28.1            sp_2.2-4                      </span></span>
+<span><span class="co">#&gt;  [73] XVector_0.52.0                 RcppAnnoy_0.0.23              </span></span>
+<span><span class="co">#&gt;  [75] ggrepel_0.9.8                  RANN_2.6.3                    </span></span>
+<span><span class="co">#&gt;  [77] pillar_1.11.1                  stringr_1.6.0                 </span></span>
+<span><span class="co">#&gt;  [79] spam_2.11-4                    RcppHNSW_0.7.0                </span></span>
+<span><span class="co">#&gt;  [81] limma_3.68.5                   splines_4.6.2                 </span></span>
+<span><span class="co">#&gt;  [83] dplyr_1.2.1                    lattice_0.23-1                </span></span>
+<span><span class="co">#&gt;  [85] emdist_0.3-3                   tidyselect_1.2.1              </span></span>
+<span><span class="co">#&gt;  [87] locfit_1.5-9.12                CDI_1.10.0                    </span></span>
+<span><span class="co">#&gt;  [89] scuttle_1.22.0                 pbapply_1.7-5                 </span></span>
+<span><span class="co">#&gt;  [91] knitr_1.52                     gridExtra_2.3.1               </span></span>
+<span><span class="co">#&gt;  [93] edgeR_4.10.7                   scattermore_1.2               </span></span>
+<span><span class="co">#&gt;  [95] RhpcBLASctl_0.23-42            xfun_0.62                     </span></span>
+<span><span class="co">#&gt;  [97] pls_2.9-0                      statmod_1.5.2                 </span></span>
+<span><span class="co">#&gt;  [99] stringi_1.8.9                  yaml_2.3.12                   </span></span>
+<span><span class="co">#&gt; [101] evaluate_1.0.5                 codetools_0.2-20              </span></span>
+<span><span class="co">#&gt; [103] kSamples_1.2-12                tibble_3.3.1                  </span></span>
+<span><span class="co">#&gt; [105] cli_3.6.6                      uwot_0.2.5                    </span></span>
+<span><span class="co">#&gt; [107] RcppParallel_6.2.1             systemfonts_1.3.4             </span></span>
+<span><span class="co">#&gt; [109] jquerylib_0.1.4                Rcpp_1.1.2                    </span></span>
+<span><span class="co">#&gt; [111] globals_0.20.0                 png_0.1-9                     </span></span>
+<span><span class="co">#&gt; [113] parallel_4.6.2                 pkgdown_2.2.1                 </span></span>
+<span><span class="co">#&gt; [115] ggplot2_4.0.4                  dotCall64_1.2                 </span></span>
+<span><span class="co">#&gt; [117] mclust_6.1.4                   listenv_1.1.0                 </span></span>
+<span><span class="co">#&gt; [119] viridisLite_0.4.3              scales_1.4.0                  </span></span>
+<span><span class="co">#&gt; [121] ggridges_0.5.7                 e1071_1.7-17                  </span></span>
+<span><span class="co">#&gt; [123] SeuratObject_5.4.0             rlang_1.3.0                   </span></span>
+<span><span class="co">#&gt; [125] cowplot_1.2.0</span></span></code></pre></div>
 </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
     </nav></aside>
@@ -871,6 +894,31 @@ document.addEventListener("DOMContentLoaded", function() {
     });
   }
   initDocPlotZoom();
+
+  /* Click-to-zoom lightbox for Reference example plots (without mutating <pre><code> DOM) */
+  document.querySelectorAll("#main pre .r-plt img, #main .r-plt.img img").forEach(function(img) {
+    img.title = "Click to inspect full-size plot";
+    img.addEventListener("click", function() {
+      window.scOpenLightbox(img.src);
+    });
+  });
+
+  /* Ensure KaTeX renders all Reference Rd \\(...\\) and $...$ equations reliably */
+  function renderScSimEvalMath() {
+    if (typeof renderMathInElement === "function") {
+      renderMathInElement(document.body, {
+        delimiters: [
+          { left: "$", right: "$", display: true },
+          { left: "\\[", right: "\\]", display: true },
+          { left: "\\(", right: "\\)", display: false }
+        ],
+        ignoredTags: ["script", "noscript", "style", "textarea", "pre", "code", "option"],
+        throwOnError: false
+      });
+    }
+  }
+  renderScSimEvalMath();
+  window.addEventListener("load", renderScSimEvalMath);
 });
 </script>
 </body>

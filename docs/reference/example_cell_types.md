@@ -28,10 +28,10 @@ Derived from `example_scrna$cell_types`.
 ``` r
 data(example_cell_types)
 head(example_cell_types)
-#> AAACCGGCAAGTGTTT-1 AAACGGATCGATCAGT-1 AACAGCAAGGTTAGAG-1 AACCTAATCAAGTGAG-1 
-#>    Parenchyma_cell    Parenchyma_cell          Epidermis     Bud_primordium 
-#> AAGGTGCAGGGTCCAC-1 AAGTTTGTCCACCTGT-1 
-#>  Vascular_cylinder      Root_meristem 
+#> GTACTTAAGCTCAATA-1 CTTGACGAGTAGCGGG-1 AAAGCACCAACCCTCC-1 CGCACAATCTTGATGA-1 
+#>           Bud_axis           Bud_axis           Bud_axis           Bud_axis 
+#> AGCTACTAGCGAGTAA-1 CTTACTAGTCTCAGCC-1 
+#>           Bud_axis           Bud_axis 
 #> 8 Levels: Bud_axis Bud_primordium Bud-unknown Epidermis ... Vascular_cylinder
 table(example_cell_types)
 #> example_cell_types

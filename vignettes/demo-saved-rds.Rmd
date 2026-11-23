@@ -27,7 +27,7 @@ knitr::opts_chunk$set(
 
 In multi-tissue or multi-simulator benchmarking studies executed on high-performance computing (HPC) clusters, computing the full 56-metric evaluation suite across dozens of dataset-simulator pairs is computationally intensive. Once evaluations are serialized to `.rds` files via `saveRDS()`, **`scSimEval`** enables instant reloading, cross-dataset consolidation, custom leaderboard ranking, and publication-grade visualization — **without re-computing a single metric**.
 
-This demonstration illustrates a complete downstream `.rds` workflow using **3 independently saved Rice paired multiomics benchmark sessions** (`Flag`, `Leaf`, and `Root` tissues), each containing all 6 simulators (`scDesign3`, `MOSim`, `scCross`, `scMultiSim`, `Matilda`, and `scMoMtF`) evaluated across all 8 canonical categories (2,142 metric evaluations per tissue; 6,426 total rows).
+This demonstration illustrates a complete downstream `.rds` workflow using **3 independently saved Rice paired multiomics benchmark sessions** (`Flag`, `Leaf`, and `Root` tissues), each containing all 6 simulators (`scDesign3`, `MOSim`, `scCross`, `scMultiSim`, `Matilda`, and `scMoMtF`) evaluated across all 8 canonical categories (2,154 metric evaluations per tissue; 6,462 total rows).
 
 ---
 
@@ -137,7 +137,7 @@ p_bubble <- plot_benchmark_bubble_matrix(
   title     = "Cross-Tissue Simulation Fidelity: Rice Flag, Leaf & Root (Pre-Saved .rds)",
   base_size = 12
 )
-ggsave("figures/presaved_benchmark_bubble_matrix.png", plot = p_bubble, width = 18, height = 9, dpi = 300)
+ggsave("figures/presaved_benchmark_bubble_matrix.png", plot = p_bubble, width = 28, height = 9.5, dpi = 300)
 ```
 
 ```{r fig-bubble, echo = FALSE, out.width = "100%", fig.cap = "**Figure 1: Cross-Tissue Comparative Bubble Matrix (Rice Flag, Leaf & Root).** Consolidates normalized fidelity scores across all 8 evaluation categories and 6 simulators directly from three pre-saved `.rds` session archives."}
@@ -240,7 +240,7 @@ Navigate to **Data Hub $\rightarrow$ Upload Pre-Saved Benchmark Session (.rds)**
 
 # 5. Cross-Tissue Takeaways
 
-Consolidating the three pre-saved Rice `.rds` sessions (6,426 metric evaluations) demonstrates strong rank stability across distinct plant tissues:
+Consolidating the three pre-saved Rice `.rds` sessions (6,462 metric evaluations) demonstrates strong rank stability across distinct plant tissues:
 * **`scDesign3`** consistently ranked **#1** across all three tissues (**89.1%** overall: Flag 89.4%, Leaf 91.2%, Root 86.7%).
 * **`MOSim`** consistently ranked **#2** (**81.1%** overall: Flag 82.4%, Leaf 76.3%, Root 84.7%), closing the gap with `scDesign3` most closely in Root tissue.
 * **`scCross`** (**62.6%**) and **`scMultiSim`** (**48.6%**) held steady at ranks #3 and #4 across every tissue, while **`Matilda`** (**32.0%**) and **`scMoMtF`** (**26.9%**) offered the fastest execution footprints.

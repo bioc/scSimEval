@@ -43,15 +43,15 @@ A named list with the fitted logistic dropout model parameters:
 data(example_scrna, package = "scSimEval")
 calc_zero_probability_curve(example_scrna$ref)
 #> $intercept
-#> [1] 1.349168
+#> [1] 0.6899991
 #> 
 #> $slope
-#> [1] -0.7125713
+#> [1] -0.7442697
 #> 
 #> $midpoint
-#> [1] 1.893379
+#> [1] 0.9270821
 #> 
 #> $r_squared
-#> [1] 0.8012893
+#> [1] 0.6214271
 #> 
 ```

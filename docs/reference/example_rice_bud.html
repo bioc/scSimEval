@@ -23,7 +23,7 @@ and observed scalability benchmarks (runtime in seconds, peak RAM in MiB, and CP
 
     <a class="navbar-brand me-2" href="../index.html">scSimEval</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.99.13</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.99.14</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -113,10 +113,10 @@ and observed scalability benchmarks (runtime in seconds, peak RAM in MiB, and CP
 <span class="r-out co"><span class="r-pr">#&gt;</span> dim: 100 100 </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> metadata(0):</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> assays(1): counts</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> rownames(100): Os04g0188433 Os05g0202800 ... Os06g0553200 Os04g0578600</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> rownames(100): Os05g0257100 Os06g0142400 ... Os05g0550300 Os12g0181500</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> rowData names(0):</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> colnames(100): AAACCGGCAAGTGTTT-1 AAACGGATCGATCAGT-1 ...</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   TTTGGTGCATGTCAGC-1 TTTGTGTTCATAACGC-1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> colnames(100): GTACTTAAGCTCAATA-1 CTTGACGAGTAGCGGG-1 ...</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   GTCAGGCTCCTCACAC-1 TAATTGCCAGCATGGA-1</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> colData names(7): orig.ident nCount_RNA ... nCount_ATAC nFeature_ATAC</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> reducedDimNames(1): PCA</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> mainExpName: NULL</span>
@@ -147,6 +147,7 @@ and observed scalability benchmarks (runtime in seconds, peak RAM in MiB, and CP
 <span class="r-in"><span><span class="op">)</span></span></span>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>Zero sample variances detected, have been offset away from zero</span>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>Zero sample variances detected, have been offset away from zero</span>
+<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>shoving 'interior' knots matching boundary knots to inside</span>
 <span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">res</span><span class="op">$</span><span class="va">benchmark_summary_table</span>, <span class="fl">8</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>                    Category     Property                      Metric</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 1 Distributional Properties library_size                 Wasserstein</span>
@@ -158,14 +159,14 @@ and observed scalability benchmarks (runtime in seconds, peak RAM in MiB, and CP
 <span class="r-out co"><span class="r-pr">#&gt;</span> 7 Distributional Properties library_size Between_Dataset_Silh_Global</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 8 Distributional Properties library_size                         MAE</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>         Value Modality</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 1 22.87000000      RNA</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 2  0.20000000      RNA</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 3 10.00000000      RNA</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 4  0.00564741      RNA</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 5 -2.83556062      RNA</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 6  0.06500000      RNA</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 7  0.02451093      RNA</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 8 22.87000000      RNA</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 1 15.51000000      RNA</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 2  0.15000000      RNA</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 3  8.00000000      RNA</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 4  0.02549834      RNA</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 5 -0.18431144      RNA</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 6  0.01500000      RNA</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 7  0.01042318      RNA</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 8 15.51000000      RNA</span>
 <span class="r-in"><span><span class="co"># }</span></span></span>
 </code></pre></div>
     </div>

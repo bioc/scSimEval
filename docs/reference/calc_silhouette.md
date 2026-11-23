@@ -29,5 +29,5 @@ data <- matrix(stats::rnorm(200), 20, 10)
 cl <- factor(rep(c("A", "B"), each = 10))
 dist_mat <- stats::dist(data)
 calc_silhouette(dist_mat, cl)
-#> [1] -0.02622912
+#> [1] 0.01029355
 ```

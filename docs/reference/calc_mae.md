@@ -32,5 +32,5 @@ Non-negative numeric mean absolute difference.
 ref <- stats::rnorm(50)
 sim <- stats::rnorm(50)
 calc_mae(ref, sim)
-#> [1] 0.5043658
+#> [1] 0.3295646
 ```

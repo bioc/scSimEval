@@ -99,16 +99,16 @@ benchmark_resource_usage({ Sys.sleep(0.01); 1 + 1 })
 #> [1] 2.777778e-06
 #> 
 #> $memory_per_core_mib
-#> [1] 0.004581451
+#> [1] 581.9
 #> 
 #> $memory_per_core_gib
-#> [1] 4.474074e-06
+#> [1] 0.5682617
 #> 
 #> $memory_per_core_mb
-#> [1] 0.004804
+#> [1] 610.1664
 #> 
 #> $memory_per_core_gb
-#> [1] 4.804e-06
+#> [1] 0.6101664
 #> 
 #> $elapsed_seconds
 #> [1] 0.01
@@ -117,12 +117,12 @@ benchmark_resource_usage({ Sys.sleep(0.01); 1 + 1 })
 #> [1] 0.0001666667
 #> 
 #> $memory_mb
-#> [1] 0.004581451
+#> [1] 581.9
 #> 
 #> $memory_mib
-#> [1] 0.004581451
+#> [1] 581.9
 #> 
 #> $memory_mb_si
-#> [1] 0.004804
+#> [1] 610.1664
 #> 
 ```

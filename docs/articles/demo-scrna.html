@@ -11,7 +11,8 @@
 <link rel="apple-touch-icon" sizes="180x180" href="../apple-touch-icon.png">
 <link rel="icon" sizes="any" href="../favicon.ico">
 <link rel="manifest" href="../site.webmanifest">
-<script src="../lightswitch.js"></script><script src="../deps/jquery-3.6.0/jquery-3.6.0.min.js"></script><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<!-- katex math --><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css" integrity="sha384-nB0miv6/jRmo5UMMR1wu3Gz6NLsoTkbqJghGIsx//Rlm+ZU03BU6SQNC66uf4l5+" crossorigin="anonymous">
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js" integrity="sha384-7zkQWkzuo3B5mTepMUcHkMB5jZaolc2xDwL6VFqjFALcbeS9Ggm/Yr2r3Dy4lfFg" crossorigin="anonymous"></script><script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js" integrity="sha384-43gviWU0YVjaDtb/GhzOouOXtZMP/7XUzwPTstBeZFe/+rCMvRwr4yROQP43s0Xk" crossorigin="anonymous" onload="renderMathInElement(document.body);"></script><script src="../katex-auto.js"></script><script src="../lightswitch.js"></script><script src="../deps/jquery-3.6.0/jquery-3.6.0.min.js"></script><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 <link href="../deps/bootstrap-5.3.8/bootstrap.min.css" rel="stylesheet">
 <script src="../deps/bootstrap-5.3.8/bootstrap.bundle.min.js"></script><link href="../deps/font-awesome-6.5.2/css/all.min.css" rel="stylesheet">
 <link href="../deps/font-awesome-6.5.2/css/v4-shims.min.css" rel="stylesheet">
@@ -29,7 +30,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">scSimEval</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.99.13</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.99.14</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -111,13 +112,7 @@ Kolmogorov–Smirnov, MAD, Bhattacharyya, nearest-neighbor divergence)
 across cell-level and gene-level properties.</li>
 <li>
 <strong>Category II: Sparsity &amp; Zero-Inflation Dynamics</strong>
-(4 metrics) — Logistic dropout curve parameters (midpoint error
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>x</mi><mn>0</mn></msub><annotation encoding="application/x-tex">x_0</annotation></semantics></math>,
-slope error
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>k</mi><annotation encoding="application/x-tex">k</annotation></semantics></math>,
-fit discrepancy
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msup><mi>R</mi><mn>2</mn></msup><annotation encoding="application/x-tex">R^2</annotation></semantics></math>)
-and excess zero proportions.</li>
+(4 metrics) — Logistic dropout curve parameters (midpoint error <span class="math inline">x_0</span>, slope error <span class="math inline">k</span>, fit discrepancy <span class="math inline">R^2</span>) and excess zero proportions.</li>
 <li>
 <strong>Category III: Cellular Manifold &amp; Clustering
 Concordance</strong> (8 metrics) — High-dimensional geometry
@@ -128,17 +123,14 @@ Recall, Average Silhouette Width (ASW), Clustering Deviation Index
 <li>
 <strong>Category IV: Technical Variation &amp; Batch Mixing
 Dynamics</strong> (5 metrics) — Batch Silhouette Width, Principal
-Component Regression
-(<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>P</mi><mi>C</mi><mi>R</mi><mspace width="0.222em"></mspace><msup><mi>R</mi><mn>2</mn></msup></mrow><annotation encoding="application/x-tex">PCR\ R^2</annotation></semantics></math>),
+Component Regression (<span class="math inline">PCR\ R^2</span>),
 Cell-Specific Mixing Score (CMS), Inverse Simpson’s Index (ISI), and
 cross-batch cell-type classification F1.</li>
 <li>
 <strong>Category V: Biological Signal &amp; Differential Expression
 (DEG) Fidelity</strong> (6 metrics) — Pseudobulk <code>edgeR-QLF</code>
-statistical testing assessing null
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>p</mi><annotation encoding="application/x-tex">p</annotation></semantics></math>-value
-uniformity, marker gene detection accuracy, precision, recall, F1-score,
-and ROC-AUC.</li>
+statistical testing assessing null <span class="math inline">p</span>-value uniformity, marker gene detection
+accuracy, precision, recall, F1-score, and ROC-AUC.</li>
 <li>
 <strong>Category VII: Trajectory &amp; Lineage Topology</strong> (5
 metrics) — HVG-filtered dynverse lineage modeling measuring milestone
@@ -163,22 +155,16 @@ inactive for unimodal scRNA-seq evaluations.</p>
 <p>Raw metrics span diverse physical units (Kolmogorov–Smirnov
 distances, runtimes in seconds, RAM in MiB, correlation coefficients).
 <code>scSimEval</code> transforms all raw metrics into
-<strong>standardized, direction-aware fidelity scores in
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo stretchy="true" form="prefix">[</mo><mn>0</mn><mo>,</mo><mn>1</mn><mo stretchy="true" form="postfix">]</mo></mrow><annotation encoding="application/x-tex">[0, 1]</annotation></semantics></math></strong>,
-where
-<strong><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mn>1.0</mn><annotation encoding="application/x-tex">1.0</annotation></semantics></math>
-represents ideal concordance with the biological reference</strong>: *
-For distance or error metrics where lower values represent superior
-accuracy (e.g., Wasserstein, MMD, dropout midpoint error), scores are
-inverted:
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mtext mathvariant="normal">Score</mtext><mo>=</mo><mo>exp</mo><mrow><mo stretchy="true" form="prefix">(</mo><mo>−</mo><mi>γ</mi><mo>⋅</mo><mtext mathvariant="normal">distance</mtext><mo stretchy="true" form="postfix">)</mo></mrow></mrow><annotation encoding="application/x-tex">\text{Score} = \exp(-\gamma \cdot \text{distance})</annotation></semantics></math>.
-* For bounded correlation and concordance indices where higher values
-represent superior fidelity (e.g., ARI, NMI, Generative Precision,
-ROC-AUC), scores are scaled linearly to
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo stretchy="true" form="prefix">[</mo><mn>0</mn><mo>,</mo><mn>1</mn><mo stretchy="true" form="postfix">]</mo></mrow><annotation encoding="application/x-tex">[0, 1]</annotation></semantics></math>.
-* For mixing and balance metrics where values closer to zero indicate
-optimal batch mixing without clustering artifacts (e.g., Batch
-Silhouette), scores are centered symmetrically.</p>
+<strong>standardized, direction-aware fidelity scores in <span class="math inline">[0, 1]</span></strong>, where <strong><span class="math inline">1.0</span> represents ideal concordance with the
+biological reference</strong>: * For distance or error metrics where
+lower values represent superior accuracy (e.g., Wasserstein, MMD,
+dropout midpoint error), scores are inverted: <span class="math inline">\text{Score} = \exp(-\gamma \cdot
+\text{distance})</span>. * For bounded correlation and concordance
+indices where higher values represent superior fidelity (e.g., ARI, NMI,
+Generative Precision, ROC-AUC), scores are scaled linearly to <span class="math inline">[0, 1]</span>. * For mixing and balance metrics
+where values closer to zero indicate optimal batch mixing without
+clustering artifacts (e.g., Batch Silhouette), scores are centered
+symmetrically.</p>
 <hr>
 </div>
 </div>
@@ -193,9 +179,8 @@ two primary components alongside cell-level metadata:</p>
 (<code>ref_sce</code>):</strong>
 <ul>
 <li>A Bioconductor <code>SingleCellExperiment</code> containing raw
-scRNA-seq counts
-(<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mtext mathvariant="normal">genes</mtext><mo>×</mo><mtext mathvariant="normal">cells</mtext></mrow><annotation encoding="application/x-tex">\text{genes} \times \text{cells}</annotation></semantics></math>).
-Users starting from Seurat can convert via
+scRNA-seq counts (<span class="math inline">\text{genes} \times
+\text{cells}</span>). Users starting from Seurat can convert via
 <code><a href="https://satijalab.org/seurat/reference/as.SingleCellExperiment.html" class="external-link">Seurat::as.SingleCellExperiment()</a></code>.</li>
 <li>
 <strong>Cell-Type (<code>cell_type</code> in
@@ -231,14 +216,13 @@ allocated during simulation (<code>sim_cores</code>).</li>
 <p>In this demonstration, we benchmark <strong>6 representative
 single-cell simulators</strong> configured to simulate single-cell RNA
 data from an empirical biological reference (rice bud tissue: 1,558
-genes
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mo>×</mo><annotation encoding="application/x-tex">\times</annotation></semantics></math>
-2,589 single cells across 8 annotated cell types and 2 technical
-batches): 1. <strong><code>scMultiSim</code></strong> (Multi-modal
-kinetic and spatial simulator) 2.
-<strong><code>scDesign3</code></strong> (Unified probabilistic model
-with copula framework) 3. <strong><code>MOSim</code></strong>
-(Multi-omics simulation with user-defined differential profiles) 4.
+genes <span class="math inline">\times</span> 2,589 single cells across
+8 annotated cell types and 2 technical batches): 1.
+<strong><code>scMultiSim</code></strong> (Multi-modal kinetic and
+spatial simulator) 2. <strong><code>scDesign3</code></strong> (Unified
+probabilistic model with copula framework) 3.
+<strong><code>MOSim</code></strong> (Multi-omics simulation with
+user-defined differential profiles) 4.
 <strong><code>scCross</code></strong> (Cross-modality generative
 adversarial network) 5. <strong><code>scMoMtF</code></strong> (Matrix
 factorization for single-cell multiomics) 6.
@@ -337,7 +321,7 @@ trajectory topologies, and standardizes all scores.</p>
 <span>  memory_mb         <span class="op">=</span> <span class="fl">5713.90</span>,             <span class="co"># Simulation peak RAM</span></span>
 <span>  memory_unit       <span class="op">=</span> <span class="st">"MiB"</span>,</span>
 <span>  sim_cores         <span class="op">=</span> <span class="fl">16L</span>,                 <span class="co"># Allocated simulation cores</span></span>
-<span>  compute_bivariate <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>  compute_bivariate <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>  threads           <span class="op">=</span> <span class="fl">16</span>,                  <span class="co"># Multiprocessing threads for evaluation</span></span>
 <span>  verbose           <span class="op">=</span> <span class="cn">TRUE</span></span>
 <span><span class="op">)</span></span>
@@ -376,7 +360,7 @@ a configured list of simulator outputs:</p>
 <span>    memory_mb         <span class="op">=</span> <span class="va">cfg</span><span class="op">$</span><span class="va">mem</span>,</span>
 <span>    memory_unit       <span class="op">=</span> <span class="va">cfg</span><span class="op">$</span><span class="va">mem_u</span>,</span>
 <span>    sim_cores         <span class="op">=</span> <span class="fl">16L</span>,</span>
-<span>    compute_bivariate <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>    compute_bivariate <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>    threads           <span class="op">=</span> <span class="fl">16</span>,</span>
 <span>    verbose           <span class="op">=</span> <span class="cn">FALSE</span></span>
 <span>  <span class="op">)</span></span>
@@ -406,9 +390,8 @@ Standardized metric identifier. *
 <strong><code>Score_Raw</code></strong>: Unnormalized raw empirical
 value (physical unit: seconds, MiB, KS statistic, correlation). *
 <strong><code>Score</code></strong>: Standardized direction-aware
-fidelity score normalized to
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo stretchy="true" form="prefix">[</mo><mn>0</mn><mo>,</mo><mn>1</mn><mo stretchy="true" form="postfix">]</mo></mrow><annotation encoding="application/x-tex">[0, 1]</annotation></semantics></math>
-(<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mn>1.0</mn><mo>=</mo><mtext mathvariant="normal">best</mtext></mrow><annotation encoding="application/x-tex">1.0 = \text{best}</annotation></semantics></math>).</p>
+fidelity score normalized to <span class="math inline">[0, 1]</span>
+(<span class="math inline">1.0 = \text{best}</span>).</p>
 <p>Below we inspect representative metric scores across each evaluated
 category:</p>
 <div class="section level4">
@@ -418,18 +401,12 @@ category:</p>
 feature detection frequencies, expression means, and variances:</p>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/subset.html" class="external-link">subset</a></span><span class="op">(</span><span class="va">final_benchmark_df</span>, <span class="fu"><a href="https://rdrr.io/r/base/grep.html" class="external-link">grepl</a></span><span class="op">(</span><span class="st">"Distributional"</span>, <span class="va">Category</span><span class="op">)</span><span class="op">)</span><span class="op">[</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Method"</span>, <span class="st">"Property"</span>, <span class="st">"Metric"</span>, <span class="st">"Value"</span>, <span class="st">"Score"</span><span class="op">)</span><span class="op">]</span>, <span class="fl">5</span><span class="op">)</span></span>
-<span><span class="co">#&gt;                           Method     Property         Metric        Value</span></span>
-<span><span class="co">#&gt; scMultiSim_Rice_Bud.1 scMultiSim library_size    Wasserstein 568.22325222</span></span>
-<span><span class="co">#&gt; scMultiSim_Rice_Bud.2 scMultiSim library_size             KS   0.93182696</span></span>
-<span><span class="co">#&gt; scMultiSim_Rice_Bud.3 scMultiSim library_size            MAD 560.00000000</span></span>
-<span><span class="co">#&gt; scMultiSim_Rice_Bud.4 scMultiSim library_size  Bhattacharyya   0.03318678</span></span>
-<span><span class="co">#&gt; scMultiSim_Rice_Bud.5 scMultiSim library_size Runs_Statistic -64.23783074</span></span>
-<span><span class="co">#&gt;                              Score</span></span>
-<span><span class="co">#&gt; scMultiSim_Rice_Bud.1 568.22325222</span></span>
-<span><span class="co">#&gt; scMultiSim_Rice_Bud.2   0.93182696</span></span>
-<span><span class="co">#&gt; scMultiSim_Rice_Bud.3 560.00000000</span></span>
-<span><span class="co">#&gt; scMultiSim_Rice_Bud.4   0.03318678</span></span>
-<span><span class="co">#&gt; scMultiSim_Rice_Bud.5 -64.23783074</span></span></code></pre></div>
+<span><span class="co">#&gt;                  Method     Property         Metric       Value       Score</span></span>
+<span><span class="co">#&gt; scMultiSim.1 scMultiSim library_size    Wasserstein 568.2232522 568.2232522</span></span>
+<span><span class="co">#&gt; scMultiSim.2 scMultiSim library_size             KS   0.9320201   0.9320201</span></span>
+<span><span class="co">#&gt; scMultiSim.3 scMultiSim library_size            MAD 560.0000000 560.0000000</span></span>
+<span><span class="co">#&gt; scMultiSim.4 scMultiSim library_size  Bhattacharyya   1.2751370   1.2751370</span></span>
+<span><span class="co">#&gt; scMultiSim.5 scMultiSim library_size Runs_Statistic -63.7513911 -63.7513911</span></span></code></pre></div>
 </div>
 <div class="section level4">
 <h4 id="category-ii-sparsity-zero-inflation-dynamics">3.2 Category II: Sparsity &amp; Zero-Inflation Dynamics<a class="anchor" aria-label="anchor" href="#category-ii-sparsity-zero-inflation-dynamics"></a>
@@ -438,18 +415,18 @@ feature detection frequencies, expression means, and variances:</p>
 slopes, and logistic zero-probability dynamics:</p>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/subset.html" class="external-link">subset</a></span><span class="op">(</span><span class="va">final_benchmark_df</span>, <span class="fu"><a href="https://rdrr.io/r/base/grep.html" class="external-link">grepl</a></span><span class="op">(</span><span class="st">"Sparsity"</span>, <span class="va">Category</span><span class="op">)</span><span class="op">)</span><span class="op">[</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Method"</span>, <span class="st">"Property"</span>, <span class="st">"Metric"</span>, <span class="st">"Value"</span>, <span class="st">"Score"</span><span class="op">)</span><span class="op">]</span>, <span class="fl">5</span><span class="op">)</span></span>
-<span><span class="co">#&gt;                             Method            Property</span></span>
-<span><span class="co">#&gt; scMultiSim_Rice_Bud.141 scMultiSim       dropout_curve</span></span>
-<span><span class="co">#&gt; scMultiSim_Rice_Bud.142 scMultiSim       dropout_curve</span></span>
-<span><span class="co">#&gt; scMultiSim_Rice_Bud.143 scMultiSim       dropout_curve</span></span>
-<span><span class="co">#&gt; scMultiSim_Rice_Bud.144 scMultiSim excess_zero_weights</span></span>
-<span><span class="co">#&gt; scDesign3_Rice_Bud.141   scDesign3       dropout_curve</span></span>
-<span><span class="co">#&gt;                                                 Metric      Value      Score</span></span>
-<span><span class="co">#&gt; scMultiSim_Rice_Bud.141                    slope_error 0.09196064 0.09196064</span></span>
-<span><span class="co">#&gt; scMultiSim_Rice_Bud.142                 midpoint_error 0.74999276 0.74999276</span></span>
-<span><span class="co">#&gt; scMultiSim_Rice_Bud.143                 r2_discrepancy 0.11003824 0.11003824</span></span>
-<span><span class="co">#&gt; scMultiSim_Rice_Bud.144 excess_zero_weight_discrepancy 0.19099177 0.19099177</span></span>
-<span><span class="co">#&gt; scDesign3_Rice_Bud.141                     slope_error 0.07187202 0.07187202</span></span></code></pre></div>
+<span><span class="co">#&gt;                    Method            Property                         Metric</span></span>
+<span><span class="co">#&gt; scMultiSim.157 scMultiSim       dropout_curve                    slope_error</span></span>
+<span><span class="co">#&gt; scMultiSim.158 scMultiSim       dropout_curve                 midpoint_error</span></span>
+<span><span class="co">#&gt; scMultiSim.159 scMultiSim       dropout_curve                 r2_discrepancy</span></span>
+<span><span class="co">#&gt; scMultiSim.160 scMultiSim excess_zero_weights excess_zero_weight_discrepancy</span></span>
+<span><span class="co">#&gt; scDesign3.157   scDesign3       dropout_curve                    slope_error</span></span>
+<span><span class="co">#&gt;                     Value      Score</span></span>
+<span><span class="co">#&gt; scMultiSim.157 0.09196064 0.09196064</span></span>
+<span><span class="co">#&gt; scMultiSim.158 0.74999276 0.74999276</span></span>
+<span><span class="co">#&gt; scMultiSim.159 0.11003824 0.11003824</span></span>
+<span><span class="co">#&gt; scMultiSim.160 0.19099177 0.19099177</span></span>
+<span><span class="co">#&gt; scDesign3.157  0.07187202 0.07187202</span></span></code></pre></div>
 </div>
 <div class="section level4">
 <h4 id="category-iii-cellular-manifold-clustering-concordance">3.3 Category III: Cellular Manifold &amp; Clustering
@@ -460,41 +437,28 @@ recall (sample fidelity vs. diversity), cluster separation (ASW), ARI,
 and NMI:</p>
 <div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/subset.html" class="external-link">subset</a></span><span class="op">(</span><span class="va">final_benchmark_df</span>, <span class="fu"><a href="https://rdrr.io/r/base/grep.html" class="external-link">grepl</a></span><span class="op">(</span><span class="st">"Manifold"</span>, <span class="va">Category</span><span class="op">)</span><span class="op">)</span><span class="op">[</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Method"</span>, <span class="st">"Property"</span>, <span class="st">"Metric"</span>, <span class="st">"Value"</span>, <span class="st">"Score"</span><span class="op">)</span><span class="op">]</span>, <span class="fl">5</span><span class="op">)</span></span>
-<span><span class="co">#&gt;                             Method   Property               Metric     Value</span></span>
-<span><span class="co">#&gt; scMultiSim_Rice_Bud.145 scMultiSim   manifold                  MMD 0.3868724</span></span>
-<span><span class="co">#&gt; scMultiSim_Rice_Bud.146 scMultiSim   manifold Generative_Precision 0.0000000</span></span>
-<span><span class="co">#&gt; scMultiSim_Rice_Bud.147 scMultiSim   manifold    Generative_Recall 0.0000000</span></span>
-<span><span class="co">#&gt; scMultiSim_Rice_Bud.148 scMultiSim clustering       silhouette_sim 0.1154894</span></span>
-<span><span class="co">#&gt; scMultiSim_Rice_Bud.149 scMultiSim clustering                  cdi 1.5904445</span></span>
-<span><span class="co">#&gt;                             Score</span></span>
-<span><span class="co">#&gt; scMultiSim_Rice_Bud.145 0.3868724</span></span>
-<span><span class="co">#&gt; scMultiSim_Rice_Bud.146 0.0000000</span></span>
-<span><span class="co">#&gt; scMultiSim_Rice_Bud.147 0.0000000</span></span>
-<span><span class="co">#&gt; scMultiSim_Rice_Bud.148 0.1154894</span></span>
-<span><span class="co">#&gt; scMultiSim_Rice_Bud.149 1.5904445</span></span></code></pre></div>
+<span><span class="co">#&gt;                    Method   Property               Metric     Value     Score</span></span>
+<span><span class="co">#&gt; scMultiSim.161 scMultiSim   manifold                  MMD 0.3755185 0.3755185</span></span>
+<span><span class="co">#&gt; scMultiSim.162 scMultiSim   manifold Generative_Precision 0.0000000 0.0000000</span></span>
+<span><span class="co">#&gt; scMultiSim.163 scMultiSim   manifold    Generative_Recall 0.0000000 0.0000000</span></span>
+<span><span class="co">#&gt; scMultiSim.164 scMultiSim clustering       silhouette_sim 0.1154894 0.1154894</span></span>
+<span><span class="co">#&gt; scMultiSim.165 scMultiSim clustering                  cdi 1.6408140 1.6408140</span></span></code></pre></div>
 </div>
 <div class="section level4">
 <h4 id="category-iv-technical-variation-batch-mixing-dynamics">3.4 Category IV: Technical Variation &amp; Batch Mixing
 Dynamics<a class="anchor" aria-label="anchor" href="#category-iv-technical-variation-batch-mixing-dynamics"></a>
 </h4>
 <p>Evaluates batch silhouette widths, Principal Component Regression
-(<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>P</mi><mi>C</mi><mi>R</mi><mspace width="0.222em"></mspace><msup><mi>R</mi><mn>2</mn></msup></mrow><annotation encoding="application/x-tex">PCR\ R^2</annotation></semantics></math>),
-Cell-Specific Mixing Scores (CMS), and cross-batch cell-type
-classification transfer F1:</p>
+(<span class="math inline">PCR\ R^2</span>), Cell-Specific Mixing Scores
+(CMS), and cross-batch cell-type classification transfer F1:</p>
 <div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/subset.html" class="external-link">subset</a></span><span class="op">(</span><span class="va">final_benchmark_df</span>, <span class="fu"><a href="https://rdrr.io/r/base/grep.html" class="external-link">grepl</a></span><span class="op">(</span><span class="st">"Batch"</span>, <span class="va">Category</span><span class="op">)</span><span class="op">)</span><span class="op">[</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Method"</span>, <span class="st">"Property"</span>, <span class="st">"Metric"</span>, <span class="st">"Value"</span>, <span class="st">"Score"</span><span class="op">)</span><span class="op">]</span>, <span class="fl">5</span><span class="op">)</span></span>
-<span><span class="co">#&gt;                             Method     Property           Metric      Value</span></span>
-<span><span class="co">#&gt; scMultiSim_Rice_Bud.153 scMultiSim batch_mixing batch_silhouette 0.15233124</span></span>
-<span><span class="co">#&gt; scMultiSim_Rice_Bud.154 scMultiSim batch_mixing           pcr_r2 0.15880169</span></span>
-<span><span class="co">#&gt; scMultiSim_Rice_Bud.155 scMultiSim batch_mixing              cms 0.00263763</span></span>
-<span><span class="co">#&gt; scMultiSim_Rice_Bud.156 scMultiSim batch_mixing              isi 1.31740248</span></span>
-<span><span class="co">#&gt; scMultiSim_Rice_Bud.157 scMultiSim batch_mixing   cross_batch_F1 0.93336925</span></span>
-<span><span class="co">#&gt;                              Score</span></span>
-<span><span class="co">#&gt; scMultiSim_Rice_Bud.153 0.15233124</span></span>
-<span><span class="co">#&gt; scMultiSim_Rice_Bud.154 0.15880169</span></span>
-<span><span class="co">#&gt; scMultiSim_Rice_Bud.155 0.00263763</span></span>
-<span><span class="co">#&gt; scMultiSim_Rice_Bud.156 1.31740248</span></span>
-<span><span class="co">#&gt; scMultiSim_Rice_Bud.157 0.93336925</span></span></code></pre></div>
+<span><span class="co">#&gt;                    Method     Property           Metric       Value       Score</span></span>
+<span><span class="co">#&gt; scMultiSim.169 scMultiSim batch_mixing batch_silhouette 0.152331238 0.152331238</span></span>
+<span><span class="co">#&gt; scMultiSim.170 scMultiSim batch_mixing           pcr_r2 0.158801686 0.158801686</span></span>
+<span><span class="co">#&gt; scMultiSim.171 scMultiSim batch_mixing              cms 0.002637605 0.002637605</span></span>
+<span><span class="co">#&gt; scMultiSim.172 scMultiSim batch_mixing              isi 1.317402480 1.317402480</span></span>
+<span><span class="co">#&gt; scMultiSim.173 scMultiSim batch_mixing   cross_batch_F1 0.933905776 0.933905776</span></span></code></pre></div>
 </div>
 <div class="section level4">
 <h4 id="category-v-biological-signal-differential-expression-deg-fidelity">3.5 Category V: Biological Signal &amp; Differential Expression
@@ -505,18 +469,18 @@ assessing whether synthetic data preserves genuine marker genes without
 inflating false discoveries:</p>
 <div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/subset.html" class="external-link">subset</a></span><span class="op">(</span><span class="va">final_benchmark_df</span>, <span class="fu"><a href="https://rdrr.io/r/base/grep.html" class="external-link">grepl</a></span><span class="op">(</span><span class="st">"Differential"</span>, <span class="va">Category</span><span class="op">)</span><span class="op">)</span><span class="op">[</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Method"</span>, <span class="st">"Property"</span>, <span class="st">"Metric"</span>, <span class="st">"Value"</span>, <span class="st">"Score"</span><span class="op">)</span><span class="op">]</span>, <span class="fl">5</span><span class="op">)</span></span>
-<span><span class="co">#&gt;                             Method                      Property</span></span>
-<span><span class="co">#&gt; scMultiSim_Rice_Bud.158 scMultiSim scRNA_differential_expression</span></span>
-<span><span class="co">#&gt; scMultiSim_Rice_Bud.159 scMultiSim scRNA_differential_expression</span></span>
-<span><span class="co">#&gt; scMultiSim_Rice_Bud.160 scMultiSim scRNA_differential_expression</span></span>
-<span><span class="co">#&gt; scMultiSim_Rice_Bud.161 scMultiSim scRNA_differential_expression</span></span>
-<span><span class="co">#&gt; scMultiSim_Rice_Bud.162 scMultiSim scRNA_differential_expression</span></span>
-<span><span class="co">#&gt;                                  Metric     Value     Score</span></span>
-<span><span class="co">#&gt; scMultiSim_Rice_Bud.158 pval_dist_score 0.8073362 0.8073362</span></span>
-<span><span class="co">#&gt; scMultiSim_Rice_Bud.159        accuracy 0.8192279 0.8192279</span></span>
-<span><span class="co">#&gt; scMultiSim_Rice_Bud.160       precision 0.0000000 0.0000000</span></span>
-<span><span class="co">#&gt; scMultiSim_Rice_Bud.161          recall 0.0000000 0.0000000</span></span>
-<span><span class="co">#&gt; scMultiSim_Rice_Bud.162        f1_score 0.0000000 0.0000000</span></span></code></pre></div>
+<span><span class="co">#&gt;                    Method                      Property          Metric</span></span>
+<span><span class="co">#&gt; scMultiSim.174 scMultiSim scRNA_differential_expression pval_dist_score</span></span>
+<span><span class="co">#&gt; scMultiSim.175 scMultiSim scRNA_differential_expression        accuracy</span></span>
+<span><span class="co">#&gt; scMultiSim.176 scMultiSim scRNA_differential_expression       precision</span></span>
+<span><span class="co">#&gt; scMultiSim.177 scMultiSim scRNA_differential_expression          recall</span></span>
+<span><span class="co">#&gt; scMultiSim.178 scMultiSim scRNA_differential_expression        f1_score</span></span>
+<span><span class="co">#&gt;                    Value     Score</span></span>
+<span><span class="co">#&gt; scMultiSim.174 0.8074297 0.8074297</span></span>
+<span><span class="co">#&gt; scMultiSim.175 0.8200303 0.8200303</span></span>
+<span><span class="co">#&gt; scMultiSim.176 0.0000000 0.0000000</span></span>
+<span><span class="co">#&gt; scMultiSim.177 0.0000000 0.0000000</span></span>
+<span><span class="co">#&gt; scMultiSim.178 0.0000000 0.0000000</span></span></code></pre></div>
 </div>
 <div class="section level4">
 <h4 id="category-vii-trajectory-lineage-topology">3.6 Category VII: Trajectory &amp; Lineage Topology<a class="anchor" aria-label="anchor" href="#category-vii-trajectory-lineage-topology"></a>
@@ -526,18 +490,18 @@ geodesic distances, branch assignment F1, and Random Forest feature
 importance correlation:</p>
 <div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/subset.html" class="external-link">subset</a></span><span class="op">(</span><span class="va">final_benchmark_df</span>, <span class="fu"><a href="https://rdrr.io/r/base/grep.html" class="external-link">grepl</a></span><span class="op">(</span><span class="st">"Trajectory"</span>, <span class="va">Category</span><span class="op">)</span><span class="op">)</span><span class="op">[</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Method"</span>, <span class="st">"Property"</span>, <span class="st">"Metric"</span>, <span class="st">"Value"</span>, <span class="st">"Score"</span><span class="op">)</span><span class="op">]</span>, <span class="fl">5</span><span class="op">)</span></span>
-<span><span class="co">#&gt;                             Method            Property               Metric</span></span>
-<span><span class="co">#&gt; scMultiSim_Rice_Bud.164 scMultiSim trajectory_topology                  him</span></span>
-<span><span class="co">#&gt; scMultiSim_Rice_Bud.165 scMultiSim trajectory_topology            edge_flip</span></span>
-<span><span class="co">#&gt; scMultiSim_Rice_Bud.166 scMultiSim   geodesic_ordering geodesic_correlation</span></span>
-<span><span class="co">#&gt; scMultiSim_Rice_Bud.167 scMultiSim  branch_concordance          F1_branches</span></span>
-<span><span class="co">#&gt; scMultiSim_Rice_Bud.168 scMultiSim    dynamic_features        wcor_features</span></span>
-<span><span class="co">#&gt;                             Value     Score</span></span>
-<span><span class="co">#&gt; scMultiSim_Rice_Bud.164 0.5953041 0.5953041</span></span>
-<span><span class="co">#&gt; scMultiSim_Rice_Bud.165 0.4000000 0.4000000</span></span>
-<span><span class="co">#&gt; scMultiSim_Rice_Bud.166 0.2978557 0.2978557</span></span>
-<span><span class="co">#&gt; scMultiSim_Rice_Bud.167 0.1528210 0.1528210</span></span>
-<span><span class="co">#&gt; scMultiSim_Rice_Bud.168 0.5305022 0.5305022</span></span></code></pre></div>
+<span><span class="co">#&gt;                    Method            Property               Metric     Value</span></span>
+<span><span class="co">#&gt; scMultiSim.180 scMultiSim trajectory_topology                  him 0.4522082</span></span>
+<span><span class="co">#&gt; scMultiSim.181 scMultiSim trajectory_topology            edge_flip 0.4285714</span></span>
+<span><span class="co">#&gt; scMultiSim.182 scMultiSim   geodesic_ordering geodesic_correlation 0.1685611</span></span>
+<span><span class="co">#&gt; scMultiSim.183 scMultiSim  branch_concordance          F1_branches 0.1510784</span></span>
+<span><span class="co">#&gt; scMultiSim.184 scMultiSim    dynamic_features        wcor_features 0.3963435</span></span>
+<span><span class="co">#&gt;                    Score</span></span>
+<span><span class="co">#&gt; scMultiSim.180 0.4522082</span></span>
+<span><span class="co">#&gt; scMultiSim.181 0.4285714</span></span>
+<span><span class="co">#&gt; scMultiSim.182 0.1685611</span></span>
+<span><span class="co">#&gt; scMultiSim.183 0.1510784</span></span>
+<span><span class="co">#&gt; scMultiSim.184 0.3963435</span></span></code></pre></div>
 </div>
 <div class="section level4">
 <h4 id="category-viii-computational-scalability-efficiency">3.7 Category VIII: Computational Scalability &amp; Efficiency<a class="anchor" aria-label="anchor" href="#category-viii-computational-scalability-efficiency"></a>
@@ -546,20 +510,20 @@ importance correlation:</p>
 core-seconds and resident peak memory per allocated core:</p>
 <div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/subset.html" class="external-link">subset</a></span><span class="op">(</span><span class="va">final_benchmark_df</span>, <span class="fu"><a href="https://rdrr.io/r/base/grep.html" class="external-link">grepl</a></span><span class="op">(</span><span class="st">"Scalability"</span>, <span class="va">Category</span><span class="op">)</span><span class="op">)</span><span class="op">[</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Method"</span>, <span class="st">"Property"</span>, <span class="st">"Metric"</span>, <span class="st">"Value"</span>, <span class="st">"Score"</span><span class="op">)</span><span class="op">]</span>, <span class="fl">6</span><span class="op">)</span></span>
-<span><span class="co">#&gt;                             Method       Property              Metric</span></span>
-<span><span class="co">#&gt; scMultiSim_Rice_Bud.169 scMultiSim resource_usage        core_seconds</span></span>
-<span><span class="co">#&gt; scMultiSim_Rice_Bud.170 scMultiSim resource_usage memory_per_core_mib</span></span>
-<span><span class="co">#&gt; scDesign3_Rice_Bud.169   scDesign3 resource_usage        core_seconds</span></span>
-<span><span class="co">#&gt; scDesign3_Rice_Bud.170   scDesign3 resource_usage memory_per_core_mib</span></span>
-<span><span class="co">#&gt; MOSim_Rice_Bud.169           MOSim resource_usage        core_seconds</span></span>
-<span><span class="co">#&gt; MOSim_Rice_Bud.170           MOSim resource_usage memory_per_core_mib</span></span>
-<span><span class="co">#&gt;                              Value      Score</span></span>
-<span><span class="co">#&gt; scMultiSim_Rice_Bud.169 3070.24000 3070.24000</span></span>
-<span><span class="co">#&gt; scMultiSim_Rice_Bud.170   71.18750   71.18750</span></span>
-<span><span class="co">#&gt; scDesign3_Rice_Bud.169  1405.92000 1405.92000</span></span>
-<span><span class="co">#&gt; scDesign3_Rice_Bud.170   357.11875  357.11875</span></span>
-<span><span class="co">#&gt; MOSim_Rice_Bud.169      4711.20000 4711.20000</span></span>
-<span><span class="co">#&gt; MOSim_Rice_Bud.170        87.46875   87.46875</span></span></code></pre></div>
+<span><span class="co">#&gt;                    Method       Property              Metric      Value</span></span>
+<span><span class="co">#&gt; scMultiSim.185 scMultiSim resource_usage        core_seconds 3070.24000</span></span>
+<span><span class="co">#&gt; scMultiSim.186 scMultiSim resource_usage memory_per_core_mib   71.18750</span></span>
+<span><span class="co">#&gt; scDesign3.185   scDesign3 resource_usage        core_seconds 1405.92000</span></span>
+<span><span class="co">#&gt; scDesign3.186   scDesign3 resource_usage memory_per_core_mib  357.11875</span></span>
+<span><span class="co">#&gt; MOSim.185           MOSim resource_usage        core_seconds 4711.20000</span></span>
+<span><span class="co">#&gt; MOSim.186           MOSim resource_usage memory_per_core_mib   87.46875</span></span>
+<span><span class="co">#&gt;                     Score</span></span>
+<span><span class="co">#&gt; scMultiSim.185 3070.24000</span></span>
+<span><span class="co">#&gt; scMultiSim.186   71.18750</span></span>
+<span><span class="co">#&gt; scDesign3.185  1405.92000</span></span>
+<span><span class="co">#&gt; scDesign3.186   357.11875</span></span>
+<span><span class="co">#&gt; MOSim.185      4711.20000</span></span>
+<span><span class="co">#&gt; MOSim.186        87.46875</span></span></code></pre></div>
 <hr>
 </div>
 </div>
@@ -578,11 +542,10 @@ scores</strong>.</p>
 entire benchmarking study. Each column represents an individual
 evaluation metric, grouped by category, while each row represents a
 simulator. Bubble size and color gradient encode the normalized fidelity
-score
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo stretchy="true" form="prefix">[</mo><mn>0</mn><mo>,</mo><mn>1</mn><mo stretchy="true" form="postfix">]</mo></mrow><annotation encoding="application/x-tex">[0, 1]</annotation></semantics></math>:</p>
+score <span class="math inline">[0, 1]</span>:</p>
 <div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">p_bubble</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/plot_benchmark_bubble_matrix.html">plot_benchmark_bubble_matrix</a></span><span class="op">(</span><span class="va">final_benchmark_df</span>, base_size <span class="op">=</span> <span class="fl">12</span><span class="op">)</span></span>
-<span><span class="fu">ggsave</span><span class="op">(</span><span class="st">"figures/scSimEval_benchmark_bubble_matrix.png"</span>, plot <span class="op">=</span> <span class="va">p_bubble</span>, width <span class="op">=</span> <span class="fl">18</span>, height <span class="op">=</span> <span class="fl">9</span>, dpi <span class="op">=</span> <span class="fl">300</span><span class="op">)</span></span></code></pre></div>
+<code class="sourceCode R"><span><span class="va">p_bubble</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/plot_benchmark_bubble_matrix.html">plot_benchmark_bubble_matrix</a></span><span class="op">(</span><span class="va">final_benchmark_df</span>, assay_modality <span class="op">=</span> <span class="st">"RNA"</span>, base_size <span class="op">=</span> <span class="fl">12</span><span class="op">)</span></span>
+<span><span class="fu">ggsave</span><span class="op">(</span><span class="st">"figures/scSimEval_benchmark_bubble_matrix.png"</span>, plot <span class="op">=</span> <span class="va">p_bubble</span>, width <span class="op">=</span> <span class="fl">26</span>, height <span class="op">=</span> <span class="fl">9</span>, dpi <span class="op">=</span> <span class="fl">300</span><span class="op">)</span></span></code></pre></div>
 <div class="figure">
 <img src="figures/scSimEval_benchmark_bubble_matrix.png" class="r-plt" alt="**Figure 1: Comparative Bubble Matrix across 44 scRNA-seq evaluation metrics.** Visualizes normalized fidelity scores across all 7 active categories for the 6 evaluated single-cell simulation algorithms." width="100%"><p class="caption">
 <strong>Figure 1: Comparative Bubble Matrix across 44 scRNA-seq
@@ -797,7 +760,7 @@ across simulators.
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/sessionInfo.html" class="external-link">sessionInfo</a></span><span class="op">(</span><span class="op">)</span></span>
 <span><span class="co">#&gt; R version 4.6.2 (2026-10-29)</span></span>
 <span><span class="co">#&gt; Platform: x86_64-pc-linux-gnu</span></span>
-<span><span class="co">#&gt; Running under: Ubuntu 24.04.5 LTS</span></span>
+<span><span class="co">#&gt; Running under: Ubuntu 24.04.4 LTS</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; Matrix products: default</span></span>
 <span><span class="co">#&gt; BLAS:   /usr/lib/x86_64-linux-gnu/blas/libblas.so.3.12.0 </span></span>
@@ -820,8 +783,8 @@ across simulators.
 <span><span class="co">#&gt; loaded via a namespace (and not attached):</span></span>
 <span><span class="co">#&gt;  [1] digest_0.6.39     desc_1.4.3        R6_2.6.1          fastmap_1.2.0    </span></span>
 <span><span class="co">#&gt;  [5] xfun_0.62         cachem_1.1.0      knitr_1.52        htmltools_0.5.9  </span></span>
-<span><span class="co">#&gt;  [9] rmarkdown_2.32    lifecycle_1.0.5   cli_3.6.6         sass_0.4.10      </span></span>
-<span><span class="co">#&gt; [13] pkgdown_2.2.1     textshaping_1.0.5 jquerylib_0.1.4   systemfonts_1.3.3</span></span>
+<span><span class="co">#&gt;  [9] rmarkdown_2.32    lifecycle_1.0.5   cli_3.6.6         sass_0.5.0       </span></span>
+<span><span class="co">#&gt; [13] pkgdown_2.2.1     textshaping_1.1.0 jquerylib_0.1.4   systemfonts_1.3.4</span></span>
 <span><span class="co">#&gt; [17] compiler_4.6.2    tools_4.6.2       ragg_1.5.2        bslib_0.12.0     </span></span>
 <span><span class="co">#&gt; [21] evaluate_1.0.5    yaml_2.3.12       otel_0.3.0        jsonlite_2.0.0   </span></span>
 <span><span class="co">#&gt; [25] rlang_1.3.0       fs_2.1.0          htmlwidgets_1.6.4</span></span></code></pre></div>
@@ -1273,6 +1236,31 @@ document.addEventListener("DOMContentLoaded", function() {
     });
   }
   initDocPlotZoom();
+
+  /* Click-to-zoom lightbox for Reference example plots (without mutating <pre><code> DOM) */
+  document.querySelectorAll("#main pre .r-plt img, #main .r-plt.img img").forEach(function(img) {
+    img.title = "Click to inspect full-size plot";
+    img.addEventListener("click", function() {
+      window.scOpenLightbox(img.src);
+    });
+  });
+
+  /* Ensure KaTeX renders all Reference Rd \\(...\\) and $...$ equations reliably */
+  function renderScSimEvalMath() {
+    if (typeof renderMathInElement === "function") {
+      renderMathInElement(document.body, {
+        delimiters: [
+          { left: "$", right: "$", display: true },
+          { left: "\\[", right: "\\]", display: true },
+          { left: "\\(", right: "\\)", display: false }
+        ],
+        ignoredTags: ["script", "noscript", "style", "textarea", "pre", "code", "option"],
+        throwOnError: false
+      });
+    }
+  }
+  renderScSimEvalMath();
+  window.addEventListener("load", renderScSimEvalMath);
 });
 </script>
 </body>
