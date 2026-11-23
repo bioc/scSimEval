@@ -1,5 +1,9 @@
 # Changelog
 
+## scSimEval 0.99.15
+
+- **Bioconductor Staging Version Bump & Documentation Sync**: Incremented package version to `0.99.15` and synchronized documentation metadata for a clean Bioconductor staging build.
+
 ## scSimEval 0.99.14
 
 - **Scientific Verification & Accuracy Fixes Across All 56 Measures**:

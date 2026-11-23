@@ -1,3 +1,8 @@
+# scSimEval 0.99.15
+
+* **Bioconductor Staging Version Bump & Documentation Sync**: Incremented package version to `0.99.15` and synchronized documentation metadata for a clean Bioconductor staging build.
+
+
 # scSimEval 0.99.14
 
 * **Scientific Verification & Accuracy Fixes Across All 56 Measures**: Verified and hardened all 8 evaluation categories, including density-based Bhattacharyya distance, tie-safe Wald-Wolfowitz runs and k-NN mismatch tests, sparse-safe normalized 2D EMD, scale-consistent MMD and Generative Precision/Recall, dense-simulator dropout curve fallback, unpaired multiomics Category VI integration alignment, and consistent modality-aware Category V (`DE` / `DA` / `DE/DA`) display labels.

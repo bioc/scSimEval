@@ -369,7 +369,7 @@ sessionInfo()
 #> [1] stats     graphics  grDevices utils     datasets  methods   base     
 #> 
 #> other attached packages:
-#> [1] scSimEval_0.99.14
+#> [1] scSimEval_0.99.15
 #> 
 #> loaded via a namespace (and not attached):
 #>   [1] pbapply_1.7-5               gridExtra_2.3.1            
