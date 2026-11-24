@@ -26,7 +26,7 @@ plot_metric_heatmap(
 
 \item{scale_fill}{Character. Cell color fill scaling: \code{"relative"} (default; direction-aware
 min-max normalized fidelity in [0, 1] across methods per metric, ensuring balanced color contrast
-across all 48 curated evaluation measures while cell text displays exact raw numbers) or \code{"raw"} (direct numeric values).}
+across all 56 curated evaluation measures) or \code{"raw"} (direct numeric values in native units).}
 
 \item{top_n_properties}{Optional integer. If specified, restricts to top N most variable metrics. Default \code{NULL} (all metrics).}
 
@@ -46,9 +46,11 @@ A \code{ggplot} object.
 \description{
 Produces a 600 DPI comparative heatmap displaying simulators on the x-axis
 and evaluated biological/computational measures on the y-axis, grouped by the 8 canonical
-evaluation categories. Displays the exact original raw evaluation score in text inside every cell,
-with cell fill colors scaled by relative fidelity (direction-aware, ensuring balanced visual contrast
-across all 48 curated evaluation measures without scale distortion from high-magnitude metrics like RAM or runtime).
+evaluation categories. Displays standardized relative fidelity or original raw values
+inside every cell, with explicit optimization-direction arrows (up-arrow = higher is better,
+down-arrow = lower is better) across all 56 curated evaluation measures (14 Distributional,
+5 Sparsity, 8 Cellular Manifold, 5 Batch Mixing, 12 Biological Signal DE/DA,
+5 Multiomics Integration, 5 Trajectory, and 2 Scalability).
 }
 \details{
 \if{html}{\figure{metric_heatmap.png}{options: width="800" alt="Cross-Metric Z-Scored Heatmap"}}
@@ -63,7 +65,7 @@ bm_df <- data.frame(
     "(IV) Technical Variation & Batch Mixing Dynamics",
     "(V) Biological Signal & Differential Fidelity"
   ), 5),
-  Metric = rep(c("KS", "Wasserstein", "Zero_Prob_RMSE", "ARI", "CMS", "DE_F1"), 5),
+  Metric = rep(c("KS", "Wasserstein", "r2_discrepancy", "ari", "cms", "rna_de_f1"), 5),
   Value = c(
     0.10, 0.16, 0.07, 0.85, 0.88, 0.82,
     0.14, 0.21, 0.11, 0.79, 0.83, 0.77,

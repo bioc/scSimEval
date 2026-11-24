@@ -1,3 +1,9 @@
+# scSimEval 0.99.16
+
+* **Full 56-Metric Category Coverage & Directionality Arrows Across All Plots**: Disambiguated Category V RNA DE (6 metrics) and ATAC DA (6 metrics) across multiomics visualizations so `plot_metric_heatmap()`, `plot_metric_pca()`, `plot_metric_mds()`, `plot_metric_boxplots()`, `plot_category_metric_bars()`, `plot_individual_metric_bar()`, and `plot_benchmark_bubble_matrix()` render all 56 canonical evaluation measures ordered by category (44 for scRNA-seq, 38 for scATAC-seq) with explicit higher-is-better (`↑`) and lower-is-better (`↓`) optimization-direction arrows.
+* **Improved PCA Ordination, MDS Metric Space & Metric Plots**: Standardized direction-aligned property-level normalization prior to metric aggregation across `plot_metric_pca()`, `plot_metric_mds()`, `plot_metric_heatmap()`, `plot_metric_boxplots()`, `plot_benchmark_bubble_matrix()`, and `plot_evaluation_summary()`, included all 8 categories by default in PCA/MDS ordinations, added MDS variance-explained axis labels, fixed Panel a simulator legend color alignment in `plot_metric_pca()`, and expanded plot margins and label repulsion to eliminate clipping and overlaps.
+
+
 # scSimEval 0.99.15
 
 * **Bioconductor Staging Version Bump & Documentation Sync**: Incremented package version to `0.99.15` and synchronized documentation metadata for a clean Bioconductor staging build.

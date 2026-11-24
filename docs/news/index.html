@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">scSimEval</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.99.15</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.99.16</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -48,6 +48,13 @@
     </div>
 
     <div class="section level2">
+<h2 class="pkg-version" data-toc-text="0.99.16" id="scsimeval-09916">scSimEval 0.99.16<a class="anchor" aria-label="anchor" href="#scsimeval-09916"></a></h2>
+<ul><li>
+<strong>Full 56-Metric Category Coverage &amp; Directionality Arrows Across All Plots</strong>: Disambiguated Category V RNA DE (6 metrics) and ATAC DA (6 metrics) across multiomics visualizations so <code><a href="../reference/plot_metric_heatmap.html">plot_metric_heatmap()</a></code>, <code><a href="../reference/plot_metric_pca.html">plot_metric_pca()</a></code>, <code><a href="../reference/plot_metric_mds.html">plot_metric_mds()</a></code>, <code><a href="../reference/plot_metric_boxplots.html">plot_metric_boxplots()</a></code>, <code><a href="../reference/plot_category_metric_bars.html">plot_category_metric_bars()</a></code>, <code><a href="../reference/plot_individual_metric_bar.html">plot_individual_metric_bar()</a></code>, and <code><a href="../reference/plot_benchmark_bubble_matrix.html">plot_benchmark_bubble_matrix()</a></code> render all 56 canonical evaluation measures ordered by category (44 for scRNA-seq, 38 for scATAC-seq) with explicit higher-is-better (<code>↑</code>) and lower-is-better (<code>↓</code>) optimization-direction arrows.</li>
+<li>
+<strong>Improved PCA Ordination, MDS Metric Space &amp; Metric Plots</strong>: Standardized direction-aligned property-level normalization prior to metric aggregation across <code><a href="../reference/plot_metric_pca.html">plot_metric_pca()</a></code>, <code><a href="../reference/plot_metric_mds.html">plot_metric_mds()</a></code>, <code><a href="../reference/plot_metric_heatmap.html">plot_metric_heatmap()</a></code>, <code><a href="../reference/plot_metric_boxplots.html">plot_metric_boxplots()</a></code>, <code><a href="../reference/plot_benchmark_bubble_matrix.html">plot_benchmark_bubble_matrix()</a></code>, and <code><a href="../reference/plot_evaluation_summary.html">plot_evaluation_summary()</a></code>, included all 8 categories by default in PCA/MDS ordinations, added MDS variance-explained axis labels, fixed Panel a simulator legend color alignment in <code><a href="../reference/plot_metric_pca.html">plot_metric_pca()</a></code>, and expanded plot margins and label repulsion to eliminate clipping and overlaps.</li>
+</ul></div>
+    <div class="section level2">
 <h2 class="pkg-version" data-toc-text="0.99.15" id="scsimeval-09915">scSimEval 0.99.15<a class="anchor" aria-label="anchor" href="#scsimeval-09915"></a></h2>
 <ul><li>
 <strong>Bioconductor Staging Version Bump &amp; Documentation Sync</strong>: Incremented package version to <code>0.99.15</code> and synchronized documentation metadata for a clean Bioconductor staging build.</li>
@@ -87,11 +94,11 @@
 <li>
 <strong>Standardized SingleCellExperiment API</strong>: Core evaluation workflows (<code>evaluate_simulation_accuracy</code>, <code>evaluate_multiomics_accuracy</code>, <code>extract_dataset_summary</code>) now natively require and operate directly on standard Bioconductor <code>SingleCellExperiment</code> objects with standardized <code>colData</code> annotations.</li>
 <li>
-<strong>Bioconductor Multiomics via <code>altExp</code></strong>: Upgraded multiomics evaluation pipelines to represent paired multimodal data (scRNA-seq + scATAC-seq) using Bioconductor’s standard <code><a href="https://rdrr.io/pkg/SingleCellExperiment/man/altExps.html" class="external-link">altExp()</a></code> assay representation.</li>
+<strong>Bioconductor Multiomics via <code>altExp</code></strong>: Upgraded multiomics evaluation pipelines to represent paired multimodal data (scRNA-seq + scATAC-seq) using Bioconductor’s standard <code>altExp()</code> assay representation.</li>
 <li>
 <strong>Streamlined Dependencies</strong>: Replaced direct dependencies on heavy external single-cell ecosystems (<code>Seurat</code>, <code>Signac</code>) by moving optional adapters to <code>Suggests</code>, drastically reducing dependency overhead.</li>
 <li>
-<strong>Accessor Method Compliance</strong>: Eliminated all direct S4 <code>@</code> slot accesses across metric computation, trajectories, and dimension reductions in favor of formal accessor methods (<code><a href="https://rdrr.io/pkg/SummarizedExperiment/man/SummarizedExperiment-class.html" class="external-link">assay()</a></code>, <code><a href="https://rdrr.io/pkg/SummarizedExperiment/man/SummarizedExperiment-class.html" class="external-link">assays()</a></code>, <code><a href="https://rdrr.io/pkg/SummarizedExperiment/man/SummarizedExperiment-class.html" class="external-link">colData()</a></code>, <code><a href="https://rdrr.io/pkg/SingleCellExperiment/man/reducedDims.html" class="external-link">reducedDim()</a></code>, <code><a href="https://rdrr.io/pkg/SingleCellExperiment/man/altExps.html" class="external-link">altExp()</a></code>).</li>
+<strong>Accessor Method Compliance</strong>: Eliminated all direct S4 <code>@</code> slot accesses across metric computation, trajectories, and dimension reductions in favor of formal accessor methods (<code>assay()</code>, <code>assays()</code>, <code>colData()</code>, <code>reducedDim()</code>, <code>altExp()</code>).</li>
 <li>
 <strong>Clean Condition &amp; Error Handling</strong>: Removed all instances of <code><a href="https://rdrr.io/r/base/warning.html" class="external-link">suppressWarnings()</a></code>, <code><a href="https://rdrr.io/r/base/message.html" class="external-link">suppressMessages()</a></code>, <code><a href="https://rdrr.io/r/base/bindenv.html" class="external-link">unlockBinding()</a></code>, and global variable assignments (<code>&lt;&lt;-</code>) to adhere to strict Bioconductor code hygiene standards.</li>
 <li>

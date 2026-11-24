@@ -12,8 +12,7 @@ plot_metric_mds(
   by_category = FALSE,
   as_list = FALSE,
   category = NULL,
-  exclude_categories = c("(VII) Trajectory & Lineage Topology",
-    "(VIII) Computational Scalability & Efficiency"),
+  exclude_categories = NULL,
   metrics = NULL,
   normalize_scores = TRUE,
   palette = NULL,
@@ -26,8 +25,8 @@ plot_metric_mds(
 \item{benchmark_data}{Benchmark summary data.frame, matrix, or list.}
 
 \item{ordination_by}{Character. Either \code{"simulators"} (ordinated points represent
-candidate simulators) or \code{"summaries"} (default; ordinated points represent
-biological and computational summaries).}
+candidate simulators) or \code{"summaries"} (ordinated points represent
+biological and computational evaluation metrics).}
 
 \item{assay_modality}{Character string specifying the molecular modality:
 \code{"auto"} (default; automatically detects from data attributes or metrics),
@@ -37,7 +36,7 @@ When \code{"scRNA-seq"}, feature-level metrics are labeled \code{"gene"}.
 When \code{"multiomics"}, feature-level metrics are labeled \code{"features"}.}
 
 \item{group_by}{Character. Grouping variable for metric points when \code{ordination_by = "summaries"}:
-\code{"category"} (default) groups points by evaluation category (I–VIII);
+\code{"category"} (default) groups points by evaluation category (I--VIII);
 \code{"summary_type"} groups by feature/cell/global level.}
 
 \item{by_category}{Logical. If \code{TRUE} and \code{ordination_by = "summaries"}, generates
@@ -48,17 +47,16 @@ a multi-panel grid displaying an MDS ordination for each evaluation category sep
 
 \item{category}{Optional character vector to filter by evaluation category (e.g. \code{"(I) Distributional Properties"}).}
 
-\item{exclude_categories}{Character vector of categories to exclude from the ordination.
-Default is \code{c("(VII) Trajectory & Lineage Topology", "(VIII) Computational Scalability & Efficiency")}
-because these two categories contain only a few measures each, leaving the 6 canonical categories.}
+\item{exclude_categories}{Optional character vector of categories to exclude from the ordination.
+Default is \code{NULL} (includes all 8 canonical categories / 56 curated metrics).}
 
 \item{metrics}{Optional character vector of specific metrics to include.}
 
 \item{normalize_scores}{Logical. If \code{TRUE} (default), scores are direction-aware normalized to [0, 1]
-so that metrics on disparate scales (e.g. MB vs distance) do not artificially distort Euclidean distance.}
+before aggregation so that metrics on disparate scales (e.g. MiB vs distance) do not distort Euclidean distance.}
 
 \item{palette}{Optional named character vector of colors. For \code{ordination_by = "summaries"},
-maps feature-level (\code{"peak"}, \code{"gene"}, or \code{"features"}), \code{"cell"}, and \code{"global"}.}
+maps categories or feature-level (\code{"peak"}, \code{"gene"}, or \code{"features"}), \code{"cell"}, and \code{"global"}.}
 
 \item{title}{Optional plot title.}
 
@@ -70,16 +68,16 @@ maps feature-level (\code{"peak"}, \code{"gene"}, or \code{"features"}), \code{"
 A \code{ggplot} or \code{patchwork} object.
 }
 \description{
-Projects evaluation metric profiles or simulator performances into a 2D MDS space
-for benchmarking single-cell simulation methods.
+Projects all evaluated benchmark metrics (up to 56 metrics across 8 canonical categories)
+or simulator performances into a 2D MDS space for benchmarking single-cell simulation methods.
 }
 \details{
-When \code{ordination_by = "summaries"}, each point represents an evaluated property/metric,
-colored by its biological level: \code{"gene"} (red), \code{"peak"} (red, for scATAC-seq),
-\code{"features"} (red, for multiomics), \code{"cell"} (blue), or \code{"global"} (green).
+When \code{ordination_by = "summaries"}, each point represents an evaluated metric annotated
+with its optimization-direction arrow (up-arrow = higher raw value better, down-arrow = lower raw value better),
+colored by canonical category (I-VIII) or biological level (\code{"gene"}, \code{"peak"},
+\code{"features"}, \code{"cell"}, \code{"global"}).
 If \code{by_category = TRUE}, a multi-panel dashboard is produced showing one MDS ordination per
-category (by default across the 6 canonical categories with >= 3 measures, excluding Trajectory and
-Scalability which each contain only 2 measures).
+category (automatically skipping categories with fewer than 3 measures).
 }
 \examples{
 bm_df <- data.frame(
@@ -93,8 +91,8 @@ bm_df <- data.frame(
     "(IV) Technical Variation & Batch Mixing Dynamics",
     "(V) Biological Signal & Differential Fidelity"
   ), 5),
-  Metric = rep(c("KS", "Wasserstein", "RMSE", "Zero_Prob_RMSE",
-                 "ARI", "Silhouette_ASW", "CMS", "DE_F1"), 5),
+  Metric = rep(c("KS", "Wasserstein", "RMSE", "r2_discrepancy",
+                 "ari", "silhouette_sim", "cms", "rna_de_f1"), 5),
   Value = c(
     0.10, 0.16, 0.22, 0.07, 0.85, 0.74, 0.88, 0.84,
     0.18, 0.20, 0.24, 0.15, 0.82, 0.81, 0.76, 0.79,

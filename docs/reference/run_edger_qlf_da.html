@@ -11,7 +11,7 @@ for scRNA-seq on replicate pseudobulk count matrices using edgeR's Quasi-Likelih
 
     <a class="navbar-brand me-2" href="../index.html">scSimEval</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.99.15</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.99.16</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -133,13 +133,13 @@ benchmark-proven control over false discovery rates across biological replicates
 <span class="r-in"><span><span class="va">groups</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"A"</span>, <span class="st">"A"</span>, <span class="st">"B"</span>, <span class="st">"B"</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="va">res</span> <span class="op">&lt;-</span> <span class="fu">run_edger_qlf_da</span><span class="op">(</span><span class="va">mat</span>, <span class="va">groups</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">res</span><span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>        feature       logFC   logCPM     F_stat    PValue       FDR is_da</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Peak_1  Peak_1 -0.76495478 13.68009 2.81316061 0.1009694 0.6776821 FALSE</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Peak_2  Peak_2  0.38727146 13.62672 0.71152882 0.4037454 0.9267735 FALSE</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Peak_3  Peak_3  0.31108606 13.38463 0.47556419 0.4942559 0.9267735 FALSE</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Peak_4  Peak_4 -0.09386425 13.20979 0.03843570 0.8455227 0.9730446 FALSE</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Peak_5  Peak_5  0.36427396 13.48190 0.55367383 0.4609899 0.9267735 FALSE</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Peak_6  Peak_6 -0.07498553 13.47974 0.02700602 0.8702607 0.9730446 FALSE</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>        feature       logFC   logCPM     F_stat     PValue       FDR is_da</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Peak_1  Peak_1 -0.84875686 13.48379 3.06142231 0.08170520 0.6207204 FALSE</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Peak_2  Peak_2  0.05588459 13.41932 0.01460955 0.90391538 0.9692864 FALSE</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Peak_3  Peak_3 -0.86581276 13.65739 3.14353138 0.07775064 0.6207204 FALSE</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Peak_4  Peak_4 -0.49777377 13.38769 1.15685634 0.28341426 0.9371499 FALSE</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Peak_5  Peak_5  0.18290559 13.54190 0.14505752 0.70370828 0.9692864 FALSE</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Peak_6  Peak_6 -0.18306442 13.38778 0.15769910 0.69170725 0.9692864 FALSE</span>
 </code></pre></div>
     </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>

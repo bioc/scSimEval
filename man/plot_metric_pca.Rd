@@ -12,8 +12,9 @@ plot_metric_pca(
   by_category = FALSE,
   as_list = FALSE,
   category = NULL,
-  exclude_categories = "(VIII) Computational Scalability & Efficiency",
+  exclude_categories = NULL,
   metrics = NULL,
+  normalize_scores = TRUE,
   palette = NULL,
   top_n_loadings = 14,
   base_size = 11
@@ -33,7 +34,7 @@ When \code{"scRNA-seq"}, feature-level metrics are labeled \code{"gene"}.
 When \code{"multiomics"}, feature-level metrics are labeled \code{"features"}.}
 
 \item{group_by}{Character. Grouping variable for loading vectors in panel b:
-\code{"category"} (default) groups vectors by evaluation category (I–VIII);
+\code{"category"} (default) groups vectors by evaluation category (I--VIII);
 \code{"summary_type"} groups by feature/cell/global level.}
 
 \item{by_category}{Logical. If \code{TRUE}, perform separate PCA ordinations per evaluation category. Default \code{FALSE}.}
@@ -42,15 +43,18 @@ When \code{"multiomics"}, feature-level metrics are labeled \code{"features"}.}
 
 \item{category}{Optional character vector to filter by evaluation category.}
 
-\item{exclude_categories}{Optional character vector of categories to exclude (e.g. scalability).}
+\item{exclude_categories}{Optional character vector of categories to exclude (default \code{NULL}, includes all 8 categories).}
 
 \item{metrics}{Optional character vector of specific metrics to include.}
+
+\item{normalize_scores}{Logical. If \code{TRUE} (default), direction-align and min-max normalize scores to [0, 1]
+before aggregation and PCA decomposition.}
 
 \item{palette}{Optional named character vector of colors for simulators.}
 
 \item{top_n_loadings}{Integer or \code{NULL}. Maximum number of loading vectors to plot in panel b
 (ordered by vector magnitude in PC1-PC2 space). Default is \code{14} to prevent visual clutter;
-set to \code{NULL} or \code{48} to display all evaluated metrics.}
+set to \code{NULL} or \code{56} to display all evaluated metrics.}
 
 \item{base_size}{Numeric. Base font size. Default \code{11}.}
 }
@@ -59,18 +63,19 @@ A \code{ggplot} or \code{patchwork} object representing the ordination figure.
 }
 \description{
 Generates a dual-panel PCA dashboard for evaluating single-cell simulation benchmark metrics
-and methods.
+and methods across all 56 curated evaluation measures.
 }
 \details{
-All metrics present in \code{benchmark_data} (e.g. all 48 curated evaluation metrics across categories)
-are mathematically considered in the PCA decomposition. Panel \code{"both"} displays:
+All metrics present in \code{benchmark_data} (up to all 56 curated evaluation metrics across 8 canonical categories)
+are direction-normalized before PCA decomposition so higher values uniformly correspond to higher fidelity.
+Panel \code{"both"} displays:
 \itemize{
   \item \strong{Panel a (Methods Ordination)}: Simulators mapped into PC1 vs PC2 coordinates with
     solid black crosshairs, centroid markers, and white rounded badge labels with colored borders.
   \item \strong{Panel b (PC Loadings Vectors)}: Directional loading vectors (arrows) radiating from
-    the origin \code{(0, 0)} to loading coordinates \code{(w1, w2)}, colored by summary type
-    (\code{"gene"} = red, \code{"cell"} = blue, \code{"global"} = green) with rounded badge labels.
-    Pass \code{top_n_loadings = NULL} or \code{48} to render all metric loading vectors.
+    the origin \code{(0, 0)} to loading coordinates \code{(w1, w2)}, colored by canonical category
+    or summary type and annotated with optimization-direction arrows (up-arrow / down-arrow).
+    Pass \code{top_n_loadings = NULL} or \code{56} to render all metric loading vectors.
 }
 }
 \examples{
@@ -85,8 +90,8 @@ bm_df <- data.frame(
     "(IV) Technical Variation & Batch Mixing Dynamics",
     "(V) Biological Signal & Differential Fidelity"
   ), 5),
-  Metric = rep(c("KS", "Wasserstein", "RMSE", "Zero_Prob_RMSE",
-                 "ARI", "Silhouette_ASW", "CMS", "DE_F1"), 5),
+  Metric = rep(c("KS", "Wasserstein", "RMSE", "r2_discrepancy",
+                 "ari", "silhouette_sim", "cms", "rna_de_f1"), 5),
   Value = c(
     0.10, 0.16, 0.22, 0.07, 0.85, 0.74, 0.88, 0.84,
     0.18, 0.20, 0.24, 0.15, 0.82, 0.81, 0.76, 0.79,

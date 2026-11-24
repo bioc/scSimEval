@@ -236,8 +236,11 @@ test_that("All 4 analysis modes return exact canonical metric counts (44/38/56/5
   )
   expect_equal(count_canonical(r_pair$benchmark_summary_table), 56L)
   p_pair <- plot_benchmark_bubble_matrix(list(scDesign3 = r_pair))
+  expect_equal(length(unique(p_pair$data$Metric_Key)), 56L)
   c5_pair <- unique(as.character(p_pair$data$Display_Metric[grepl("Bio-Signal|\\(V\\)", p_pair$data$Display_Category)]))
-  expect_true(all(startsWith(c5_pair, "DE/DA ")))
+  expect_equal(length(c5_pair), 12L)
+  expect_equal(sum(startsWith(c5_pair, "RNA DE ")), 6L)
+  expect_equal(sum(startsWith(c5_pair, "ATAC DA ")), 6L)
 
   r_unp <- evaluate_multiomics_accuracy(
     example_soybean_root$reference$combined, example_soybean_root$simulated$scMultiSim$combined,
@@ -281,14 +284,37 @@ test_that("Regression tests: normalize_counts, benchmark_resource_usage, multi-b
   )
   expect_true(is.finite(ac_res$curve_rmse) && ac_res$curve_rmse >= 0 && ac_res$curve_rmse <= 1)
 
-  # 5. Category III vs Category VI ari/nmi disambiguation in heatmap/MDS/PCA (zero reshapeWide warnings)
+  # 5. Full 56-metric coverage, Cat V/VI disambiguation, and direction arrows in heatmap, MDS, PCA, and metric plots
   rds_path <- system.file("extdata", "scSimEval_benchmark_results.rds", package = "scSimEval")
   if (nzchar(rds_path) && file.exists(rds_path)) {
     rds_df <- readRDS(rds_path)
     p_hm <- plot_metric_heatmap(rds_df)
-    expect_equal(length(unique(p_hm$data$Display_Metric)), length(unique(paste(p_hm$data$Category, p_hm$data$Metric))))
-    expect_no_warning(plot_metric_mds(rds_df, ordination_by = "summaries"))
+    hm_metrics <- unique(as.character(p_hm$data$Display_Metric))
+    expect_equal(length(hm_metrics), 56L)
+    expect_true(all(grepl("\\(\u2191\\)|\\(\u2193\\)$", hm_metrics)))
+    expect_true(any(grepl("\\(\u2191\\)$", hm_metrics)))
+    expect_true(any(grepl("\\(\u2193\\)$", hm_metrics)))
+    expect_equal(length(unique(p_hm$data$Category)), 8L)
+
+    p_mds <- expect_no_warning(plot_metric_mds(rds_df, ordination_by = "summaries"))
+    expect_equal(nrow(p_mds$data), 56L)
+    expect_true(all(grepl("\\(\u2191\\)|\\(\u2193\\)$", p_mds$data$Display_Label)))
+
     p_pca <- plot_metric_pca(rds_df, panel = "both")
     expect_true(inherits(p_pca, "gg") || inherits(p_pca, "patchwork"))
+    p_pca_load <- plot_metric_pca(rds_df, panel = "loadings", top_n_loadings = NULL)
+    expect_gte(nrow(p_pca_load$data), 50L)
+    expect_true(all(grepl("\\(\u2191\\)|\\(\u2193\\)$", p_pca_load$data$Display_Label)))
+
+    p_box <- plot_metric_boxplots(rds_df, score_type = "normalized")
+    expect_equal(length(unique(paste(p_box$data$Category, p_box$data$Metric))), 56L)
+    expect_true(all(grepl("\\(\u2191\\)|\\(\u2193\\)$", as.character(p_box$data$Display_Metric))))
+
+    p_cat5 <- plot_category_metric_bars(rds_df, category = "(V) Biological Signal & Differential Fidelity")
+    expect_equal(length(unique(p_cat5$data$Display_Metric)), 12L)
+    expect_true(all(grepl("\\(\u2191\\)$", as.character(p_cat5$data$Display_Metric))))
+
+    p_ind <- plot_individual_metric_bar(rds_df, metric = "rna_de_f1")
+    expect_true(grepl("\u2191", p_ind$labels$title))
   }
 })

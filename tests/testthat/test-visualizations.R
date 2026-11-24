@@ -268,13 +268,13 @@ test_that("plot_benchmark_bubble_matrix returns a valid ggplot object with data.
   p_af1 <- plot_benchmark_bubble_matrix(af1_filt)
   expect_s3_class(p_af1, "ggplot")
   expect_true(all(c("KDE ISE", "2D EMD", "Runs Statistic", "Accessibility Sparsity RMSE",
-                    "DE/DA Null P-Value Uniformity", "DE/DA ROC-AUC", "Batch ASW",
+                    "RNA DE P-Val Uniformity", "ATAC DA ROC-AUC", "Batch ASW",
                     "Integration ARI", "Integration NMI") %in% as.character(p_af1$data$Display_Metric)))
   runs_a <- p_af1$data$Score_Norm[p_af1$data$Metric == "Runs_Statistic" & p_af1$data$Method == "SimA"]
   runs_b <- p_af1$data$Score_Norm[p_af1$data$Metric == "Runs_Statistic" & p_af1$data$Method == "SimB"]
   expect_gt(runs_a, runs_b)
-  auc_a <- p_af1$data$Score_Norm[p_af1$data$Metric == "auc" & p_af1$data$Method == "SimA"]
-  auc_b <- p_af1$data$Score_Norm[p_af1$data$Metric == "auc" & p_af1$data$Method == "SimB"]
+  auc_a <- p_af1$data$Score_Norm[p_af1$data$Metric == "atac_da_auc" & p_af1$data$Method == "SimA"]
+  auc_b <- p_af1$data$Score_Norm[p_af1$data$Metric == "atac_da_auc" & p_af1$data$Method == "SimB"]
   expect_gt(auc_a, auc_b)
 
   p_rna <- plot_benchmark_bubble_matrix(af1_filt, assay_modality = "RNA")
