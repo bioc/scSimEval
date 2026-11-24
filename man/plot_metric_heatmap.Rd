@@ -24,9 +24,11 @@ plot_metric_heatmap(
 
 \item{metrics}{Optional character vector of specific metrics to include. Default \code{NULL} (all).}
 
-\item{scale_fill}{Character. Cell color fill scaling: \code{"relative"} (default; direction-aware
-min-max normalized fidelity in [0, 1] across methods per metric, ensuring balanced color contrast
-across all 56 curated evaluation measures) or \code{"raw"} (direct numeric values in native units).}
+\item{scale_fill}{Character. Cell label & color mode: \code{"relative"} (default; cell text and
+tile fill both show per-metric direction-aware normalized fidelity in [0, 1]) or \code{"raw"}
+(cell text displays original unnormalized raw values in native units while tile shading still
+scales per metric by direction-aware fidelity in [0, 1] so high-magnitude metrics like runtime
+or RAM do not wash out color contrast across rows).}
 
 \item{top_n_properties}{Optional integer. If specified, restricts to top N most variable metrics. Default \code{NULL} (all metrics).}
 

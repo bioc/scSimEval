@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">scSimEval</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.99.16</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.99.17</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -48,9 +48,16 @@
     </div>
 
     <div class="section level2">
+<h2 class="pkg-version" data-toc-text="0.99.17" id="scsimeval-09917">scSimEval 0.99.17<a class="anchor" aria-label="anchor" href="#scsimeval-09917"></a></h2>
+<ul><li>
+<strong>Per-Metric Raw Heatmap Shading</strong>: Updated <code><a href="../reference/plot_metric_heatmap.html">plot_metric_heatmap()</a></code> so <code>scale_fill = "raw"</code> preserves exact native raw metric values in cell annotations while scaling tile fill colors per metric in <code>[0, 1]</code> (matching normalized fidelity shading so high-magnitude scalability metrics do not wash out row-level color contrast).</li>
+<li>
+<strong>Raw-Mode-Only Direction Arrows</strong>: Restricted <code>(↑)</code> / <code>(↓)</code> optimization-direction arrows next to metric names exclusively to raw-value plots (<code>scale_fill = "raw"</code>, <code>score_type = "raw"</code>, or <code>normalize_scores = FALSE</code>) across heatmaps, metric plots, and ordinations; all normalized plots and bubble matrices now display clean metric names only.</li>
+</ul></div>
+    <div class="section level2">
 <h2 class="pkg-version" data-toc-text="0.99.16" id="scsimeval-09916">scSimEval 0.99.16<a class="anchor" aria-label="anchor" href="#scsimeval-09916"></a></h2>
 <ul><li>
-<strong>Full 56-Metric Category Coverage &amp; Directionality Arrows Across All Plots</strong>: Disambiguated Category V RNA DE (6 metrics) and ATAC DA (6 metrics) across multiomics visualizations so <code><a href="../reference/plot_metric_heatmap.html">plot_metric_heatmap()</a></code>, <code><a href="../reference/plot_metric_pca.html">plot_metric_pca()</a></code>, <code><a href="../reference/plot_metric_mds.html">plot_metric_mds()</a></code>, <code><a href="../reference/plot_metric_boxplots.html">plot_metric_boxplots()</a></code>, <code><a href="../reference/plot_category_metric_bars.html">plot_category_metric_bars()</a></code>, <code><a href="../reference/plot_individual_metric_bar.html">plot_individual_metric_bar()</a></code>, and <code><a href="../reference/plot_benchmark_bubble_matrix.html">plot_benchmark_bubble_matrix()</a></code> render all 56 canonical evaluation measures ordered by category (44 for scRNA-seq, 38 for scATAC-seq) with explicit higher-is-better (<code>↑</code>) and lower-is-better (<code>↓</code>) optimization-direction arrows.</li>
+<strong>Full 56-Metric Category Coverage</strong>: Disambiguated Category V RNA DE (6 metrics) and ATAC DA (6 metrics) across multiomics visualizations so <code><a href="../reference/plot_metric_heatmap.html">plot_metric_heatmap()</a></code>, <code><a href="../reference/plot_metric_pca.html">plot_metric_pca()</a></code>, <code><a href="../reference/plot_metric_mds.html">plot_metric_mds()</a></code>, <code><a href="../reference/plot_metric_boxplots.html">plot_metric_boxplots()</a></code>, <code><a href="../reference/plot_category_metric_bars.html">plot_category_metric_bars()</a></code>, <code><a href="../reference/plot_individual_metric_bar.html">plot_individual_metric_bar()</a></code>, and <code><a href="../reference/plot_benchmark_bubble_matrix.html">plot_benchmark_bubble_matrix()</a></code> render all 56 canonical evaluation measures ordered by category (44 for scRNA-seq, 38 for scATAC-seq).</li>
 <li>
 <strong>Improved PCA Ordination, MDS Metric Space &amp; Metric Plots</strong>: Standardized direction-aligned property-level normalization prior to metric aggregation across <code><a href="../reference/plot_metric_pca.html">plot_metric_pca()</a></code>, <code><a href="../reference/plot_metric_mds.html">plot_metric_mds()</a></code>, <code><a href="../reference/plot_metric_heatmap.html">plot_metric_heatmap()</a></code>, <code><a href="../reference/plot_metric_boxplots.html">plot_metric_boxplots()</a></code>, <code><a href="../reference/plot_benchmark_bubble_matrix.html">plot_benchmark_bubble_matrix()</a></code>, and <code><a href="../reference/plot_evaluation_summary.html">plot_evaluation_summary()</a></code>, included all 8 categories by default in PCA/MDS ordinations, added MDS variance-explained axis labels, fixed Panel a simulator legend color alignment in <code><a href="../reference/plot_metric_pca.html">plot_metric_pca()</a></code>, and expanded plot margins and label repulsion to eliminate clipping and overlaps.</li>
 </ul></div>

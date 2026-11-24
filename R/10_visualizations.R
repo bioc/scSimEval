@@ -2012,7 +2012,7 @@ plot_metric_boxplots <- function(
   df$Direction <- ifelse(is_hib, "\u2191 Higher is better", "\u2193 Lower is better")
   disp_m <- ifelse(df$Metric %in% names(.METRIC_DISPLAY_LABELS), .METRIC_DISPLAY_LABELS[df$Metric], df$Metric)
   disp_m <- .apply_cat5_display_labels(disp_m, df$Metric, df$Category, cat5_prefix)
-  df$Display_Metric <- paste0(disp_m, ifelse(is_hib, " (\u2191)", " (\u2193)"))
+  df$Display_Metric <- if (score_type == "raw") paste0(disp_m, ifelse(is_hib, " (\u2191)", " (\u2193)")) else disp_m
   ordered_m <- .order_metrics_canonical(df$Metric)
   disp_lvls <- unique(df$Display_Metric[match(ordered_m, df$Metric)])
   df$Display_Metric <- factor(df$Display_Metric, levels = disp_lvls)
@@ -2040,19 +2040,19 @@ plot_metric_boxplots <- function(
 
   y_var <- if (score_type == "normalized") "Score_Norm" else "Score_Raw"
   y_lab <- if (score_type == "normalized") {
-    "Standardized Fidelity Score [0, 1] (\u2191 Better)"
+    "Standardized Fidelity Score [0, 1] (Higher = Better)"
   } else {
     "Original Raw Metric Score"
   }
   sub_txt <- if (score_type == "normalized") {
-    sprintf("%d canonical evaluation metrics across %d categories | Direction-normalized fidelity scores in [0, 1] (\u2191 higher is always better)",
+    sprintf("%d canonical evaluation metrics across %d categories | Direction-normalized fidelity scores in [0, 1] (higher is always better)",
             n_unique_metrics, n_unique_cats)
   } else {
     sprintf("%d canonical evaluation metrics across %d categories | Original unnormalized raw metric values (\u2191 higher better, \u2193 lower better)",
             n_unique_metrics, n_unique_cats)
   }
   cap_txt <- if (score_type == "normalized") {
-    "Boxplot indicates median and IQR across canonical metrics per category; each point denotes an evaluated metric.\nMetrics are direction-standardized to [0, 1] across simulators (1.0 = best observed performance; \u2193 distance/error metrics inverted)."
+    "Boxplot indicates median and IQR across canonical metrics per category; each point denotes an evaluated metric.\nMetrics are direction-standardized to [0, 1] across simulators (1.0 = best observed performance; distance/error metrics inverted)."
   } else {
     "Boxplot indicates median and IQR across canonical metrics per category; points denote evaluated measures in original units (\u2191 higher better, \u2193 lower better)."
   }
@@ -2217,11 +2217,15 @@ plot_individual_metric_bar <- function(
     disp_m
   }
 
-  title_txt <- paste0(disp_m, " (", ifelse(is_hib, "\u2191", "\u2193"), ")")
-  sub_txt <- sprintf("Category: %s  |  Native Direction: %s", cat_name, dir_txt)
+  title_txt <- if (score_type == "raw") paste0(disp_m, " (", ifelse(is_hib, "\u2191", "\u2193"), ")") else disp_m
+  sub_txt <- if (score_type == "raw") {
+    sprintf("Category: %s  |  %s", cat_name, dir_txt)
+  } else {
+    sprintf("Category: %s", cat_name)
+  }
 
   cap_txt <- if (score_type == "normalized") {
-    sprintf("Standardized fidelity score in [0, 1] (1.0 = best agreement with reference; native direction: %s).\nSimulators ranked by fidelity from best performer (left) to lowest (right).", dir_txt)
+    "Standardized fidelity score in [0, 1] (1.0 = best agreement with reference).\nSimulators ranked by fidelity from best performer (left) to lowest (right)."
   } else {
     sprintf("Unnormalized raw metric values in original measurement units (%s).\nSimulators ranked by performance from best (left) to lowest (right).", dir_txt)
   }
@@ -2356,7 +2360,7 @@ plot_category_metric_bars <- function(
   disp_m <- ifelse(df$Metric %in% names(.METRIC_DISPLAY_LABELS), .METRIC_DISPLAY_LABELS[df$Metric], df$Metric)
   disp_m <- .apply_cat5_display_labels(disp_m, df$Metric, df$Category, cat5_prefix)
   dir_symbol <- ifelse(is_hib, "\u2191", "\u2193")
-  df$Display_Metric <- paste0(disp_m, " (", dir_symbol, ")")
+  df$Display_Metric <- if (score_type == "raw") paste0(disp_m, " (", dir_symbol, ")") else disp_m
 
   ordered_m <- .order_metrics_canonical(df$Metric)
 
@@ -2367,7 +2371,7 @@ plot_category_metric_bars <- function(
     dm <- if (m_i %in% names(.METRIC_DISPLAY_LABELS)) .METRIC_DISPLAY_LABELS[[m_i]] else m_i
     dm <- .apply_cat5_display_labels(dm, m_i, unname(cat_lookup[m_i]), cat5_prefix)
     ds <- if (.is_higher_better(m_i)) "\u2191" else "\u2193"
-    disp_levels[i] <- paste0(dm, " (", ds, ")")
+    disp_levels[i] <- if (score_type == "raw") paste0(dm, " (", ds, ")") else dm
   }
   df$Display_Metric <- factor(df$Display_Metric, levels = unique(disp_levels))
 
@@ -2406,12 +2410,12 @@ plot_category_metric_bars <- function(
 
   title_txt <- category
   sub_txt <- if (score_type == "normalized") {
-    sprintf("%d evaluated metrics | Standardized fidelity scores [0, 1] (\u2191 higher raw better, \u2193 lower raw better)", n_m)
+    sprintf("%d evaluated metrics | Standardized fidelity scores [0, 1] across evaluated simulators", n_m)
   } else {
     sprintf("%d evaluated metrics | Original unnormalized raw metric scores (\u2191 higher better, \u2193 lower better)", n_m)
   }
   cap_txt <- if (score_type == "normalized") {
-    "Bars represent standardized fidelity scores [0, 1] across evaluated metrics (1.0 = best observed agreement with reference). \u2191 Higher raw value is better  |  \u2193 Lower raw value is better."
+    "Bars represent standardized fidelity scores [0, 1] across evaluated metrics (1.0 = best observed agreement with reference)."
   } else {
     "Bars represent unnormalized raw metric scores in native measurement units. \u2191 Higher is better  |  \u2193 Lower is better."
   }
@@ -2922,9 +2926,11 @@ plot_benchmark_summary <- function(
 #' @param benchmark_data A tidy benchmark summary table or a named list of benchmark tables.
 #' @param category Optional character vector to filter by canonical evaluation category. Default \code{NULL} (all 8 categories).
 #' @param metrics Optional character vector of specific metrics to include. Default \code{NULL} (all).
-#' @param scale_fill Character. Cell color fill scaling: \code{"relative"} (default; direction-aware
-#'   min-max normalized fidelity in [0, 1] across methods per metric, ensuring balanced color contrast
-#'   across all 56 curated evaluation measures) or \code{"raw"} (direct numeric values in native units).
+#' @param scale_fill Character. Cell label & color mode: \code{"relative"} (default; cell text and
+#'   tile fill both show per-metric direction-aware normalized fidelity in [0, 1]) or \code{"raw"}
+#'   (cell text displays original unnormalized raw values in native units while tile shading still
+#'   scales per metric by direction-aware fidelity in [0, 1] so high-magnitude metrics like runtime
+#'   or RAM do not wash out color contrast across rows).
 #' @param top_n_properties Optional integer. If specified, restricts to top N most variable metrics. Default \code{NULL} (all metrics).
 #' @param facet_by_category Logical. Whether to group rows into vertical category banner panels across all 8 categories. Default \code{TRUE}.
 #' @param cluster_rows Logical. Hierarchically cluster measures along y-axis. Default \code{FALSE}.
@@ -3005,14 +3011,16 @@ plot_metric_heatmap <- function(
     df <- agg_norm
   }
 
-  # Clean measure display names with explicit higher/lower-is-better arrows
+  # Clean measure display names; append higher/lower-is-better arrows ONLY when displaying raw values
   df$Display_Metric <- if ("Metric" %in% colnames(df)) {
     disp_m <- ifelse(df$Metric %in% names(.METRIC_DISPLAY_LABELS), .METRIC_DISPLAY_LABELS[df$Metric], df$Metric)
     .apply_cat5_display_labels(disp_m, df$Metric, df$Category, cat5_prefix)
   } else df$Metric
 
-  is_hib <- .is_higher_better(df$Metric)
-  df$Display_Metric <- paste0(df$Display_Metric, ifelse(is_hib, " (\u2191)", " (\u2193)"))
+  if (scale_fill == "raw") {
+    is_hib <- .is_higher_better(df$Metric)
+    df$Display_Metric <- paste0(df$Display_Metric, ifelse(is_hib, " (\u2191)", " (\u2193)"))
+  }
 
   # Filter top discriminating properties only if explicitly requested
   all_props <- unique(df$Display_Metric)
@@ -3022,16 +3030,15 @@ plot_metric_heatmap <- function(
     df          <- df[df$Display_Metric %in% top_props, , drop = FALSE]
   }
 
-  # Text formatting and adaptive contrast color on tiles
+  # Text formatting and adaptive contrast color on tiles (tile fill is always per-metric Score_Norm)
+  df$Text_Color <- ifelse(!is.na(df$Score_Norm) & df$Score_Norm >= 0.68, "#FFFFFF", "#0F172A")
   if (scale_fill == "relative") {
     df$Score_Label <- ifelse(is.na(df$Score_Norm), "-", sprintf("%.2f", df$Score_Norm))
-    df$Text_Color  <- ifelse(!is.na(df$Score_Norm) & df$Score_Norm >= 0.68, "#FFFFFF", "#0F172A")
   } else {
     df$Score_Label <- ifelse(is.na(df$Score_Raw), "-",
                              ifelse(abs(df$Score_Raw) >= 100, sprintf("%.0f", df$Score_Raw),
                              ifelse(abs(df$Score_Raw) >= 10,  sprintf("%.1f", df$Score_Raw),
                              sprintf("%.2f", df$Score_Raw))))
-    df$Text_Color <- "#0F172A"
   }
 
   # Canonical 56-metric row ordering within each category (unless cluster_rows = TRUE)
@@ -3046,9 +3053,9 @@ plot_metric_heatmap <- function(
   }
   col_order <- unique(df$Method)
 
-  # Reshape wide for optional clustering
+  # Reshape wide for optional clustering (always use per-metric Score_Norm to prevent scale dominance)
   if ((cluster_rows || cluster_cols) && length(row_order) > 1 && length(col_order) > 1) {
-    wide_val_col <- if (scale_fill == "relative") "Score_Norm" else "Score_Raw"
+    wide_val_col <- "Score_Norm"
     wide_m <- stats::reshape(
       df[, c("Method", "Display_Metric", wide_val_col)],
       timevar = "Method", idvar = "Display_Metric", direction = "wide"
@@ -3084,7 +3091,9 @@ plot_metric_heatmap <- function(
                     setdiff(unique(df$Category), ordered_cats))
   df$Category <- factor(df$Category, levels = ordered_cats)
 
-  fill_var <- if (scale_fill == "relative") "Score_Norm" else "Score_Raw"
+  # Tile fill color is always scaled per metric by direction-aware fidelity [0, 1]
+  # so that raw-mode displays native numbers inside tiles without high-magnitude metrics washing out colors
+  fill_var <- "Score_Norm"
 
   p <- ggplot2::ggplot(df, ggplot2::aes(x = .data$Method, y = .data$Display_Metric, fill = .data[[fill_var]])) +
     ggplot2::geom_tile(color = "#FFFFFF", linewidth = 0.5) +
@@ -3092,40 +3101,33 @@ plot_metric_heatmap <- function(
       ggplot2::aes(label = .data$Score_Label, color = .data$Text_Color),
       size = base_size * 0.25, fontface = "bold", show.legend = FALSE
     ) +
-    ggplot2::scale_color_identity()
-
-  if (scale_fill == "relative") {
-    p <- p + ggplot2::scale_fill_gradient(
+    ggplot2::scale_color_identity() +
+    ggplot2::scale_fill_gradient(
       low = "#EBF5FB", high = "#1F618D",
-      na.value = "#F2F4F4", name = "Relative Fidelity [0, 1]\n(\u2191 Higher = Better)",
+      na.value = "#F2F4F4",
+      name = if (scale_fill == "relative") {
+        "Relative Fidelity [0, 1]\n(Higher = Better)"
+      } else {
+        "Per-Metric Fidelity [0, 1]\n(\u2191 Higher = Better)"
+      },
       limits = c(0, 1),
       guide = ggplot2::guide_colorbar(
         barwidth = ggplot2::unit(7, "cm"), barheight = ggplot2::unit(0.35, "cm"),
         title.position = "top", title.hjust = 0.5
       )
     )
-  } else {
-    p <- p + ggplot2::scale_fill_gradient2(
-      low = "#EBF5FB", mid = "#AED6F1", high = "#1F618D",
-      na.value = "#F2F4F4", name = "Raw Metric Score\n(Native Units)",
-      guide = ggplot2::guide_colorbar(
-        barwidth = ggplot2::unit(7, "cm"), barheight = ggplot2::unit(0.35, "cm"),
-        title.position = "top", title.hjust = 0.5
-      )
-    )
-  }
 
   sub_heat <- if (scale_fill == "relative") {
-    sprintf("%d evaluation metrics across %d canonical categories | Standardized fidelity [0, 1] (\u2191 higher raw better, \u2193 lower raw better)",
+    sprintf("%d evaluation metrics across %d canonical categories | Standardized fidelity scores [0, 1] (1.0 = best)",
             n_metrics_shown, n_cats_shown)
   } else {
-    sprintf("%d evaluation metrics across %d canonical categories | Unnormalized raw scores (\u2191 higher is better, \u2193 lower is better)",
+    sprintf("%d evaluation metrics across %d canonical categories | Raw values in cells; tile color scaled per metric [0, 1] (\u2191 higher better, \u2193 lower better)",
             n_metrics_shown, n_cats_shown)
   }
   cap_heat <- if (scale_fill == "relative") {
-    "Values inside cells and tile shading indicate direction-standardized fidelity [0, 1] (1.0 = best reference agreement). \u2191 Higher raw value is better  |  \u2193 Lower raw value is better."
+    "Values inside cells and tile shading indicate direction-standardized fidelity [0, 1] (1.0 = best reference agreement)."
   } else {
-    "Values inside cells and tile intensity denote original unnormalized metric values in native units. \u2191 Higher is better  |  \u2193 Lower is better."
+    "Cell text displays original unnormalized raw metric values in native units; tile shading reflects per-metric direction-standardized fidelity [0, 1] (1.0 = best). \u2191 Higher raw value is better  |  \u2193 Lower raw value is better."
   }
 
   p <- p +
@@ -3249,16 +3251,21 @@ plot_metric_heatmap <- function(
 
   ann <- .annotate_ordination_metrics(
     data.frame(Metric = rownames(mat), MDS1 = mds$points[, 1], MDS2 = mds$points[, 2], stringsAsFactors = FALSE),
-    sub_df, group_by, feature_label, palette, type_colors, show_direction = TRUE
+    sub_df, group_by, feature_label, palette, type_colors, show_direction = !isTRUE(normalize_scores)
   )
 
   n_pts  <- nrow(ann$df)
   n_grps <- length(unique(ann$df$Group))
   sub_txt <- if (!by_category) {
-    sprintf("%d evaluation metrics across %d %s | Direction-aligned metric space (\u2191 higher raw better, \u2193 lower raw better)",
-            n_pts, n_grps, if (group_by == "category") "canonical categories" else "biological levels")
+    if (isTRUE(normalize_scores)) {
+      sprintf("%d evaluation metrics across %d %s | Direction-aligned metric space",
+              n_pts, n_grps, if (group_by == "category") "canonical categories" else "biological levels")
+    } else {
+      sprintf("%d evaluation metrics across %d %s | Raw metric space (\u2191 higher better, \u2193 lower better)",
+              n_pts, n_grps, if (group_by == "category") "canonical categories" else "biological levels")
+    }
   } else {
-    sprintf("%d metrics (\u2191 higher raw better, \u2193 lower raw better)", n_pts)
+    if (isTRUE(normalize_scores)) sprintf("%d metrics", n_pts) else sprintf("%d metrics (\u2191 higher better, \u2193 lower better)", n_pts)
   }
 
   p <- ggplot2::ggplot(ann$df, ggplot2::aes(x = .data$MDS1, y = .data$MDS2)) +
@@ -3555,7 +3562,8 @@ plot_metric_mds <- function(
 #' Build PCA Scores and Loadings ggplot Panels
 #' @keywords internal
 #' @noRd
-.build_pca_panels <- function(pca, df, group_by, feature_label, palette, top_n_loadings, base_size, n_total_metrics = NULL) {
+.build_pca_panels <- function(pca, df, group_by, feature_label, palette, top_n_loadings, base_size,
+                              n_total_metrics = NULL, normalize_scores = TRUE) {
   pca_var <- round(100 * summary(pca)$importance[2, seq_len(2)], 1)
   scores_df <- data.frame(Method = rownames(pca$x), PC1 = pca$x[, 1], PC2 = pca$x[, 2], stringsAsFactors = FALSE)
   m_names <- sort(unique(scores_df$Method))
@@ -3615,12 +3623,17 @@ plot_metric_mds <- function(
     ldf <- utils::head(ldf[order(ldf$mag, decreasing = TRUE), ], top_n_loadings)
   }
   ann <- .annotate_ordination_metrics(ldf, df, group_by, feature_label, palette,
-                                      default_summary_legend = "Category", show_direction = TRUE)
+                                      default_summary_legend = "Category", show_direction = !isTRUE(normalize_scores))
 
   title_b <- if (nrow(ann$df) < total_loadings) {
     sprintf("Metric Loadings Vectors (Top %d of %d Discriminating Metrics)", nrow(ann$df), total_loadings)
   } else {
     sprintf("Metric Loadings Vectors (All %d Discriminating Metrics)", nrow(ann$df))
+  }
+  sub_b <- if (isTRUE(normalize_scores)) {
+    "Direction-aligned fidelity loadings (vector length and direction indicate influence on PC1 and PC2 separation)"
+  } else {
+    "Raw metric loadings (\u2191 higher better, \u2193 lower better; vector length = PC1-PC2 influence)"
   }
 
   p_b <- ggplot2::ggplot(ann$df) +
@@ -3639,7 +3652,7 @@ plot_metric_mds <- function(
     ggplot2::scale_x_continuous(expand = ggplot2::expansion(mult = 0.16)) +
     ggplot2::scale_y_continuous(expand = ggplot2::expansion(mult = 0.18)) +
     ggplot2::labs(title = title_b,
-                  subtitle = "Direction-aligned fidelity loadings (\u2191 higher raw better, \u2193 lower raw better; vector length = PC1-PC2 influence)",
+                  subtitle = sub_b,
                   x = sprintf("PC1 (%s%%)", pca_var[1]), y = sprintf("PC2 (%s%%)", pca_var[2])) +
     pca_theme + ggplot2::guides(color = ggplot2::guide_legend(override.aes = list(linewidth = 1.0, shape = NA)))
   list(p_a = p_a, p_b = p_b)
@@ -3803,7 +3816,8 @@ plot_metric_pca <- function(
     return(ggplot2::ggplot() + ggplot2::annotate("text", x = 0.5, y = 0.5, label = "Unable to compute PCA ordination with the current metric matrix.", size = base_size * 0.4, fontface = "italic", color = "#EF4444") + ggplot2::theme_void(base_size = base_size))
   }
 
-  panels <- .build_pca_panels(pca, prep$df, group_by, feature_label, palette, top_n_loadings, base_size, n_total_metrics = n_total_metrics)
+  panels <- .build_pca_panels(pca, prep$df, group_by, feature_label, palette, top_n_loadings, base_size,
+                              n_total_metrics = n_total_metrics, normalize_scores = normalize_scores)
   if (panel == "methods") return(panels$p_a)
   if (panel == "loadings") return(panels$p_b)
   if (requireNamespace("patchwork", quietly = TRUE)) {
@@ -4106,9 +4120,7 @@ plot_metric_pca <- function(
       ggplot2::guides(x = .guide_axis_colored(label_colors = klc))
   }
 
-  is_hib_key <- .is_higher_better(df$Metric)
-  dir_lbl <- paste0(as.character(df$Display_Metric), ifelse(is_hib_key, " (\u2191)", " (\u2193)"))
-  xlm <- stats::setNames(dir_lbl, as.character(df$Metric_Key))
+  xlm <- stats::setNames(as.character(df$Display_Metric), as.character(df$Metric_Key))
   if (isTRUE(show_category_bars)) for (mct in ord$cat_bar_meta) xlm[c(mct$bar1_k, mct$bar2_k)] <- ""
   p <- p + ggplot2::scale_x_discrete(breaks = function(lims) lims[!grepl("__CAT_AVG_BAR[12]__$", lims)],
                                      labels = function(k) ifelse(k %in% names(xlm), unname(xlm[k]), k))
@@ -4186,7 +4198,7 @@ plot_metric_pca <- function(
       caption = paste0(
         "Circle/bar: standard performance  |  Bold outline: top-performing simulator for the metric or category",
         if (show_missing_dots) "  |  Grey dot: metric not computed.\n" else ".\n",
-        "All ", length(ord$real_metric_keys), " metrics direction-normalized: 1.0 always indicates closest agreement to empirical reference (\u2191 higher raw better, \u2193 lower raw better).",
+        "All ", length(ord$real_metric_keys), " metrics direction-normalized: 1.0 always indicates closest agreement to empirical reference.",
         if (isTRUE(show_category_bars)) " Right-hand bars show category mean scores [0.00-1.00]." else ""
       )
     ) +

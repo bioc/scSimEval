@@ -1,6 +1,12 @@
+# scSimEval 0.99.17
+
+* **Per-Metric Raw Heatmap Shading**: Updated `plot_metric_heatmap()` so `scale_fill = "raw"` preserves exact native raw metric values in cell annotations while scaling tile fill colors per metric in `[0, 1]` (matching normalized fidelity shading so high-magnitude scalability metrics do not wash out row-level color contrast).
+* **Raw-Mode-Only Direction Arrows**: Restricted `(↑)` / `(↓)` optimization-direction arrows next to metric names exclusively to raw-value plots (`scale_fill = "raw"`, `score_type = "raw"`, or `normalize_scores = FALSE`) across heatmaps, metric plots, and ordinations; all normalized plots and bubble matrices now display clean metric names only.
+
+
 # scSimEval 0.99.16
 
-* **Full 56-Metric Category Coverage & Directionality Arrows Across All Plots**: Disambiguated Category V RNA DE (6 metrics) and ATAC DA (6 metrics) across multiomics visualizations so `plot_metric_heatmap()`, `plot_metric_pca()`, `plot_metric_mds()`, `plot_metric_boxplots()`, `plot_category_metric_bars()`, `plot_individual_metric_bar()`, and `plot_benchmark_bubble_matrix()` render all 56 canonical evaluation measures ordered by category (44 for scRNA-seq, 38 for scATAC-seq) with explicit higher-is-better (`↑`) and lower-is-better (`↓`) optimization-direction arrows.
+* **Full 56-Metric Category Coverage**: Disambiguated Category V RNA DE (6 metrics) and ATAC DA (6 metrics) across multiomics visualizations so `plot_metric_heatmap()`, `plot_metric_pca()`, `plot_metric_mds()`, `plot_metric_boxplots()`, `plot_category_metric_bars()`, `plot_individual_metric_bar()`, and `plot_benchmark_bubble_matrix()` render all 56 canonical evaluation measures ordered by category (44 for scRNA-seq, 38 for scATAC-seq).
 * **Improved PCA Ordination, MDS Metric Space & Metric Plots**: Standardized direction-aligned property-level normalization prior to metric aggregation across `plot_metric_pca()`, `plot_metric_mds()`, `plot_metric_heatmap()`, `plot_metric_boxplots()`, `plot_benchmark_bubble_matrix()`, and `plot_evaluation_summary()`, included all 8 categories by default in PCA/MDS ordinations, added MDS variance-explained axis labels, fixed Panel a simulator legend color alignment in `plot_metric_pca()`, and expanded plot margins and label repulsion to eliminate clipping and overlaps.
 
 

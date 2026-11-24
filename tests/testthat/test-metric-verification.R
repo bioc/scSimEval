@@ -284,37 +284,52 @@ test_that("Regression tests: normalize_counts, benchmark_resource_usage, multi-b
   )
   expect_true(is.finite(ac_res$curve_rmse) && ac_res$curve_rmse >= 0 && ac_res$curve_rmse <= 1)
 
-  # 5. Full 56-metric coverage, Cat V/VI disambiguation, and direction arrows in heatmap, MDS, PCA, and metric plots
+  # 5. Full 56-metric coverage, Cat V/VI disambiguation, per-metric raw heatmap fill, and raw-only direction arrows
   rds_path <- system.file("extdata", "scSimEval_benchmark_results.rds", package = "scSimEval")
   if (nzchar(rds_path) && file.exists(rds_path)) {
     rds_df <- readRDS(rds_path)
     p_hm <- plot_metric_heatmap(rds_df)
     hm_metrics <- unique(as.character(p_hm$data$Display_Metric))
     expect_equal(length(hm_metrics), 56L)
-    expect_true(all(grepl("\\(\u2191\\)|\\(\u2193\\)$", hm_metrics)))
-    expect_true(any(grepl("\\(\u2191\\)$", hm_metrics)))
-    expect_true(any(grepl("\\(\u2193\\)$", hm_metrics)))
+    expect_false(any(grepl("\u2191|\u2193", hm_metrics)))
     expect_equal(length(unique(p_hm$data$Category)), 8L)
+
+    # Raw mode shows (↑)/(↓) arrows, raw values in cells, and per-metric [0, 1] tile fill
+    p_hm_raw <- plot_metric_heatmap(rds_df, scale_fill = "raw")
+    hm_raw_metrics <- unique(as.character(p_hm_raw$data$Display_Metric))
+    expect_equal(length(hm_raw_metrics), 56L)
+    expect_true(all(grepl("\\(\u2191\\)|\\(\u2193\\)$", hm_raw_metrics)))
+    expect_true(any(grepl("\\(\u2191\\)$", hm_raw_metrics)))
+    expect_true(any(grepl("\\(\u2193\\)$", hm_raw_metrics)))
+    expect_true(grepl("Score_Norm", rlang::as_label(p_hm_raw$mapping$fill)))
+    expect_equal(p_hm_raw$scales$get_scales("fill")$limits, c(0, 1))
+    expect_true(any(as.numeric(p_hm_raw$data$Score_Label[p_hm_raw$data$Metric == "core_seconds"]) > 1, na.rm = TRUE))
 
     p_mds <- expect_no_warning(plot_metric_mds(rds_df, ordination_by = "summaries"))
     expect_equal(nrow(p_mds$data), 56L)
-    expect_true(all(grepl("\\(\u2191\\)|\\(\u2193\\)$", p_mds$data$Display_Label)))
+    expect_false(any(grepl("\u2191|\u2193", p_mds$data$Display_Label)))
 
     p_pca <- plot_metric_pca(rds_df, panel = "both")
     expect_true(inherits(p_pca, "gg") || inherits(p_pca, "patchwork"))
     p_pca_load <- plot_metric_pca(rds_df, panel = "loadings", top_n_loadings = NULL)
     expect_gte(nrow(p_pca_load$data), 50L)
-    expect_true(all(grepl("\\(\u2191\\)|\\(\u2193\\)$", p_pca_load$data$Display_Label)))
+    expect_false(any(grepl("\u2191|\u2193", p_pca_load$data$Display_Label)))
 
     p_box <- plot_metric_boxplots(rds_df, score_type = "normalized")
     expect_equal(length(unique(paste(p_box$data$Category, p_box$data$Metric))), 56L)
-    expect_true(all(grepl("\\(\u2191\\)|\\(\u2193\\)$", as.character(p_box$data$Display_Metric))))
+    expect_false(any(grepl("\u2191|\u2193", as.character(p_box$data$Display_Metric))))
+    p_box_raw <- plot_metric_boxplots(rds_df, score_type = "raw")
+    expect_true(all(grepl("\\(\u2191\\)|\\(\u2193\\)$", as.character(p_box_raw$data$Display_Metric))))
 
     p_cat5 <- plot_category_metric_bars(rds_df, category = "(V) Biological Signal & Differential Fidelity")
     expect_equal(length(unique(p_cat5$data$Display_Metric)), 12L)
-    expect_true(all(grepl("\\(\u2191\\)$", as.character(p_cat5$data$Display_Metric))))
+    expect_false(any(grepl("\u2191|\u2193", as.character(p_cat5$data$Display_Metric))))
+    p_cat5_raw <- plot_category_metric_bars(rds_df, category = "(V) Biological Signal & Differential Fidelity", score_type = "raw")
+    expect_true(all(grepl("\\(\u2191\\)$", as.character(p_cat5_raw$data$Display_Metric))))
 
     p_ind <- plot_individual_metric_bar(rds_df, metric = "rna_de_f1")
-    expect_true(grepl("\u2191", p_ind$labels$title))
+    expect_false(grepl("\u2191|\u2193", p_ind$labels$title))
+    p_ind_raw <- plot_individual_metric_bar(rds_df, metric = "rna_de_f1", score_type = "raw")
+    expect_true(grepl("\u2191", p_ind_raw$labels$title))
   }
 })

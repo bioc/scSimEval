@@ -19,7 +19,7 @@ down-arrow = lower is better) across all 56 curated evaluation measures (14 Dist
 
     <a class="navbar-brand me-2" href="../index.html">scSimEval</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.99.16</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.99.17</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -103,9 +103,11 @@ down-arrow = lower is better) across all 56 curated evaluation measures (14 Dist
 
 
 <dt id="arg-scale-fill">scale_fill<a class="anchor" aria-label="anchor" href="#arg-scale-fill"></a></dt>
-<dd><p>Character. Cell color fill scaling: <code>"relative"</code> (default; direction-aware
-min-max normalized fidelity in [0, 1] across methods per metric, ensuring balanced color contrast
-across all 56 curated evaluation measures) or <code>"raw"</code> (direct numeric values in native units).</p></dd>
+<dd><p>Character. Cell label &amp; color mode: <code>"relative"</code> (default; cell text and
+tile fill both show per-metric direction-aware normalized fidelity in [0, 1]) or <code>"raw"</code>
+(cell text displays original unnormalized raw values in native units while tile shading still
+scales per metric by direction-aware fidelity in [0, 1] so high-magnitude metrics like runtime
+or RAM do not wash out color contrast across rows).</p></dd>
 
 
 <dt id="arg-top-n-properties">top_n_properties<a class="anchor" aria-label="anchor" href="#arg-top-n-properties"></a></dt>
