@@ -1,3 +1,8 @@
+# scSimEval 0.99.18
+
+* **Metric Value Ranges in Master Reference Table**: Added a dedicated `Range` column documenting the theoretical bounds for all 56 canonical evaluation measures in the `metrics-catalog` vignette (`vignettes/metrics-catalog.Rmd`) and rebuilt the `pkgdown` documentation site.
+
+
 # scSimEval 0.99.17
 
 * **Per-Metric Raw Heatmap Shading**: Updated `plot_metric_heatmap()` so `scale_fill = "raw"` preserves exact native raw metric values in cell annotations while scaling tile fill colors per metric in `[0, 1]` (matching normalized fidelity shading so high-magnitude scalability metrics do not wash out row-level color contrast).

@@ -30,7 +30,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">scSimEval</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.99.17</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.99.18</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -236,22 +236,24 @@ single-cell and multiomics simulators.</strong></td>
 </h2>
 <p>The table below lists all 56 evaluation measures implemented in
 <code>scSimEval</code>. For each metric, it highlights the internal
-metric identifier, category, the ideal scoring direction, and what the
-metric captures.</p>
-<table class="table">
+metric identifier, category, theoretical value range, ideal scoring
+direction, and what the metric captures.</p>
+<table style="width:100%;" class="table">
 <colgroup>
+<col width="13%">
+<col width="13%">
+<col width="13%">
+<col width="13%">
 <col width="16%">
 <col width="16%">
-<col width="16%">
-<col width="16%">
-<col width="20%">
-<col width="16%">
+<col width="13%">
 </colgroup>
 <thead><tr class="header">
 <th align="center">#</th>
 <th align="left">Metric ID</th>
 <th align="left">Display Name</th>
 <th align="left">Category</th>
+<th align="center">Range</th>
 <th align="center">Best Direction</th>
 <th align="left">Plain-English Evaluation Focus</th>
 </tr></thead>
@@ -261,6 +263,7 @@ metric captures.</p>
 <td align="left"><code>Wasserstein</code></td>
 <td align="left">1D Wasserstein Distance</td>
 <td align="left">I. Distributional</td>
+<td align="center"><code>[0, ∞)</code></td>
 <td align="center">Lower is better</td>
 <td align="left">Physical transport work needed to transform simulated
 distributions into reference distributions across 14 univariate
@@ -271,6 +274,7 @@ properties.</td>
 <td align="left"><code>KS</code></td>
 <td align="left">Kolmogorov–Smirnov Distance</td>
 <td align="left">I. Distributional</td>
+<td align="center"><code>[0, 1]</code></td>
 <td align="center">Lower is better</td>
 <td align="left">Maximum vertical divergence between the cumulative
 distribution curves of real and simulated properties.</td>
@@ -280,6 +284,7 @@ distribution curves of real and simulated properties.</td>
 <td align="left"><code>MAD</code></td>
 <td align="left">Median Absolute Deviation</td>
 <td align="left">I. Distributional</td>
+<td align="center"><code>[0, ∞)</code></td>
 <td align="center">Lower is better</td>
 <td align="left">Median absolute discrepancy across aligned quantile
 points; highly resistant to extreme outliers.</td>
@@ -289,6 +294,7 @@ points; highly resistant to extreme outliers.</td>
 <td align="left"><code>MAE</code></td>
 <td align="left">Mean Absolute Error</td>
 <td align="left">I. Distributional</td>
+<td align="center"><code>[0, ∞)</code></td>
 <td align="center">Lower is better</td>
 <td align="left">Average absolute discrepancy across the entire range of
 cell and feature properties.</td>
@@ -298,6 +304,7 @@ cell and feature properties.</td>
 <td align="left"><code>RMSE</code></td>
 <td align="left">Root Mean Squared Error</td>
 <td align="left">I. Distributional</td>
+<td align="center"><code>[0, ∞)</code></td>
 <td align="center">Lower is better</td>
 <td align="left">Average squared discrepancy across quantiles, placing
 greater penalty on severe distribution tail mismatches.</td>
@@ -307,6 +314,7 @@ greater penalty on severe distribution tail mismatches.</td>
 <td align="left"><code>Bhattacharyya</code></td>
 <td align="left">Bhattacharyya Distance</td>
 <td align="left">I. Distributional</td>
+<td align="center"><code>[0, ∞)</code></td>
 <td align="center">Lower is better</td>
 <td align="left">Measures the geometric overlap and statistical
 divergence between reference and simulated probability histograms.</td>
@@ -316,6 +324,7 @@ divergence between reference and simulated probability histograms.</td>
 <td align="left"><code>KDE_ISE</code></td>
 <td align="left">Kernel Density Error</td>
 <td align="left">I. Distributional</td>
+<td align="center"><code>[0, ∞)</code></td>
 <td align="center">Lower is better</td>
 <td align="left">Integrated squared difference between smoothed
 continuous probability density curves.</td>
@@ -325,6 +334,7 @@ continuous probability density curves.</td>
 <td align="left"><code>Runs_Statistic</code></td>
 <td align="left">Wald–Wolfowitz Runs</td>
 <td align="left">I. Distributional</td>
+<td align="center"><code>(-∞, +∞)</code></td>
 <td align="center">Closer to 0 is better</td>
 <td align="left">Tests whether real and simulated values interleave
 randomly without clustering by dataset source.</td>
@@ -334,6 +344,7 @@ randomly without clustering by dataset source.</td>
 <td align="left"><code>NN_Mismatch</code></td>
 <td align="left">1D Nearest-Neighbor Mismatch</td>
 <td align="left">I. Distributional</td>
+<td align="center"><code>[0, 1]</code></td>
 <td align="center">Lower is better</td>
 <td align="left">Fraction of pooled data points whose nearest neighbor
 comes from the wrong dataset.</td>
@@ -343,6 +354,7 @@ comes from the wrong dataset.</td>
 <td align="left"><code>Between_Dataset_Silh_Global</code></td>
 <td align="left">1D Inter-Dataset Silhouette</td>
 <td align="left">I. Distributional</td>
+<td align="center"><code>[-1, 1]</code></td>
 <td align="center">Closer to 0 is better</td>
 <td align="left">Verifies that reference and simulated data do not
 artificially form separate clusters along a single property axis.</td>
@@ -352,6 +364,7 @@ artificially form separate clusters along a single property axis.</td>
 <td align="left"><code>Fasano_Franceschini_2D_KS</code></td>
 <td align="left">2D Kolmogorov–Smirnov</td>
 <td align="left">I. Distributional</td>
+<td align="center"><code>[0, 1]</code></td>
 <td align="center">Lower is better</td>
 <td align="left">Two-dimensional extension of the KS test measuring
 divergence across joint bivariate quadrant distributions.</td>
@@ -361,6 +374,7 @@ divergence across joint bivariate quadrant distributions.</td>
 <td align="left"><code>EMD_2D</code></td>
 <td align="left">2D Earth Mover’s Distance</td>
 <td align="left">I. Distributional</td>
+<td align="center"><code>[0, ∞)</code></td>
 <td align="center">Lower is better</td>
 <td align="left">Optimal transport work required to morph 2D bivariate
 property density surfaces into one another.</td>
@@ -370,6 +384,7 @@ property density surfaces into one another.</td>
 <td align="left"><code>NN_Mismatch_2D</code></td>
 <td align="left">2D Nearest-Neighbor Mismatch</td>
 <td align="left">I. Distributional</td>
+<td align="center"><code>[0, 1]</code></td>
 <td align="center">Lower is better</td>
 <td align="left">Evaluates local joint neighborhood mixing across
 bivariate property pairs.</td>
@@ -379,6 +394,7 @@ bivariate property pairs.</td>
 <td align="left"><code>Between_Dataset_Silh_2D_Global</code></td>
 <td align="left">2D Inter-Dataset Silhouette</td>
 <td align="left">I. Distributional</td>
+<td align="center"><code>[-1, 1]</code></td>
 <td align="center">Closer to 0 is better</td>
 <td align="left">Ensures real and simulated cells do not artificially
 segregate into distinct clusters in 2D property space.</td>
@@ -388,6 +404,7 @@ segregate into distinct clusters in 2D property space.</td>
 <td align="left"><code>midpoint_error</code></td>
 <td align="left">Dropout Midpoint Error</td>
 <td align="left">II. Sparsity Dynamics</td>
+<td align="center"><code>[0, ∞)</code></td>
 <td align="center">Lower is better</td>
 <td align="left">Absolute shift in the expression level at which genes
 have a 50% probability of dropout (scRNA-seq).</td>
@@ -397,6 +414,7 @@ have a 50% probability of dropout (scRNA-seq).</td>
 <td align="left"><code>slope_error</code></td>
 <td align="left">Dropout Slope Error</td>
 <td align="left">II. Sparsity Dynamics</td>
+<td align="center"><code>[0, ∞)</code></td>
 <td align="center">Lower is better</td>
 <td align="left">Discrepancy in the rate of transition from silent to
 detected as expression increases (scRNA-seq).</td>
@@ -406,6 +424,7 @@ detected as expression increases (scRNA-seq).</td>
 <td align="left"><code>r2_discrepancy</code></td>
 <td align="left">Sparsity Fit Discrepancy</td>
 <td align="left">II. Sparsity Dynamics</td>
+<td align="center"><code>[0, 1]</code></td>
 <td align="center">Lower is better</td>
 <td align="left">Difference in how tightly feature sparsity follows
 empirical trend lines compared to real biological data.</td>
@@ -415,6 +434,7 @@ empirical trend lines compared to real biological data.</td>
 <td align="left"><code>curve_rmse</code></td>
 <td align="left">Accessibility Sparsity RMSE</td>
 <td align="left">II. Sparsity Dynamics</td>
+<td align="center"><code>[0, ∞)</code></td>
 <td align="center">Lower is better</td>
 <td align="left">Root mean squared error between peak accessibility and
 non-zero proportion curves (scATAC-seq).</td>
@@ -424,6 +444,7 @@ non-zero proportion curves (scATAC-seq).</td>
 <td align="left"><code>excess_zero_weight_discrepancy</code></td>
 <td align="left">Excess Zero Discrepancy</td>
 <td align="left">II. Sparsity Dynamics</td>
+<td align="center"><code>[0, 1]</code></td>
 <td align="center">Lower is better</td>
 <td align="left">Quantifies differences in the proportion of zeroes
 attributable to technical dropout beyond biological expectation.</td>
@@ -433,6 +454,7 @@ attributable to technical dropout beyond biological expectation.</td>
 <td align="left"><code>MMD</code></td>
 <td align="left">Maximum Mean Discrepancy</td>
 <td align="left">III. Cellular Manifold</td>
+<td align="center"><code>[0, ∞)</code></td>
 <td align="center">Lower is better</td>
 <td align="left">Multi-scale kernel distance in high-dimensional PCA
 space, evaluating overall multivariate point-cloud alignment.</td>
@@ -442,6 +464,7 @@ space, evaluating overall multivariate point-cloud alignment.</td>
 <td align="left"><code>Generative_Precision</code></td>
 <td align="left">Generative Precision</td>
 <td align="left">III. Cellular Manifold</td>
+<td align="center"><code>[0, 1]</code></td>
 <td align="center">Higher is better</td>
 <td align="left">Proportion of simulated cells that fall within the
 valid support of real cell states (penalizes hallucinated cells).</td>
@@ -451,6 +474,7 @@ valid support of real cell states (penalizes hallucinated cells).</td>
 <td align="left"><code>Generative_Recall</code></td>
 <td align="left">Generative Recall</td>
 <td align="left">III. Cellular Manifold</td>
+<td align="center"><code>[0, 1]</code></td>
 <td align="center">Higher is better</td>
 <td align="left">Proportion of real biological cell diversity
 successfully captured by the simulator (penalizes mode collapse).</td>
@@ -460,6 +484,7 @@ successfully captured by the simulator (penalizes mode collapse).</td>
 <td align="left"><code>silhouette_sim</code></td>
 <td align="left">Cluster Silhouette (ASW)</td>
 <td align="left">III. Cellular Manifold</td>
+<td align="center"><code>[-1, 1]</code></td>
 <td align="center">Higher is better</td>
 <td align="left">Measures how tightly cells of the same cell type
 cluster together compared to neighboring cell types.</td>
@@ -469,6 +494,7 @@ cluster together compared to neighboring cell types.</td>
 <td align="left"><code>cdi</code></td>
 <td align="left">Clustering Deviation Index</td>
 <td align="left">III. Cellular Manifold</td>
+<td align="center"><code>(0, ∞)</code></td>
 <td align="center">Lower is better</td>
 <td align="left">Penalized statistical likelihood measuring whether
 simulated cell populations are over-clustered or under-clustered.</td>
@@ -478,6 +504,7 @@ simulated cell populations are over-clustered or under-clustered.</td>
 <td align="left"><code>neighborhood_purity</code></td>
 <td align="left">Neighborhood Purity</td>
 <td align="left">III. Cellular Manifold</td>
+<td align="center"><code>[0, 1]</code></td>
 <td align="center">Higher is better</td>
 <td align="left">Average percentage of a cell’s nearest neighbors that
 belong to the exact same biological cell type.</td>
@@ -487,6 +514,7 @@ belong to the exact same biological cell type.</td>
 <td align="left"><code>ari</code></td>
 <td align="left">Adjusted Rand Index</td>
 <td align="left">III. Cellular Manifold</td>
+<td align="center"><code>[-1, 1]</code></td>
 <td align="center">Higher is better</td>
 <td align="left">Agreement between unsupervised cell clusters and true
 biological cell types, corrected for chance.</td>
@@ -496,6 +524,7 @@ biological cell types, corrected for chance.</td>
 <td align="left"><code>nmi</code></td>
 <td align="left">Normalized Mutual Info</td>
 <td align="left">III. Cellular Manifold</td>
+<td align="center"><code>[0, 1]</code></td>
 <td align="center">Higher is better</td>
 <td align="left">Information-theoretic measure of shared information
 between unsupervised clusters and known cell types.</td>
@@ -505,6 +534,7 @@ between unsupervised clusters and known cell types.</td>
 <td align="left"><code>batch_silhouette</code></td>
 <td align="left">Batch Silhouette</td>
 <td align="left">IV. Technical Batch</td>
+<td align="center"><code>[-1, 1]</code></td>
 <td align="center">Closer to 0 is better</td>
 <td align="left">Measures whether cells from different technical batches
 intermix naturally rather than separating into artificial groups.</td>
@@ -514,6 +544,7 @@ intermix naturally rather than separating into artificial groups.</td>
 <td align="left"><code>pcr_r2</code></td>
 <td align="left">PC Regression R2</td>
 <td align="left">IV. Technical Batch</td>
+<td align="center"><code>[0, 1]</code></td>
 <td align="center">Lower is better</td>
 <td align="left">Percentage of total expression variance in top
 principal components driven purely by technical batch artifacts.</td>
@@ -523,6 +554,7 @@ principal components driven purely by technical batch artifacts.</td>
 <td align="left"><code>cms</code></td>
 <td align="left">Cell-Specific Mixing Score</td>
 <td align="left">IV. Technical Batch</td>
+<td align="center"><code>[0, 1]</code></td>
 <td align="center">Higher is better</td>
 <td align="left">Statistical test evaluating whether local cell
 neighborhoods reflect the overall batch proportions of the
@@ -533,15 +565,18 @@ experiment.</td>
 <td align="left"><code>isi</code></td>
 <td align="left">Inverse Simpson Index (LISI)</td>
 <td align="left">IV. Technical Batch</td>
+<td align="center"><code>[1, B]</code></td>
 <td align="center">Higher is better</td>
 <td align="left">Effective number of technical batches represented in
-each cell’s immediate neighborhood.</td>
+each cell’s immediate neighborhood (where <em>B</em> is the total number
+of batches).</td>
 </tr>
 <tr class="even">
 <td align="center">32</td>
 <td align="left"><code>cross_batch_F1</code></td>
 <td align="left">Cross-Batch Classification F1</td>
 <td align="left">IV. Technical Batch</td>
+<td align="center"><code>[0, 1]</code></td>
 <td align="center">Higher is better</td>
 <td align="left">Tests whether cell-type classifiers trained on one
 batch can accurately identify cell types in another batch.</td>
@@ -552,6 +587,7 @@ batch can accurately identify cell types in another batch.</td>
 <code>pval_dist_score</code> (scRNA)</td>
 <td align="left">DE Null P-Value Uniformity</td>
 <td align="left">V. Biological Signal</td>
+<td align="center"><code>[0, 1]</code></td>
 <td align="center">Higher is better</td>
 <td align="left">Checks whether non-differential genes produce flat,
 uniform p-values under the null hypothesis (prevents false
@@ -563,6 +599,7 @@ positives).</td>
 <code>pval_dist_score</code> (scATAC)</td>
 <td align="left">DA Null P-Value Uniformity</td>
 <td align="left">V. Biological Signal</td>
+<td align="center"><code>[0, 1]</code></td>
 <td align="center">Higher is better</td>
 <td align="left">Checks whether non-differential chromatin peaks produce
 properly calibrated, uniform null p-values.</td>
@@ -573,6 +610,7 @@ properly calibrated, uniform null p-values.</td>
 <code>accuracy</code> (scRNA)</td>
 <td align="left">DE Detection Accuracy</td>
 <td align="left">V. Biological Signal</td>
+<td align="center"><code>[0, 1]</code></td>
 <td align="center">Higher is better</td>
 <td align="left">Overall binary accuracy in distinguishing differential
 genes from non-differential genes.</td>
@@ -583,6 +621,7 @@ genes from non-differential genes.</td>
 <code>accuracy</code> (scATAC)</td>
 <td align="left">DA Detection Accuracy</td>
 <td align="left">V. Biological Signal</td>
+<td align="center"><code>[0, 1]</code></td>
 <td align="center">Higher is better</td>
 <td align="left">Overall binary accuracy in distinguishing differential
 chromatin peaks from background regions.</td>
@@ -593,6 +632,7 @@ chromatin peaks from background regions.</td>
 <code>precision</code> (scRNA)</td>
 <td align="left">DE Detection Precision</td>
 <td align="left">V. Biological Signal</td>
+<td align="center"><code>[0, 1]</code></td>
 <td align="center">Higher is better</td>
 <td align="left">Proportion of declared marker genes that correspond to
 genuine biological markers in the reference data.</td>
@@ -603,6 +643,7 @@ genuine biological markers in the reference data.</td>
 <code>precision</code> (scATAC)</td>
 <td align="left">DA Detection Precision</td>
 <td align="left">V. Biological Signal</td>
+<td align="center"><code>[0, 1]</code></td>
 <td align="center">Higher is better</td>
 <td align="left">Proportion of declared accessible peaks that represent
 genuine regulatory differences in reference data.</td>
@@ -613,6 +654,7 @@ genuine regulatory differences in reference data.</td>
 <code>recall</code> (scRNA)</td>
 <td align="left">DE Detection Recall</td>
 <td align="left">V. Biological Signal</td>
+<td align="center"><code>[0, 1]</code></td>
 <td align="center">Higher is better</td>
 <td align="left">Sensitivity: what percentage of true biological marker
 genes are successfully detected in the simulated data.</td>
@@ -623,6 +665,7 @@ genes are successfully detected in the simulated data.</td>
 <code>recall</code> (scATAC)</td>
 <td align="left">DA Detection Recall</td>
 <td align="left">V. Biological Signal</td>
+<td align="center"><code>[0, 1]</code></td>
 <td align="center">Higher is better</td>
 <td align="left">Sensitivity: what percentage of true regulatory
 chromatin peaks are successfully identified.</td>
@@ -633,6 +676,7 @@ chromatin peaks are successfully identified.</td>
 <code>f1_score</code> (scRNA)</td>
 <td align="left">DE Detection F1-Score</td>
 <td align="left">V. Biological Signal</td>
+<td align="center"><code>[0, 1]</code></td>
 <td align="center">Higher is better</td>
 <td align="left">Harmonic balance between marker detection precision and
 recall for single-cell gene expression.</td>
@@ -643,6 +687,7 @@ recall for single-cell gene expression.</td>
 <code>f1_score</code> (scATAC)</td>
 <td align="left">DA Detection F1-Score</td>
 <td align="left">V. Biological Signal</td>
+<td align="center"><code>[0, 1]</code></td>
 <td align="center">Higher is better</td>
 <td align="left">Harmonic balance between peak detection precision and
 recall for single-cell chromatin accessibility.</td>
@@ -653,6 +698,7 @@ recall for single-cell chromatin accessibility.</td>
 <code>auc</code> (scRNA)</td>
 <td align="left">DE Ranking ROC-AUC</td>
 <td align="left">V. Biological Signal</td>
+<td align="center"><code>[0, 1]</code></td>
 <td align="center">Higher is better</td>
 <td align="left">Threshold-independent ranking test: verifies that true
 marker genes receive stronger statistical significance than noise.</td>
@@ -663,6 +709,7 @@ marker genes receive stronger statistical significance than noise.</td>
 <code>auc</code> (scATAC)</td>
 <td align="left">DA Ranking ROC-AUC</td>
 <td align="left">V. Biological Signal</td>
+<td align="center"><code>[0, 1]</code></td>
 <td align="center">Higher is better</td>
 <td align="left">Threshold-independent ranking test: verifies that true
 differential chromatin peaks are ranked at the top.</td>
@@ -672,6 +719,7 @@ differential chromatin peaks are ranked at the top.</td>
 <td align="left"><code>batch_asw</code></td>
 <td align="left">Cross-Modal Batch ASW</td>
 <td align="left">VI. Multiomics Alignment</td>
+<td align="center"><code>[0, 1]</code></td>
 <td align="center">Higher is better</td>
 <td align="left">Evaluates whether RNA and ATAC modalities intermix
 smoothly within matching cell types in joint latent space.</td>
@@ -681,6 +729,7 @@ smoothly within matching cell types in joint latent space.</td>
 <td align="left"><code>cell_type_asw</code></td>
 <td align="left">Joint Cell-Type ASW</td>
 <td align="left">VI. Multiomics Alignment</td>
+<td align="center"><code>[0, 1]</code></td>
 <td align="center">Higher is better</td>
 <td align="left">Verifies that biological cell types remain distinctly
 separated from one another in the joint multiomics space.</td>
@@ -690,6 +739,7 @@ separated from one another in the joint multiomics space.</td>
 <td align="left"><code>graph_connectivity</code></td>
 <td align="left">Graph Connectivity</td>
 <td align="left">VI. Multiomics Alignment</td>
+<td align="center"><code>[0, 1]</code></td>
 <td align="center">Higher is better</td>
 <td align="left">Checks whether cells of the same biological type form
 an unbroken, interconnected network across modalities.</td>
@@ -699,15 +749,18 @@ an unbroken, interconnected network across modalities.</td>
 <td align="left"><code>ari</code></td>
 <td align="left">Integration ARI</td>
 <td align="left">VI. Multiomics Alignment</td>
+<td align="center"><code>[0, 1]</code></td>
 <td align="center">Higher is better</td>
 <td align="left">Accuracy of unsupervised clustering on joint multiomics
-embeddings compared to ground-truth cell labels.</td>
+embeddings compared to ground-truth cell labels (truncated to
+<code>[0, 1]</code>).</td>
 </tr>
 <tr class="odd">
 <td align="center">49</td>
 <td align="left"><code>nmi</code></td>
 <td align="left">Integration NMI</td>
 <td align="left">VI. Multiomics Alignment</td>
+<td align="center"><code>[0, 1]</code></td>
 <td align="center">Higher is better</td>
 <td align="left">Shared information between joint multiomics clusters
 and true biological cell identities.</td>
@@ -717,6 +770,7 @@ and true biological cell identities.</td>
 <td align="left"><code>him</code></td>
 <td align="left">HIM Topology Similarity</td>
 <td align="left">VII. Lineage Trajectory</td>
+<td align="center"><code>[0, 1]</code></td>
 <td align="center">Higher is better</td>
 <td align="left">Combines local edge structure and global graph spectra
 to test whether trajectory branching trees match real biology.</td>
@@ -726,6 +780,7 @@ to test whether trajectory branching trees match real biology.</td>
 <td align="left"><code>edge_flip</code></td>
 <td align="left">Edge Flip Similarity</td>
 <td align="left">VII. Lineage Trajectory</td>
+<td align="center"><code>[0, 1]</code></td>
 <td align="center">Higher is better</td>
 <td align="left">Measures the minimum number of graph edits needed to
 morph simulated differentiation paths into real paths.</td>
@@ -735,15 +790,18 @@ morph simulated differentiation paths into real paths.</td>
 <td align="left"><code>geodesic_correlation</code></td>
 <td align="left">Geodesic Distance Corr.</td>
 <td align="left">VII. Lineage Trajectory</td>
+<td align="center"><code>[0, 1]</code></td>
 <td align="center">Higher is better</td>
 <td align="left">Tests whether continuous pseudotime progression
-distances between cells are preserved along developmental paths.</td>
+distances between cells are preserved along developmental paths
+(negative correlations clipped to <code>0</code>).</td>
 </tr>
 <tr class="odd">
 <td align="center">53</td>
 <td align="left"><code>F1_branches</code></td>
 <td align="left">Branch Assignment F1</td>
 <td align="left">VII. Lineage Trajectory</td>
+<td align="center"><code>[0, 1]</code></td>
 <td align="center">Higher is better</td>
 <td align="left">Assesses whether cells are assigned to the correct
 developmental lineages and terminal fate branches.</td>
@@ -753,15 +811,18 @@ developmental lineages and terminal fate branches.</td>
 <td align="left"><code>wcor_features</code></td>
 <td align="left">Driver Gene Importance Corr.</td>
 <td align="left">VII. Lineage Trajectory</td>
+<td align="center"><code>[0, 1]</code></td>
 <td align="center">Higher is better</td>
 <td align="left">Verifies that the exact same dynamic regulatory genes
-govern trajectory progression in simulated and real cells.</td>
+govern trajectory progression in simulated and real cells (negative
+values clipped to <code>0</code>).</td>
 </tr>
 <tr class="odd">
 <td align="center">55</td>
 <td align="left"><code>core_seconds</code></td>
 <td align="left">Cumulative Core-Seconds</td>
 <td align="left">VIII. Scalability</td>
+<td align="center"><code>(0, ∞)</code></td>
 <td align="center">Lower is better</td>
 <td align="left">Total computational effort: elapsed wall-clock seconds
 multiplied by the number of allocated processor cores.</td>
@@ -771,12 +832,22 @@ multiplied by the number of allocated processor cores.</td>
 <td align="left"><code>memory_per_core_mib</code></td>
 <td align="left">Peak RAM per Core (MiB)</td>
 <td align="left">VIII. Scalability</td>
+<td align="center"><code>(0, ∞)</code></td>
 <td align="center">Lower is better</td>
 <td align="left">Hardware-normalized resident memory footprint: peak RAM
 consumption divided by allocated cores.</td>
 </tr>
 </tbody>
 </table>
+<blockquote>
+<p><strong>Range notes:</strong> For <code>isi</code>, <span class="math inline">B \ge 2</span> denotes the number of batches in the
+dataset. Following the <code>scib</code> and <code>dynverse</code>
+benchmarking conventions, Integration ARI (<code>ari</code> in Category
+VI), Geodesic Distance Correlation (<code>geodesic_correlation</code>),
+and Driver Gene Importance Weighted Correlation
+(<code>wcor_features</code>) are truncated/clipped below at
+<code>0</code> so they span <code>[0, 1]</code>.</p>
+</blockquote>
 <hr>
 </div>
 <div class="section level2">
@@ -784,35 +855,31 @@ consumption divided by allocated cores.</td>
 </h2>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/sessionInfo.html" class="external-link">sessionInfo</a></span><span class="op">(</span><span class="op">)</span></span>
-<span><span class="co">#&gt; R version 4.6.2 (2026-10-29)</span></span>
-<span><span class="co">#&gt; Platform: x86_64-pc-linux-gnu</span></span>
-<span><span class="co">#&gt; Running under: Ubuntu 24.04.4 LTS</span></span>
+<span><span class="co">#&gt; R version 4.6.1 (2026-06-24 ucrt)</span></span>
+<span><span class="co">#&gt; Platform: x86_64-w64-mingw32/x64</span></span>
+<span><span class="co">#&gt; Running under: Windows 11 x64 (build 26300)</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; Matrix products: default</span></span>
-<span><span class="co">#&gt; BLAS:   /usr/lib/x86_64-linux-gnu/blas/libblas.so.3.12.0 </span></span>
-<span><span class="co">#&gt; LAPACK: /usr/lib/x86_64-linux-gnu/lapack/liblapack.so.3.12.0  LAPACK version 3.12.0</span></span>
+<span><span class="co">#&gt;   LAPACK version 3.12.1</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; locale:</span></span>
-<span><span class="co">#&gt;  [1] LC_CTYPE=en_US.UTF-8       LC_NUMERIC=C              </span></span>
-<span><span class="co">#&gt;  [3] LC_TIME=en_US.UTF-8        LC_COLLATE=en_US.UTF-8    </span></span>
-<span><span class="co">#&gt;  [5] LC_MONETARY=en_US.UTF-8    LC_MESSAGES=en_US.UTF-8   </span></span>
-<span><span class="co">#&gt;  [7] LC_PAPER=en_US.UTF-8       LC_NAME=C                 </span></span>
-<span><span class="co">#&gt;  [9] LC_ADDRESS=C               LC_TELEPHONE=C            </span></span>
-<span><span class="co">#&gt; [11] LC_MEASUREMENT=en_US.UTF-8 LC_IDENTIFICATION=C       </span></span>
+<span><span class="co">#&gt; [1] LC_COLLATE=English_India.utf8  LC_CTYPE=English_India.utf8   </span></span>
+<span><span class="co">#&gt; [3] LC_MONETARY=English_India.utf8 LC_NUMERIC=C                  </span></span>
+<span><span class="co">#&gt; [5] LC_TIME=English_India.utf8    </span></span>
 <span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; time zone: Asia/Kolkata</span></span>
-<span><span class="co">#&gt; tzcode source: system (glibc)</span></span>
+<span><span class="co">#&gt; time zone: Asia/Calcutta</span></span>
+<span><span class="co">#&gt; tzcode source: internal</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; attached base packages:</span></span>
 <span><span class="co">#&gt; [1] stats     graphics  grDevices utils     datasets  methods   base     </span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; loaded via a namespace (and not attached):</span></span>
 <span><span class="co">#&gt;  [1] digest_0.6.39     desc_1.4.3        R6_2.6.1          fastmap_1.2.0    </span></span>
-<span><span class="co">#&gt;  [5] xfun_0.62         cachem_1.1.0      knitr_1.52        htmltools_0.5.9  </span></span>
-<span><span class="co">#&gt;  [9] rmarkdown_2.32    lifecycle_1.0.5   cli_3.6.6         sass_0.5.0       </span></span>
-<span><span class="co">#&gt; [13] pkgdown_2.2.1     textshaping_1.1.0 jquerylib_0.1.4   systemfonts_1.3.4</span></span>
-<span><span class="co">#&gt; [17] compiler_4.6.2    tools_4.6.2       ragg_1.5.2        bslib_0.12.0     </span></span>
-<span><span class="co">#&gt; [21] evaluate_1.0.5    yaml_2.3.12       otel_0.3.0        jsonlite_2.0.0   </span></span>
+<span><span class="co">#&gt;  [5] xfun_0.60         cachem_1.1.0      knitr_1.52        htmltools_0.5.9  </span></span>
+<span><span class="co">#&gt;  [9] rmarkdown_2.32    lifecycle_1.0.5   cli_3.6.6         sass_0.4.10      </span></span>
+<span><span class="co">#&gt; [13] pkgdown_2.2.1     textshaping_1.0.5 jquerylib_0.1.4   systemfonts_1.3.2</span></span>
+<span><span class="co">#&gt; [17] compiler_4.6.1    tools_4.6.1       ragg_1.5.2        bslib_0.12.0     </span></span>
+<span><span class="co">#&gt; [21] evaluate_1.0.5    yaml_2.3.12       otel_0.2.0        jsonlite_2.0.0   </span></span>
 <span><span class="co">#&gt; [25] rlang_1.3.0       fs_2.1.0          htmlwidgets_1.6.4</span></span></code></pre></div>
 </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
